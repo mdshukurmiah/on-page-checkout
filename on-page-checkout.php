@@ -5,7 +5,7 @@
  * Description: A custom Elementor widget to display WooCommerce products and enable on-page checkout.
  * Version:     1.0.0
  * Author:      Manus
- * Author URI:  https://example.com/
+ * Author URI:  https://w3relations.com/
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: on-page-checkout
