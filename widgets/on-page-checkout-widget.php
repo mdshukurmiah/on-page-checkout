@@ -79,6 +79,17 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         );
 
         $this->add_control(
+            'product_selection_heading',
+            [
+                'label' => esc_html__( 'Product selection heading', 'on-page-checkout' ),
+                'type' => Controls_Manager::TEXT,
+                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout' ),
+                'label_block' => true,
+                'default' => 'Select a Product'
+            ]
+        );
+
+        $this->add_control(
             'show_quantity',
             [
                 'label' => esc_html__( 'Show Quantity Selector', 'on-page-checkout' ),
@@ -98,6 +109,17 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
                 'placeholder' => esc_html__( 'e.g., product_id', 'on-page-checkout' ),
                 'description' => esc_html__( 'Enter the query string parameter name (e.g., product_id) to preselect a product.', 'on-page-checkout' ),
                 'label_block' => true,
+            ]
+        );
+
+        $this->add_control(
+            'form_heading',
+            [
+                'label' => esc_html__( 'Checkout form heading', 'on-page-checkout' ),
+                'type' => Controls_Manager::TEXT,
+                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout' ),
+                'label_block' => true,
+                'default' => 'Your Details'
             ]
         );
 
@@ -133,7 +155,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         // Product selection (radio buttons or hidden input if only one product)
         if ( count( $product_ids ) > 1 ) {
             echo '<div class="opc-product-selection">';
-            echo '<h3>' . esc_html__( 'Select a Product', 'on-page-checkout' ) . '</h3>';
+            echo '<h3>' . esc_html__($settings['product_selection_heading'], 'on-page-checkout' ) . '</h3>';
             echo '<div class="opc-products-wrapper">';
             $first_product = true;
             foreach ( $product_ids as $id_or_sku ) {
@@ -248,34 +270,119 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
             // If only one product, pre-select it and hide the radio button
             $product = wc_get_product( $product_ids[0] );
             if ( $product ) {
-                echo '<input type="hidden" name="opc_product_id" value="' . esc_attr( $product->get_id() ) . '">';
-                    echo '<div class="opc-single-product-info">';
-                    echo '<div class="opc-product-item"><label>';
-                    echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product->get_id() ) . '" ' . $checked . '>';
-                    echo '<div class="product-card">';
-                    echo $product->get_image( 'woocommerce_thumbnail' ); 
-                    echo '<div class="product-information">';
-                    echo '<div class="product-title">'. esc_html( $product->get_name() ) .'</div>';
-                    echo '<div class="product-price">'. wp_kses_post( $product->get_price_html()) .'</div>';
-                    echo '</div>';
-                    echo '</div></label></div>';
-                echo '</div>';
+                $product_id = $product->get_id();
+                $is_variable = $product->is_type( 'variable' );
+                
+                // Prepare available variations JSON if variable
+                $data_attr = '';
+                if ( $is_variable ) {
+                    $available_variations = $product->get_available_variations(); // array
+                    $json_variations = wp_json_encode( $available_variations );
+                    $data_attr = ' data-available-variations=\'' . esc_attr( $json_variations ) . '\'';
+                }
+
+                echo '<div class="opc-products-wrapper">';
+                    echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . $data_attr . '>';
+                        echo '<label>';
+                            echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product->get_id() ) . '" checked>';
+                                echo '<div class="product-card">';
+                                echo $product->get_image( 'woocommerce_thumbnail' ); 
+                                echo '<div class="product-information">';
+                                echo '<div class="product-title">'. esc_html( $product->get_name() ) .'</div>';
+                                echo '<div class="product-price">'. wp_kses_post( $product->get_price_html()) .'</div>';
+                                // Variation selects container — render selects for the product's attributes (hidden by default)
+                                if ( $is_variable ) {
+                                    $available_variations = $product->get_available_variations(); // array
+                                    if ( ! empty( $available_variations ) ) {
+
+                                        // Build options array: variation_id => label
+                                        $options = [];
+                                        foreach ( $available_variations as $variation ) {
+                                            $variation_id = isset( $variation['variation_id'] ) ? $variation['variation_id'] : 0;
+                                            $attrs = isset( $variation['attributes'] ) ? (array) $variation['attributes'] : [];
+
+                                            // Build label from attributes: normalize values to readable text
+                                            $parts = [];
+                                            foreach ( $attrs as $attr_key => $attr_value ) {
+                                                if ( empty( $attr_value ) ) continue;
+
+                                                // $attr_key example: 'attribute_pa_grade' or 'attribute_grade'
+                                                // Convert attribute key label:
+                                                $label = wc_attribute_label( str_replace( 'attribute_', '', $attr_key ) );
+
+                                                // Attribute value can be slug. Try to get human readable term if possible
+                                                $readable = $attr_value;
+
+                                                // If it's a pa_ taxonomy, get term name if exists
+                                                if ( strpos( $attr_key, 'attribute_pa_' ) === 0 ) {
+                                                    $term = get_term_by( 'slug', $attr_value, str_replace( 'attribute_', '', $attr_key ) );
+                                                    if ( $term && ! is_wp_error( $term ) ) {
+                                                        $readable = $term->name;
+                                                    } else {
+                                                        // sometimes value already human readable
+                                                        $readable = ucfirst( str_replace( '-', ' ', $attr_value ) );
+                                                    }
+                                                } else {
+                                                    // not pa_ taxonomy — likely direct option label
+                                                    $readable = $attr_value;
+                                                }
+
+                                                $parts[] = $readable;
+                                            }
+
+                                            // Example label: "Grade A - 500 GM" or "A / 500GM" — choose format
+                                            $label = implode( ' - ', $parts );
+
+                                            if ( $variation_id ) {
+                                                $options[ $variation_id ] = $label;
+                                            }
+                                        }
+
+                                        if ( ! empty( $options ) ) {
+                                            echo '<div class="opc-combined-variants">';
+                                            echo '<select name="variation_id" class="opc-combined-variant-select" data-product-id="' . esc_attr( $product_id ) . '">';
+
+                                            $i = 0;
+                                            foreach ( $options as $vid => $lab ) {
+                                                $selected = ( $i === 0 ) ? ' selected' : '';
+                                                echo '<option value="' . esc_attr( $vid ) . '"' . $selected . '>' . esc_html( $lab ) . '</option>';
+                                                $i++;
+                                            }
+
+                                            echo '</select>';
+
+                                            // embed full available_variations JSON for JS matching if needed
+                                            echo '<input type="hidden" class="opc-avail-variations" value=\'' . esc_attr( wp_json_encode( $available_variations ) ) . '\' />';
+                                            echo '</div>';
+                                        }
+                                    }
+                                }
+                                echo '</div>';
+                            echo '</div>';
+                        echo '</label>';   
+                    echo '</div>';    
+                echo '</div>';       
             }
         }
 
         // Quantity selector
         if ( 'yes' === $settings['show_quantity'] ) {
             echo '<div class="opc-quantity-selector">';
-            echo '<label for="opc_quantity">' . esc_html__( 'Quantity:', 'on-page-checkout' ) . '</label>';
-            echo '<input type="number" id="opc_quantity" name="opc_quantity" value="1" min="1">';
+            echo '<label for="opc_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout' ) . '</label>';
+            echo '<div class="quantity-input-wrapper">';
+                echo '<button class="qty-decrement">-</button>';
+                echo '<input type="text" id="opc_quantity" name="opc_quantity" value="1" min="1">';
+                echo '<button class="qty-increment">+</button>';
+            echo '</div>';
             echo '</div>';
         } else {
             echo '<input type="hidden" name="opc_quantity" value="1">';
         }
 
         // Checkout form container
+        $form_heading = $settings['form_heading'];
         echo '<div class="opc-checkout-form-fields">';
-        echo '<h3>' . esc_html__( 'Your Details', 'on-page-checkout' ) . '</h3>';
+        echo '<h3>' . esc_html__( $form_heading , 'on-page-checkout' ) . '</h3>';
         echo '<div id="opc-checkout-fields-container-' . $this->get_id() . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout' ) . '</div>';
         echo '</div>';
         echo '</form>';
