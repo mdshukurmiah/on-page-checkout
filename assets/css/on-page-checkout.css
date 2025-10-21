@@ -192,3 +192,6 @@ select.opc-combined-variant-select {
     padding-top: unset;
     padding-bottom: unset;
 }
+.woocommerce-js form .form-row select {
+    width: 100%;
+}
