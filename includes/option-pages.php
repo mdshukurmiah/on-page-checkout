@@ -86,7 +86,6 @@ function w3_opc_register_settings() {
     );
 }
 
-
 class W3_Opc_On_Page_Checkout_Fields_Settings {
 
     private $option_name = 'w3_opc_checkout_fields';
@@ -117,15 +116,19 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
             'w3-opc-checkout-fields'
         );
 
+        // IMPORTANT: get the raw/unfiltered checkout fields so admin always lists all fields.
+        // Temporarily remove our own filter that might remove disabled fields.
+
         $checkout = WC()->checkout();
         $billing_fields  = $checkout ? $checkout->get_checkout_fields('billing') : [];
         $shipping_fields = $checkout ? $checkout->get_checkout_fields('shipping') : [];
+
 
         // Add billing fields
         foreach ($billing_fields as $field_key => $field) {
             add_settings_field(
                 "billing_{$field_key}",
-                $field['label'],
+                isset($field['label']) ? $field['label'] : $field_key,
                 [$this, 'render_field'],
                 'w3-opc-checkout-fields',
                 'w3_opc_checkout_fields_billing_section',
@@ -137,7 +140,7 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         foreach ($shipping_fields as $field_key => $field) {
             add_settings_field(
                 "shipping_{$field_key}",
-                $field['label'],
+                isset($field['label']) ? $field['label'] : $field_key,
                 [$this, 'render_field'],
                 'w3-opc-checkout-fields',
                 'w3_opc_checkout_fields_shipping_section',
@@ -154,21 +157,36 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         $saved = isset($options[$field_key]) ? $options[$field_key] : [];
 
         $enabled  = isset($saved['enabled']) ? $saved['enabled'] : 1;
-        $label    = isset($saved['label']) ? $saved['label'] : $field['label'];
+        $label    = isset($saved['label']) ? $saved['label'] : ($field['label'] ?? '');
         $required = isset($saved['required']) ? $saved['required'] : (!empty($field['required']) ? 1 : 0);
 
+        // Hidden input ensures value is always submitted even when unchecked
         ?>
-        <div class="w3-opc-field-wrapper">
-            <label>
-                <input class="opc-enable-field" type="checkbox" name="<?php echo $this->option_name; ?>[<?php echo $field_key; ?>][enabled]" value="1" <?php checked($enabled, 1); ?>>
+        <div class="w3-opc-field-wrapper" style="margin-bottom: 12px;">
+            <label style="margin-right:10px;">
+                <input type="hidden" name="<?php echo esc_attr($this->option_name); ?>[<?php echo esc_attr($field_key); ?>][enabled]" value="0">
+                <input class="opc-enable-field" type="checkbox"
+                    name="<?php echo esc_attr($this->option_name); ?>[<?php echo esc_attr($field_key); ?>][enabled]"
+                    value="1" <?php checked(1, $enabled); ?>>
                 Enable
             </label>
-            <div class="w3-opc-dependent-fields">
-                <label>
-                    Label: <input type="text" name="<?php echo $this->option_name; ?>[<?php echo $field_key; ?>][label]" value="<?php echo esc_attr($label); ?>">
+
+            <div class="w3-opc-dependent-fields"
+                style="<?php echo empty($enabled) ? 'display:none;' : ''; ?> margin-left:20px;">
+                <label style="margin-bottom:4px;">
+                    <strong>Label:</strong>
+                    <input type="text"
+                        name="<?php echo esc_attr($this->option_name); ?>[<?php echo esc_attr($field_key); ?>][label]"
+                        value="<?php echo esc_attr($label); ?>"
+                        style="width:300px;">
                 </label>
                 <label>
-                    <input type="checkbox" name="<?php echo $this->option_name; ?>[<?php echo $field_key; ?>][required]" value="1" <?php checked($required, 1); ?>>
+                    <input type="hidden"
+                        name="<?php echo esc_attr($this->option_name); ?>[<?php echo esc_attr($field_key); ?>][required]"
+                        value="0">
+                    <input type="checkbox"
+                        name="<?php echo esc_attr($this->option_name); ?>[<?php echo esc_attr($field_key); ?>][required]"
+                        value="1" <?php checked(1, $required); ?>>
                     Required
                 </label>
             </div>
@@ -178,6 +196,10 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 
     public function sanitize_fields($input) {
         $output = [];
+        if (!is_array($input)) {
+            return $output;
+        }
+
         foreach ($input as $key => $field) {
             $output[$key] = [
                 'enabled'  => !empty($field['enabled']) ? 1 : 0,
@@ -189,27 +211,35 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
     }
 
     public function modify_checkout_fields($fields) {
+        // Do not modify fields in admin area — return original so settings page sees all fields
+        if (is_admin() && !(defined('DOING_AJAX') && DOING_AJAX)) {
+            return $fields;
+        }
+
         $options = get_option($this->option_name, []);
-        
+
         foreach ($options as $field_key => $settings) {
             if (strpos($field_key, 'billing_') === 0) {
-                $wc_key = 'billing_' . str_replace('billing_', '', $field_key);
+                $wc_key = substr($field_key, strlen('billing_'));
                 if (isset($fields['billing'][$wc_key])) {
-                    
                     if (empty($settings['enabled'])) {
                         unset($fields['billing'][$wc_key]);
                     } else {
-                        $fields['billing'][$wc_key]['label'] = $settings['label'] ?? $fields['billing'][$wc_key]['label'];
+                        if (!empty($settings['label'])) {
+                            $fields['billing'][$wc_key]['label'] = $settings['label'];
+                        }
                         $fields['billing'][$wc_key]['required'] = !empty($settings['required']);
                     }
                 }
             } elseif (strpos($field_key, 'shipping_') === 0) {
-                $wc_key = str_replace('shipping_', '', $field_key);
+                $wc_key = substr($field_key, strlen('shipping_'));
                 if (isset($fields['shipping'][$wc_key])) {
                     if (empty($settings['enabled'])) {
                         unset($fields['shipping'][$wc_key]);
                     } else {
-                        $fields['shipping'][$wc_key]['label'] = $settings['label'] ?? $fields['shipping'][$wc_key]['label'];
+                        if (!empty($settings['label'])) {
+                            $fields['shipping'][$wc_key]['label'] = $settings['label'];
+                        }
                         $fields['shipping'][$wc_key]['required'] = !empty($settings['required']);
                     }
                 }
@@ -218,6 +248,7 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 
         return $fields;
     }
+
 }
 
 new W3_Opc_On_Page_Checkout_Fields_Settings();

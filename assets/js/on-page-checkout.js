@@ -100,7 +100,7 @@ jQuery(document).ready(function($) {
         w3_opc_loadCheckoutFields(widget);
     });
 
-    $(document).on('change', '.opc-product-selection select[name="variation_id"]', function() {
+    $(document).on('change', '.opc-products-wrapper select[name="variation_id"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
         w3_opc_loadCheckoutFields(widget);
     });
@@ -194,5 +194,23 @@ jQuery(document).ready(function($) {
             shippingAddress.slideUp();
         }
     });
+    
+    // quantity Selector
+    $(document).on('click', '.on-page-checkout-widget .qty-increment', function() {
+        var input = $(this).siblings('#opc_quantity');
+        var value = parseInt(input.val()) || 1;
+        input.val(value + 1).trigger('change');
+    });
+
+    $(document).on('click', '.on-page-checkout-widget .qty-decrement', function() {
+        var input = $(this).siblings('#opc_quantity');
+        var value = parseInt(input.val()) || 1;
+        var min = parseInt(input.attr('min')) || 1;
+        if (value > min) {
+            input.val(value - 1).trigger('change');
+        }
+    });
+
+
 });
 
