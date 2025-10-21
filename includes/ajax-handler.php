@@ -128,6 +128,8 @@ class W3_Opc_Ajax_Handler {
         $checkout = WC()->checkout();
         $fields = $checkout->get_checkout_fields();
 
+        $widgetSettings = $_POST['widgetSettings'] ?? '';
+
         ob_start();
         ?>
 
@@ -137,7 +139,9 @@ class W3_Opc_Ajax_Handler {
 
             <?php if ( ! empty( $fields['billing'] ) ) : ?>
                 <div class="opc-billing-fields">
-                    <h4><?php esc_html_e( 'Billing Details', 'on-page-checkout' ); ?></h4>
+                    <?php if(!empty($widgetSettings['billingTitle'])): ?>
+                        <h4><?php esc_html_e( $widgetSettings['billingTitle'], 'on-page-checkout' ); ?></h4>
+                    <?php endif ?>
                     <?php foreach ( $fields['billing'] as $key => $field ) : ?>
                         <?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
                     <?php endforeach; ?>
@@ -146,7 +150,9 @@ class W3_Opc_Ajax_Handler {
 
             <?php if ( ! empty( $fields['shipping'] ) && WC()->cart->needs_shipping() ) : ?>
                 <div class="opc-shipping-fields">
-                    <h4><?php esc_html_e( 'Shipping Details', 'on-page-checkout' ); ?></h4>
+                    <?php if(!empty($widgetSettings['shippingTitle'])): ?>
+                        <h4><?php esc_html_e( $widgetSettings['shippingTitle'], 'on-page-checkout' ); ?></h4>
+                    <?php endif ?>
                     <p class="form-row form-row-wide">
                         <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
                             <input id="ship-to-different-address-checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" type="checkbox" name="ship_to_different_address" value="1" />
@@ -163,7 +169,9 @@ class W3_Opc_Ajax_Handler {
 
             <?php if ( ! empty( $fields['order'] ) ) : ?>
                 <div class="opc-order-fields">
-                    <h4><?php esc_html_e( 'Additional Information', 'on-page-checkout' ); ?></h4>
+                    <?php if(!empty($widgetSettings['additionalInfoTitle'])): ?>
+                        <h4><?php esc_html_e( $widgetSettings['additionalInfoTitle'], 'on-page-checkout' ); ?></h4>
+                    <?php endif ?>
                     <?php foreach ( $fields['order'] as $key => $field ) : ?>
                         <?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
                     <?php endforeach; ?>
@@ -173,7 +181,9 @@ class W3_Opc_Ajax_Handler {
         <div class="order-details" id="order_review" class="woocommerce-checkout-review-order">
             <div class="order-details-wrapper">
                 <div class="opc-order-review">
-                    <h4><?php esc_html_e( 'Your Order', 'on-page-checkout' ); ?></h4>
+                    <?php if(!empty($widgetSettings['orderSummaryTitle'])): ?>
+                        <h4><?php esc_html_e( $widgetSettings['orderSummaryTitle'], 'on-page-checkout' ); ?></h4>
+                    <?php endif; ?>
                     <table class="shop_table woocommerce-checkout-review-order-table">
                         <thead>
                             <tr>
@@ -245,7 +255,9 @@ class W3_Opc_Ajax_Handler {
                     </table>
                 </div>
                 <div class="opc-payment-methods woocommerce-checkout-payment" id="payment">
-                    <h4><?php esc_html_e( 'Payment Method', 'on-page-checkout' ); ?></h4>
+                    <?php if(!empty($widgetSettings['paymentMethodTitle'])): ?>
+                        <h4><?php esc_html_e( $widgetSettings['paymentMethodTitle'], 'on-page-checkout' ); ?></h4>
+                    <?php endif; ?>
                     <ul class="wc_payment_methods payment_methods methods">
                     <?php 
                     $available_gateways = WC()->payment_gateways->get_available_payment_gateways();

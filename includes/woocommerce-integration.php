@@ -149,16 +149,13 @@ class W3_Opc_WooCommerce_Integration {
         try {
             $result = $checkout->process_checkout( $posted_data );
 
-            wp_send_json_success( [ 'message' =>  WC()->cart ] );
-            // if ( isset( $result['result'] ) && 'success' === $result['result'] ) {
-            //     wp_send_json_success( [ 'redirect' => $result['redirect'] ] );
-            // }
-
-            // wp_send_json_error( [ 'message' => esc_html__( 'Checkout failed. Please try again.', 'on-page-checkout' ) ] );
+            if ( isset( $result['result'] ) && 'success' === $result['result'] ) {
+                wp_send_json_success( [ 'redirect' => $result['redirect'] ] );
+            }
+            wp_send_json_error( [ 'message' => esc_html__( 'Checkout failed. Please try again.', 'on-page-checkout' ) ] );
 
         } catch ( Exception $e ) {
-            // wp_send_json_error( [ 'message' =>  WC()->cart ] );
-            // wp_send_json_error( [ 'message' => $e->getMessage() ] );
+            wp_send_json_error( [ 'message' => $e->getMessage() ] );
         }
     }
 
