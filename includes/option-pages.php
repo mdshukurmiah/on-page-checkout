@@ -42,15 +42,18 @@ function w3_opc_general_settings_page() {
     <?php
 }
 
-// Checkout fields page:
+
 function w3_opc_checkout_fields_edit_page() {
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('W3 OPC Checkout Fields Edit', 'w3-opc'); ?></h1>
+        <?php
+        settings_errors('w3_opc_checkout_fields_group');
+        ?>
         <form method="post" action="options.php">
             <?php
-            settings_fields('w3_opc_checkout_fields_group'); // option group
-            do_settings_sections('w3-opc-checkout-fields');   // match the section registration
+            settings_fields('w3_opc_checkout_fields_group');
+            do_settings_sections('w3-opc-checkout-fields');  
             submit_button();
             ?>
         </form>
@@ -60,6 +63,18 @@ function w3_opc_checkout_fields_edit_page() {
 
 
 add_action('admin_init', 'w3_opc_register_settings');
+
+add_action('admin_init', function() {
+    if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') {
+        add_settings_error(
+            'w3_opc_checkout_fields_group', 
+            'w3_opc_settings_saved',        
+            __('Checkout fields settings saved successfully!', 'w3-opc'),
+            'updated'
+        );
+    }
+});
+
 
 function w3_opc_register_settings() {
     // General Settings
@@ -102,6 +117,19 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
             [$this, 'sanitize_fields']
         );
 
+        // --- NEW: register a master toggle option ---
+        register_setting(
+            'w3_opc_checkout_fields_group',
+            'w3_opc_checkout_fields_master',
+            [
+                'type' => 'boolean',
+                'sanitize_callback' => function($val) {
+                    return !empty($val) ? 1 : 0;
+                },
+                'default' => 1,
+            ]
+        );
+        
         add_settings_section(
             'w3_opc_checkout_fields_billing_section',
             'Billing Fields Settings',
@@ -115,6 +143,18 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
             '__return_false',
             'w3-opc-checkout-fields'
         );
+        add_settings_section(
+            'w3_opc_checkout_fields_other_section',
+            'Other Settings',
+            '__return_false',
+            'w3-opc-checkout-fields'
+        );
+
+
+        $other_fields = [
+            'order_notes' => ['label' => 'Order  note']
+            // add more fields here as needed
+        ];
 
         // IMPORTANT: get the raw/unfiltered checkout fields so admin always lists all fields.
         // Temporarily remove our own filter that might remove disabled fields.
@@ -145,6 +185,17 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                 'w3-opc-checkout-fields',
                 'w3_opc_checkout_fields_shipping_section',
                 ['field_key' => "shipping_$field_key", 'field' => $field]
+            );
+        }
+
+        foreach ($other_fields as $field_key => $field) {
+            add_settings_field(
+                "other_{$field_key}",
+                $field['label'],
+                [$this, 'render_other_field'],
+                'w3-opc-checkout-fields',
+                'w3_opc_checkout_fields_other_section',
+                ['field_key' => $field_key, 'field' => $field]
             );
         }
     }
@@ -194,17 +245,52 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         <?php
     }
 
+    public function render_other_field($args) {
+        $options = get_option($this->option_name, []);
+        $field_key = $args['field_key'];
+        $field = $args['field'];
+
+        $saved = isset($options["other_$field_key"]) ? $options["other_$field_key"] : [];
+
+        $enabled = isset($saved['enabled']) ? $saved['enabled'] : 1;
+        $label   = isset($saved['label']) ? $saved['label'] : $field['label'];
+
+        ?>
+        <div class="w3-opc-field-wrapper">
+            <label style="margin-right:10px;">
+                <input type="hidden" name="<?php echo esc_attr($this->option_name); ?>[other_<?php echo esc_attr($field_key); ?>][enabled]" value="0">
+                <input class="opc-enable-field" type="checkbox"
+                    name="<?php echo esc_attr($this->option_name); ?>[other_<?php echo esc_attr($field_key); ?>][enabled]"
+                    value="1" <?php checked(1, $enabled); ?>>
+                Enable
+            </label>
+
+            <div class="w3-opc-dependent-fields" style="<?php echo empty($enabled) ? 'display:none;' : ''; ?> margin-left:20px;">
+                <label style="display:block; margin-bottom:4px;">
+                    Label:
+                    <input type="text"
+                        name="<?php echo esc_attr($this->option_name); ?>[other_<?php echo esc_attr($field_key); ?>][label]"
+                        value="<?php echo esc_attr($label); ?>"
+                        style="width:250px;">
+                </label>
+            </div>
+        </div>
+        <?php
+    }
+
     public function sanitize_fields($input) {
         $output = [];
+
         if (!is_array($input)) {
             return $output;
         }
 
         foreach ($input as $key => $field) {
             $output[$key] = [
-                'enabled'  => !empty($field['enabled']) ? 1 : 0,
-                'label'    => sanitize_text_field($field['label'] ?? ''),
-                'required' => !empty($field['required']) ? 1 : 0,
+                'enabled' => !empty($field['enabled']) ? 1 : 0,
+                'label'   => sanitize_text_field($field['label'] ?? ''),
+                'required'=> !empty($field['required']) ? 1 : 0,
+                'title'   => sanitize_text_field($field['title'] ?? ''), // new title field
             ];
         }
         return $output;
@@ -241,6 +327,14 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                             $fields['shipping'][$wc_key]['label'] = $settings['label'];
                         }
                         $fields['shipping'][$wc_key]['required'] = !empty($settings['required']);
+                    }
+                }
+            }elseif($field_key === 'other_order_notes' || strpos($field_key, 'other_') === 0) {
+                if (isset($options['other_order_notes']) && empty($options['other_order_notes']['enabled'])) {
+                    unset($fields['order']['order_comments']);
+                }else{
+                    if ($field_key === 'other_order_notes' && !empty($settings['label'])) {
+                        $fields['order']['order_comments']['label'] = $settings['label'];
                     }
                 }
             }
