@@ -37,6 +37,7 @@ jQuery(document).ready(function($) {
         widgetSettings['additionalInfoTitle'] = widgetparent.attr('data-additional-info-title');
         widgetSettings['orderSummaryTitle'] = widgetparent.attr('data-order-summery-title');
         widgetSettings['paymentMethodTitle'] = widgetparent.attr('data-payment-method-title');
+        widgetSettings['orderButtonName'] = widgetparent.attr('data-order-button-name');
 
         if (!productId) {
             checkoutFieldsContainer.html('<p class="opc-info">' + (opc_ajax_object.no_product_selected_text || 'Please select a product.') + '</p>');

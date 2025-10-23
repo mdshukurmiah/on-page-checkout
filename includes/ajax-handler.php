@@ -285,7 +285,8 @@ class W3_Opc_Ajax_Handler {
                     </ul>
                 </div>
                 <?php
-                    echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html__( 'Place Order', 'on-page-checkout' ) . '</button>';
+                    $orderButtonName = !empty($widgetSettings['orderButtonName']) ? $widgetSettings['orderButtonName'] : 'Place Order';
+                    echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html__( $orderButtonName, 'on-page-checkout' ) . '</button>';
                 ?>
             </div>
         </div>
