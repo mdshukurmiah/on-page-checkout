@@ -177,6 +177,16 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
                 'default' => 'Payment Method'
             ]
         );
+        $this->add_control(
+            'order_button_name',
+            [
+                'label' => esc_html__( 'Order button name', 'on-page-checkout' ),
+                'type' => Controls_Manager::TEXT,
+                'placeholder' => esc_html__( 'Place Order', 'on-page-checkout' ),
+                'label_block' => true,
+                'default' => 'Place Order'
+            ]
+        );
 
         $this->end_controls_section();
 
@@ -202,7 +212,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
             $preselected_product_id = absint( $_GET[ $settings['preselect_product_param'] ] );
         }
 
-        echo '<div class="on-page-checkout-widget" data-widget-id="' . $this->get_id() . '" data-shipping-title="'.esc_html__($settings['shipping_details_heading'] ).'" data-billing-title="'.esc_html__($settings['billing_details_heading'] ).'" data-order-summery-title="'.esc_html__($settings['order_summary_heading'] ).'" data-payment-method-title="'.esc_html__($settings['payment_method_heading'] ).'" data-additional-info-title="'.esc_html__($settings['additional_info_heading'] ).'">';
+        echo '<div class="on-page-checkout-widget" data-widget-id="' . $this->get_id() . '" data-shipping-title="'.esc_html__($settings['shipping_details_heading'] ).'" data-billing-title="'.esc_html__($settings['billing_details_heading'] ).'" data-order-summery-title="'.esc_html__($settings['order_summary_heading'] ).'" data-payment-method-title="'.esc_html__($settings['payment_method_heading'] ).'" data-additional-info-title="'.esc_html__($settings['additional_info_heading'] ).'" data-order-button-name="'.esc_html__($settings['order_button_name'] ).'">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
 
 
