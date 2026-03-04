@@ -1,6 +1,0 @@
-<?php
-/**
- * FAQ & Support page
- */
-?>
-
