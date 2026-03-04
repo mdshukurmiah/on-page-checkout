@@ -17,8 +17,8 @@ class W3_Opc_Ajax_Handler {
     public function load_checkout_fields() {
         check_ajax_referer( 'opc-nonce', 'nonce' );
 
-        $product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-        $quantity   = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
+        $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
         $product    = wc_get_product( $product_id );
 
         if ( ! $product ) {
@@ -30,7 +30,7 @@ class W3_Opc_Ajax_Handler {
         $added_item_key = false;
 
         if ( $product->is_type( 'variable' ) ) {
-            $variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
+            $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
 
             // Collect attribute_* fields from POST
             $variation = [];
@@ -109,7 +109,7 @@ class W3_Opc_Ajax_Handler {
         $customer->set_billing_country( $billing_country );
 
         // Set shipping address
-        if ( isset( $_POST['ship_to_different_address'] ) && '1' === (string) $_POST['ship_to_different_address'] ) {
+        if ( isset( $_POST['ship_to_different_address'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['ship_to_different_address'] ) ) ) {
             $shipping_first_name = isset( $_POST['shipping_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_first_name'] ) ) : $customer->get_shipping_first_name();
             $shipping_last_name  = isset( $_POST['shipping_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_last_name'] ) ) : $customer->get_shipping_last_name();
             $shipping_company    = isset( $_POST['shipping_company'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_company'] ) ) : $customer->get_shipping_company();
@@ -163,7 +163,8 @@ class W3_Opc_Ajax_Handler {
         $fields   = $checkout->get_checkout_fields();
 
         // Sanitize and whitelist widget settings coming from the browser
-        $raw_settings   = isset( $_POST['widgetSettings'] ) && is_array( $_POST['widgetSettings'] ) ? wp_unslash( $_POST['widgetSettings'] ) : [];
+        $raw_settings_input = filter_input( INPUT_POST, 'widgetSettings', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+        $raw_settings       = is_array( $raw_settings_input ) ? wp_unslash( $raw_settings_input ) : [];
         $widgetSettings = [
             'billingTitle'        => sanitize_text_field( $raw_settings['billingTitle'] ?? '' ),
             'shippingTitle'       => sanitize_text_field( $raw_settings['shippingTitle'] ?? '' ),
@@ -340,8 +341,8 @@ class W3_Opc_Ajax_Handler {
     public function add_to_cart() {
         check_ajax_referer( 'opc-nonce', 'nonce' );
 
-        $product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-        $quantity   = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
+        $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
 
         if ( ! $product_id ) {
             wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout' ) ] );

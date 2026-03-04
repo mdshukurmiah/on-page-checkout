@@ -208,8 +208,12 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         }
 
         $preselected_product_id = 0;
-        if ( ! empty( $settings['preselect_product_param'] ) && isset( $_GET[ $settings['preselect_product_param'] ] ) ) {
-            $preselected_product_id = absint( $_GET[ $settings['preselect_product_param'] ] );
+        $preselect_param = ! empty( $settings['preselect_product_param'] ) ? sanitize_key( $settings['preselect_product_param'] ) : '';
+        if ( '' !== $preselect_param ) {
+            $preselected_value = filter_input( INPUT_GET, $preselect_param, FILTER_SANITIZE_NUMBER_INT );
+            if ( null !== $preselected_value && false !== $preselected_value ) {
+                $preselected_product_id = absint( $preselected_value );
+            }
         }
 
         echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ) . '">';
@@ -232,12 +236,12 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
 
                 $product_id = $product->get_id();
                 $is_variable = $product->is_type( 'variable' );
-                $checked = '';
+                $checked = false;
 
                 if ( $preselected_product_id === $product_id ) {
-                    $checked = 'checked';
+                    $checked = true;
                 } elseif ( $first_product && empty( $preselected_product_id ) ) {
-                    $checked = 'checked';
+                    $checked = true;
                     $first_product = false;
                 }
 
@@ -250,11 +254,11 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
                 }
 
                 // Product item wrapper — include product id and available variations
-                echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . $data_attr . '>';
+                echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . wp_kses_post( $data_attr ) . '>';
                     echo '<label>';
-                        echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product_id ) . '" ' . $checked . '>';
+                        echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product_id ) . '" ' . checked( $checked, true, false ) . '>';
                         echo '<div class="product-card">';
-                            echo $product->get_image( 'woocommerce_thumbnail' );
+                            echo wp_kses_post( $product->get_image( 'woocommerce_thumbnail' ) );
                             echo '<div class="product-information">';
                                 echo '<div class="product-title">' . esc_html( $product->get_name() ) . '</div>';
                                 echo '<div class="product-price">' . wp_kses_post( $product->get_price_html() ) . '</div>';
@@ -312,8 +316,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
 
                                             $i = 0;
                                             foreach ( $options as $vid => $lab ) {
-                                                $selected = ( $i === 0 ) ? ' selected' : '';
-                                                echo '<option value="' . esc_attr( $vid ) . '"' . $selected . '>' . esc_html( $lab ) . '</option>';
+                                                echo '<option value="' . esc_attr( $vid ) . '"' . selected( $i, 0, false ) . '>' . esc_html( $lab ) . '</option>';
                                                 $i++;
                                             }
 
@@ -348,11 +351,11 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
                 }
 
                 echo '<div class="opc-products-wrapper">';
-                    echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . $data_attr . '>';
+                    echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . wp_kses_post( $data_attr ) . '>';
                         echo '<label>';
                             echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product->get_id() ) . '" checked>';
                                 echo '<div class="product-card">';
-                                echo $product->get_image( 'woocommerce_thumbnail' ); 
+                                echo wp_kses_post( $product->get_image( 'woocommerce_thumbnail' ) ); 
                                 echo '<div class="product-information">';
                                 echo '<div class="product-title">'. esc_html( $product->get_name() ) .'</div>';
                                 echo '<div class="product-price">'. wp_kses_post( $product->get_price_html()) .'</div>';
@@ -410,8 +413,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
 
                                             $i = 0;
                                             foreach ( $options as $vid => $lab ) {
-                                                $selected = ( $i === 0 ) ? ' selected' : '';
-                                                echo '<option value="' . esc_attr( $vid ) . '"' . $selected . '>' . esc_html( $lab ) . '</option>';
+                                                echo '<option value="' . esc_attr( $vid ) . '"' . selected( $i, 0, false ) . '>' . esc_html( $lab ) . '</option>';
                                                 $i++;
                                             }
 
@@ -457,4 +459,3 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         echo '</div>';
     }
 }
-

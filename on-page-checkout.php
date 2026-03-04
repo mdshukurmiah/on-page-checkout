@@ -111,8 +111,6 @@ final class W3_Opc_On_Page_Checkout {
      * @access public
      */
     public function on_plugins_loaded() {
-        load_plugin_textdomain( 'on-page-checkout', false, dirname( plugin_basename( OPC_PLUGIN_FILE ) ) . '/languages' );
-
         if ( ! $this->check_dependencies() ) {
             add_action( 'admin_notices', [ $this, 'admin_notice_missing_dependencies' ] );
             return;
@@ -181,7 +179,7 @@ final class W3_Opc_On_Page_Checkout {
             '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout' ) . '</strong>'
         );
 
-        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
     }
 
     /**

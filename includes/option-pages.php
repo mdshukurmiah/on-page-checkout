@@ -62,7 +62,14 @@ function w3_opc_maybe_show_saved_notice() {
     if ( ! in_array( $screen->id, $opc_screens, true ) ) {
         return;
     }
-    if ( isset( $_GET['settings-updated'] ) && '1' === (string) $_GET['settings-updated'] ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    $settings_updated = isset( $_GET['settings-updated'] ) ? sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) : '';
+    $nonce            = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+
+    if ( '1' === $settings_updated && ! empty( $nonce ) && wp_verify_nonce( $nonce, 'w3_opc_checkout_fields_group-options' ) ) {
         add_settings_error(
             'w3_opc_checkout_fields_group',
             'w3_opc_settings_saved',
@@ -74,7 +81,15 @@ function w3_opc_maybe_show_saved_notice() {
 
 function w3_opc_register_settings() {
     // General Settings
-    register_setting( 'w3_opc_general_settings_group', 'w3_opc_general_options' );
+    register_setting(
+        'w3_opc_general_settings_group',
+        'w3_opc_general_options',
+        [
+            'sanitize_callback' => 'w3_opc_sanitize_general_options',
+            'type'              => 'array',
+            'default'           => [],
+        ]
+    );
 
     add_settings_section(
         'w3_opc_general_section',
@@ -99,6 +114,16 @@ function w3_opc_register_settings() {
     );
 }
 
+function w3_opc_sanitize_general_options( $input ) {
+    if ( ! is_array( $input ) ) {
+        return [];
+    }
+
+    return [
+        'enable_opc' => ! empty( $input['enable_opc'] ) ? 1 : 0,
+    ];
+}
+
 class W3_Opc_On_Page_Checkout_Fields_Settings {
 
     private $option_name = 'w3_opc_checkout_fields';
@@ -112,7 +137,11 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         register_setting(
             'w3_opc_checkout_fields_group',
             $this->option_name,
-            [ $this, 'sanitize_fields' ]
+            [
+                'sanitize_callback' => [ $this, 'sanitize_fields' ],
+                'type'              => 'array',
+                'default'           => [],
+            ]
         ); 
 
         register_setting(
@@ -331,3 +360,4 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 }
 
 new W3_Opc_On_Page_Checkout_Fields_Settings();
+ 

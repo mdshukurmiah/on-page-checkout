@@ -17,9 +17,9 @@ class W3_Opc_WooCommerce_Integration {
     public function get_checkout_form() {
         check_ajax_referer( 'opc-nonce', 'nonce' );
 
-        $product_id   = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-        $variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
-        $quantity     = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
+        $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
+        $quantity     = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
         $product      = wc_get_product( $product_id );
 
@@ -67,9 +67,9 @@ class W3_Opc_WooCommerce_Integration {
     public function process_checkout() {
         check_ajax_referer( 'opc-nonce', 'nonce' );
 
-        $product_id   = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-        $variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
-        $quantity     = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
+        $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
+        $quantity     = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
         $product      = wc_get_product( $product_id );
 
@@ -134,7 +134,7 @@ class W3_Opc_WooCommerce_Integration {
 
             'order_comments'            => sanitize_textarea_field( wp_unslash( $_POST['order_comments'] ?? '' ) ),
             'payment_method'            => sanitize_text_field( wp_unslash( $_POST['payment_method'] ?? '' ) ),
-            'ship_to_different_address' => ! empty( $_POST['ship_to_different_address'] ) ? 1 : 0,
+            'ship_to_different_address' => isset( $_POST['ship_to_different_address'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['ship_to_different_address'] ) ) ? 1 : 0,
         ];
 
         // Validate payment method
@@ -163,3 +163,4 @@ class W3_Opc_WooCommerce_Integration {
 }
 
 new W3_Opc_WooCommerce_Integration();
+ 
