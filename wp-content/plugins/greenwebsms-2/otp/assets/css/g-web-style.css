@@ -1,0 +1,199 @@
+.g-web-verified-success, .g-web-verify-notice {
+    z-index: 99999999;
+    position: fixed;
+    top: 0;
+    padding: 20px;
+    left: 0;
+    right: 0;
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.g-web-verified-success span:last-of-type a {
+    text-decoration: underline;
+    color: #3c763d;
+    margin-left: 6px;
+}
+
+.g-web-notice-error{
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+.g-web-notice-success{
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.g-web-notice{
+    display: none;
+    margin-top: 10px 0;
+}
+
+.g-web-notice-error , .g-web-notice-success{
+    padding: 7px 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    display: block;
+    margin: 10px 0;
+}
+
+/* OTP */
+button.g-web-otp-verify-btn {
+    width: 100%;
+    max-width: 400px;
+    margin: 30px auto 0;
+    display: table;
+}
+
+.g-web-otp-input-cont {
+    display: table;
+    margin: 0 auto;
+}
+
+form.g-web-otp-form {
+    text-align: center;
+    display: none;
+}
+
+.g-web-otp-sent-txt {
+    margin-bottom: 22px;
+    font-size: 20px;
+}
+
+span.g-web-otp-no-change {
+    color: #0d81fe;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.g-web-otp-input-cont input.g-web-otp-input:focus {
+    outline: 0;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #0d81fe;
+}
+
+.g-web-otp-input-cont input.g-web-otp-input {
+    max-width: 60px;
+    text-align: center;
+    margin-right: 15px;
+    background-color: transparent;
+    color: #000;
+    font-weight: 600;
+    font-size: 23px;
+    border-bottom: 1px solid #000;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    box-shadow: 0 0 0;
+}
+
+.g-web-otp-notice-cont {
+    height: 50px;
+}
+
+form.g-web-otp-form .g-web-notice {
+    display: table;
+    margin: 0 auto;
+}
+
+span.g-web-reg-phone-change {
+    position: relative;
+    display: none;
+    float: right;
+    top: -22px;
+    right: 10px;
+    color: black;
+    z-index: 10;
+    cursor: pointer;
+    font-size: 13px;
+    height: 0;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+a.g-web-otp-resend-link {
+    color: #0d81fe;
+    text-decoration: none!important;
+    cursor: pointer;
+}
+
+.g-web-otp-resend {
+    margin-top: 10px;
+}
+
+a.g-web-otp-resend-link.g-web-disabled {
+    pointer-events: none!important;
+}
+
+.g-web-reg-has-cc {
+    display: flex;
+}
+
+.g-web-reg-has-cc select.g-web-reg-phone-cc-select, .g-web-reg-has-cc input.g-web-reg-phone-cc-text  {
+    max-width: 100px;
+    margin-right: 10px;
+}
+
+.g-web-regphin {
+    position: relative;
+    width: 100%;
+}
+
+input#g-web-reg-phone {
+    width: 100%;
+}
+
+span.g-web-low-back {
+    color: #4a90e2;
+    text-decoration: underline;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+}
+
+button.g-web-login-otp-btn {
+    margin-top: 13px;
+}
+.g-web-processing{
+    pointer-events: none;
+}
+.g-el-container .g-web-notice{
+    margin-top: -15px;
+    width: calc(100% - 20px);
+}
+
+span.g-web-or {
+    display: none;
+    margin: 20px 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: 1px solid #333;
+    font-size: 14px;
+}
+
+.g-aff-cont-phone span.g-web-reg-phone-change {
+    position: absolute;
+    top: 50%;
+}

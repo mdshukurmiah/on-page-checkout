@@ -1,0 +1,197 @@
+/* Basic styling for the On Page Checkout widget */
+
+
+.opc-quantity-selector label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.opc-checkout-form-fields {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.opc-place-order-button {
+    width: 100%;
+}
+
+.opc-no-products {
+    color: red;
+    font-weight: bold;
+}
+.opc-products-wrapper .product-card img {
+    height: 80px;
+    width: 80px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.opc-products-wrapper .product-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.opc-products-wrapper .opc-product-item>label {
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    gap: 15px;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 4px;
+}
+.opc-products-wrapper label:has(input:checked){
+    border: none;
+    outline: 2px solid #016520;
+}
+.opc-products-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 30px;
+}
+.opc-products-wrapper .opc-product-item {
+    max-width: 545px;
+}
+.opc-checkout-fields-container {
+    display: flex;
+    gap: 64px;
+    position: relative
+}
+
+.opc-checkout-fields-container .opc-checkout-fields, .order-details  {
+    flex: 1
+}
+.opc-checkout-fields-container .form-row.payment_method {
+    display: flex;
+    align-self: center;
+}
+.opc-checkout-fields-container .form-row.payment_method label {
+    margin: 0
+}
+.opc-checkout-fields-container div#order_review{
+    border: 0 !important;
+    padding: unset !important;
+}
+.opc-checkout-fields-container li.wc_payment_method .payment_box {
+    display: none;
+}
+
+.opc-checkout-fields-container li.wc_payment_method:has(input:checked) .payment_box{
+    display: block;
+}
+.order-details-wrapper {
+    position: sticky;
+    top: 50px;
+}
+
+/* WooCommerce form field styling */
+
+
+.opc-payment-methods label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.opc-payment-methods input[type="radio"] {
+    margin-right: 10px;
+}
+
+.payment_box {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+
+
+
+/* Loading overlay styles */
+.on-page-checkout-widget.opc-loading {
+    position: relative;
+}
+
+.opc-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.opc-loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* Media styles */
+@media only screen and (min-width: 770px){
+    .opc-product-item {
+        flex: 1 1 0;
+    }
+
+}
+
+@media only screen and (max-width: 769px) {
+    .opc-checkout-fields-container {
+        flex-direction: column;
+    }
+    .opc-products-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+select.opc-combined-variant-select {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.opc-quantity-selector {
+    margin-top: 20px;
+}
+.quantity-input-wrapper button {
+    padding: 6px 20px;
+    font-size: 24px;
+    background: #ffffff;
+    color: var(--ast-global-color-3);
+}
+.quantity-input-wrapper{
+    border: 1px solid var(--ast-border-color);
+    color: var(--ast-global-color-3);
+    width: fit-content;
+    display: flex;
+    align-items: center;
+}
+.quantity-input-wrapper input{
+    border: unset;
+    border-left: 1px solid var(--ast-border-color);
+    border-right: 1px solid var(--ast-border-color);
+    text-align: center;
+    max-width: 40px;
+    width: 100%;
+    padding-top: unset;
+    padding-bottom: unset;
+}
+.woocommerce-js form .form-row select {
+    width: 100%;
+}

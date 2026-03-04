@@ -1,0 +1,16 @@
+#wps-otp {
+    font-family: tahoma;
+    direction: rtl;
+}
+
+#wps-otp .alert-box {
+    font-family: tahoma;
+}
+
+#wps-otp .input, #wps-otp textarea {
+    font-family: tahoma;
+}
+
+#wps-otp .button {
+    font-family: tahoma;
+}

@@ -1,0 +1,207 @@
+.wpsms-error-notice {
+    background-color: #ffd5d5;
+    padding: 7px 7px;
+    display: inline-block;
+    border: 1px solid #ffb7b7;
+    border-radius: 2px;
+    color: #e02222;
+}
+
+.wpsms-time {
+    clear: both;
+    color: #a4a2a2;
+    display: block;
+    font-size: 10px;
+}
+
+.wpsms-color-green {
+    color: #27bb00;
+}
+
+.wpsms-color-red {
+    color: #f10000;
+}
+
+.wpsms-button-group .dashicons {
+    vertical-align: text-top;
+}
+
+#wpsms-select-subscriber-group {
+    display: none;
+}
+
+#wpsms-custom-text {
+    display: none;
+}
+
+#wpsms-custom-text textarea {
+    font-size: 12px;
+    width: 100%;
+    height: 114px;
+}
+
+#wpsms-custom-text p.description.data, #wpsms-custom-text code {
+    font-size: 11px !important;
+}
+
+.wpsms-plugin-meta-link span {
+    font-size: 14px;
+    vertical-align: sub;
+}
+
+.wpsms-plugin-meta-link.wp-sms-pro {
+    color: green;
+    font-weight: bold;
+}
+
+.wpsms-has-credit {
+    color: #3b9d00;
+}
+
+.wpsms-no-credit {
+    color: #c20000;
+}
+
+.wpsms-premium-tab {
+    color: #F1F1F1;
+    background: #21A8D2;
+}
+
+.wpsms-tab-group {
+    border: 1px solid #d8d8d8;
+    display: block;
+    width: 100%;
+    float: left;
+    background-color: #ffffff;
+    margin-top: 18px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.wpsms-tab {
+  
+}
+
+.wpsms-tab li {
+    margin: 0;
+}
+
+
+
+.wpsms-tab li a:focus {
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+.wpsms-tab #wpsms-logo {
+     width:200px;
+    margin:0 auto;
+    text-align: center;
+    padding-top: 10px;
+    margin-bottom: -30px;
+}
+
+.wpsms-tab #wpsms-logo img {
+    width: 50%;
+}
+
+.wpsms-tab li a {
+    display: block;
+    text-decoration: none;
+    padding: 13px 14px;
+    font-weight: bold;
+    margin: 0 -1px 0px 0;
+}
+
+.wpsms-tab li .active {
+    background-color: #f4f6ff;
+    border-top: 1px solid #d8d8d8;
+    border-bottom: 1px solid #d8d8d8;
+    border-right: 1px solid #f4f6ff;
+}
+
+.wpsms-tab-content {
+  background: url('https://sms.greenweb.com.bd/images/wp-bg.webp');
+    background-size: cover;
+    display: grid;
+    padding: 6px 33px;
+    border: 2px dashed #dc3232;
+    min-height: 564px;
+    margin: 20px;
+}
+
+.rtl .wpsms-tab {
+    float: right;
+}
+
+.rtl .wpsms-tab-content {
+    border-left: 0px none;
+    border-right: 1px solid #d8d8d8;
+}
+
+.rtl .wpsms-tab li a {
+    margin: 0 0 0 -1px;
+}
+
+.rtl .wpsms-tab li .active {
+}
+
+/* Privacy Page */
+.privacy_page input[type=tel] {
+    margin-top: 15px;
+    height: 35px;
+    min-width: 250px;
+}
+
+.privacy_page #universal-message-container {
+    padding: 2px 0px 17px 0px;
+}
+
+.privacy_page .text-lead {
+    line-height: 26px;
+    text-align: justify;
+}
+
+.wp_sms_status_success {
+    background: #04ca15;
+    color: #ffffff;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
+
+.wp_sms_status_fail {
+    background: #ca0404;
+    color: #ffffff;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
+
+.wp_sms_subscribers_label {
+    line-height: 19px;
+    left: 0px;
+    top: 6px;
+    width: 81px;
+    height: 19px;
+    display: inline-block;
+}
+
+.wp_sms_subscribers_input_text {
+    left: 81px;
+    top: 0px;
+    width: 379px;
+    height: 28px;
+}
+
+.wpsms-value.wpsms-numbers code {
+    font-family: inherit;
+}
+
+@media screen and (min-width: 1440px) {
+    .postbox-container {
+        max-width: 60%;
+    }
+
+    .rtl .postbox-container {
+        max-width: unset;
+    }
+}

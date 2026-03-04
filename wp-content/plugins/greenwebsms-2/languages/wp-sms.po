@@ -1,0 +1,116 @@
+# Loco Gettext template
+msgid ""
+msgstr ""
+"Project-Id-Version: Wordpress SMS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-18 17:21+0600\n"
+"PO-Revision-Date: 2025-05-18 17:52+0600\n"
+"Last-Translator: \n"
+"Language-Team: Green web team\n"
+"Language: bn_BD\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Revision-Date: Wed Sep 30 2025 18:26:19 GMT+0200 (Dhaka Bangladesh)\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: "
+"_:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
+"X-Generator: Poedit 3.6\n"
+
+msgid "Your mobile number for receiving sms"
+msgstr ""
+
+msgid "Mobile Number"
+msgstr ""
+
+msgid "Please enter mobile number for receiving sms"
+msgstr ""
+
+msgid "Enter your mobile number to get any notifications about your order"
+msgstr ""
+
+msgid "Please enter mobile number."
+msgstr ""
+
+msgid "Verified"
+msgstr ""
+
+msgid "Verification code"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Verification code: %s"
+msgstr ""
+
+msgid "Please enter verification code"
+msgstr ""
+
+msgid "Username/Password does not set"
+msgstr ""
+
+msgid "CURL extension not found in your server. please enable curl extenstion."
+msgstr ""
+
+msgid "Class DOMDocument not found in your php."
+msgstr ""
+
+msgid "Function simplexml_load_string not found in your php."
+msgstr ""
+
+msgid "Class SoapClient not found. please enable php_soap in your php."
+msgstr ""
+
+msgid "Login with mobile"
+msgstr ""
+
+msgid ""
+"Security code have beed send in your mobile. please enter the code for login to "
+"wordpress."
+msgstr ""
+
+msgid "Mobile number not found!"
+msgstr ""
+
+msgid "User does not exist"
+msgstr ""
+
+msgid "Security code is wrong"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Submit code"
+msgstr ""
+
+msgid "Verify code"
+msgstr ""
+
+msgid "Verify status"
+msgstr ""
+
+msgid "Green Web WP SMS"
+msgstr ""
+
+msgid "Complementary package for add new capability to Green Web SMS Plugin."
+msgstr ""
+
+#, php-format
+msgid ""
+"Please Install/Active <a href=\"%s\" class=\"thickbox\">Green Web SMS</a> to run "
+"the plugin."
+msgstr ""
