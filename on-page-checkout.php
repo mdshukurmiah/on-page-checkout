@@ -179,7 +179,7 @@ final class W3_Opc_On_Page_Checkout {
             '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout' ) . '</strong>'
         );
 
-        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
     }
 
     /**
@@ -231,7 +231,7 @@ final class W3_Opc_On_Page_Checkout {
      */
     private function init_hooks() {
         add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_forntend_scripts' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
         add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_elementor_scripts' ] );
     }
@@ -251,14 +251,14 @@ final class W3_Opc_On_Page_Checkout {
     }
 
     /**
-     * Enqueue Frontent Scripts
+     * Enqueue Frontend Scripts
      *
      * Enqueue plugin scripts and styles.
      *
      * @since 1.0.0
      * @access public
      */
-    public function enqueue_forntend_scripts() {
+    public function enqueue_frontend_scripts() {
         wp_enqueue_style( 'on-page-checkout-style', OPC_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], OPC_VERSION );
         wp_enqueue_script( 'on-page-checkout-script', OPC_PLUGIN_URL . 'assets/js/on-page-checkout.js', [ 'jquery' ], OPC_VERSION, true );
 
@@ -274,20 +274,19 @@ final class W3_Opc_On_Page_Checkout {
     }
 
     /**
-     * Enqueue Frontent Scripts
+     * Enqueue Admin Scripts
      *
-     * Enqueue plugin scripts and styles.
+     * Enqueue plugin admin scripts and styles.
      *
      * @since 1.0.0
      * @access public
      */
-    public function enqueue_admin_scripts($hook) {
+    public function enqueue_admin_scripts( $hook ) {
         $allowed_pages = [
-            'toplevel_page_w3_opc_settings',
-            'w3-opc_page_w3_opc_checkout_fields_edit',
+            'toplevel_page_w3_opc_checkout_fields_edit',
         ];
 
-        if (!in_array($hook, $allowed_pages)) {
+        if (!in_array($hook, $allowed_pages)) { 
             return; // Don't load on other admin pages
         }
 
