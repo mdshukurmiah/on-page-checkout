@@ -285,11 +285,10 @@ final class W3_Opc_On_Page_Checkout {
      */
     public function enqueue_admin_scripts( $hook ) {
         $allowed_pages = [
-            'toplevel_page_w3_opc_settings',
-            'w3-opc_page_w3_opc_checkout_fields_edit',
+            'toplevel_page_w3_opc_checkout_fields_edit',
         ];
 
-        if (!in_array($hook, $allowed_pages)) {
+        if (!in_array($hook, $allowed_pages)) { 
             return; // Don't load on other admin pages
         }
 

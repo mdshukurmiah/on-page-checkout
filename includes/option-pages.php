@@ -6,25 +6,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'admin_menu', 'w3_opc_register_settings_pages' );
 
 function w3_opc_register_settings_pages() {
-    // Top-level menu
+    // Top-level/default page: Checkout Fields Edit
     add_menu_page(
-        __( 'General Settings', 'on-page-checkout' ),
+        __( 'Checkout Fields Edit', 'on-page-checkout' ),
         __( 'W3 OPC', 'on-page-checkout' ),
         'manage_options',
-        'w3_opc_settings',
-        'w3_opc_general_settings_page',
+        'w3_opc_checkout_fields_edit',
+        'w3_opc_checkout_fields_edit_page',
         'dashicons-admin-generic',
         60
-    );
-
-    // Submenu: Checkout Fields Edit
-    add_submenu_page(
-        'w3_opc_settings',
-        __( 'Checkout Fields Edit', 'on-page-checkout' ),
-        __( 'Checkout Fields', 'on-page-checkout' ),
-        'manage_options',
-        'w3_opc_checkout_fields_edit',
-        'w3_opc_checkout_fields_edit_page'
     );
 }
 
@@ -68,7 +58,7 @@ function w3_opc_maybe_show_saved_notice() {
     if ( ! $screen ) {
         return;
     }
-    $opc_screens = [ 'toplevel_page_w3_opc_settings', 'w3-opc_page_w3_opc_checkout_fields_edit' ];
+    $opc_screens = [ 'toplevel_page_w3_opc_checkout_fields_edit' ];
     if ( ! in_array( $screen->id, $opc_screens, true ) ) {
         return;
     }
@@ -123,7 +113,7 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
             'w3_opc_checkout_fields_group',
             $this->option_name,
             [ $this, 'sanitize_fields' ]
-        );
+        ); 
 
         register_setting(
             'w3_opc_checkout_fields_group',

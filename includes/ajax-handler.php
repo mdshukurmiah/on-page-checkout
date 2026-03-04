@@ -79,41 +79,70 @@ class W3_Opc_Ajax_Handler {
         $customer     = WC()->customer;
         $base_country = wc_get_base_location()['country'];
 
+        // Keep existing/default customer values when the field is absent from AJAX payload.
+        $billing_first_name = isset( $_POST['billing_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ) ) : $customer->get_billing_first_name();
+        $billing_last_name  = isset( $_POST['billing_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ) ) : $customer->get_billing_last_name();
+        $billing_company    = isset( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : $customer->get_billing_company();
+        $billing_email      = isset( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : $customer->get_billing_email();
+        $billing_phone      = isset( $_POST['billing_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_phone'] ) ) : $customer->get_billing_phone();
+        $billing_address_1  = isset( $_POST['billing_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ) ) : $customer->get_billing_address_1();
+        $billing_address_2  = isset( $_POST['billing_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ) ) : $customer->get_billing_address_2();
+        $billing_city       = isset( $_POST['billing_city'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_city'] ) ) : $customer->get_billing_city();
+        $billing_state      = isset( $_POST['billing_state'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_state'] ) ) : $customer->get_billing_state();
+        $billing_postcode   = isset( $_POST['billing_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_postcode'] ) ) : $customer->get_billing_postcode();
+        $billing_country    = isset( $_POST['billing_country'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_country'] ) ) : $customer->get_billing_country();
+        if ( '' === $billing_country ) {
+            $billing_country = $base_country;
+        }
+
         // Set billing address
-        $customer->set_billing_first_name( sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ?? '' ) ) );
-        $customer->set_billing_last_name( sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ?? '' ) ) );
-        $customer->set_billing_company( sanitize_text_field( wp_unslash( $_POST['billing_company'] ?? '' ) ) );
-        $customer->set_billing_email( sanitize_email( wp_unslash( $_POST['billing_email'] ?? '' ) ) );
-        $customer->set_billing_phone( sanitize_text_field( wp_unslash( $_POST['billing_phone'] ?? '' ) ) );
-        $customer->set_billing_address_1( sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ?? '' ) ) );
-        $customer->set_billing_address_2( sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ?? '' ) ) );
-        $customer->set_billing_city( sanitize_text_field( wp_unslash( $_POST['billing_city'] ?? '' ) ) );
-        $customer->set_billing_state( sanitize_text_field( wp_unslash( $_POST['billing_state'] ?? '' ) ) );
-        $customer->set_billing_postcode( sanitize_text_field( wp_unslash( $_POST['billing_postcode'] ?? '' ) ) );
-        $customer->set_billing_country( ! empty( $_POST['billing_country'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_country'] ) ) : $base_country );
+        $customer->set_billing_first_name( $billing_first_name );
+        $customer->set_billing_last_name( $billing_last_name );
+        $customer->set_billing_company( $billing_company );
+        $customer->set_billing_email( $billing_email );
+        $customer->set_billing_phone( $billing_phone );
+        $customer->set_billing_address_1( $billing_address_1 );
+        $customer->set_billing_address_2( $billing_address_2 );
+        $customer->set_billing_city( $billing_city );
+        $customer->set_billing_state( $billing_state );
+        $customer->set_billing_postcode( $billing_postcode );
+        $customer->set_billing_country( $billing_country );
 
         // Set shipping address
         if ( isset( $_POST['ship_to_different_address'] ) && '1' === (string) $_POST['ship_to_different_address'] ) {
-            $customer->set_shipping_first_name( sanitize_text_field( wp_unslash( $_POST['shipping_first_name'] ?? '' ) ) );
-            $customer->set_shipping_last_name( sanitize_text_field( wp_unslash( $_POST['shipping_last_name'] ?? '' ) ) );
-            $customer->set_shipping_company( sanitize_text_field( wp_unslash( $_POST['shipping_company'] ?? '' ) ) );
-            $customer->set_shipping_address_1( sanitize_text_field( wp_unslash( $_POST['shipping_address_1'] ?? '' ) ) );
-            $customer->set_shipping_address_2( sanitize_text_field( wp_unslash( $_POST['shipping_address_2'] ?? '' ) ) );
-            $customer->set_shipping_city( sanitize_text_field( wp_unslash( $_POST['shipping_city'] ?? '' ) ) );
-            $customer->set_shipping_state( sanitize_text_field( wp_unslash( $_POST['shipping_state'] ?? '' ) ) );
-            $customer->set_shipping_postcode( sanitize_text_field( wp_unslash( $_POST['shipping_postcode'] ?? '' ) ) );
-            $customer->set_shipping_country( ! empty( $_POST['shipping_country'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_country'] ) ) : $base_country );
+            $shipping_first_name = isset( $_POST['shipping_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_first_name'] ) ) : $customer->get_shipping_first_name();
+            $shipping_last_name  = isset( $_POST['shipping_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_last_name'] ) ) : $customer->get_shipping_last_name();
+            $shipping_company    = isset( $_POST['shipping_company'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_company'] ) ) : $customer->get_shipping_company();
+            $shipping_address_1  = isset( $_POST['shipping_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_address_1'] ) ) : $customer->get_shipping_address_1();
+            $shipping_address_2  = isset( $_POST['shipping_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_address_2'] ) ) : $customer->get_shipping_address_2();
+            $shipping_city       = isset( $_POST['shipping_city'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_city'] ) ) : $customer->get_shipping_city();
+            $shipping_state      = isset( $_POST['shipping_state'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_state'] ) ) : $customer->get_shipping_state();
+            $shipping_postcode   = isset( $_POST['shipping_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_postcode'] ) ) : $customer->get_shipping_postcode();
+            $shipping_country    = isset( $_POST['shipping_country'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_country'] ) ) : $customer->get_shipping_country();
+            if ( '' === $shipping_country ) {
+                $shipping_country = $base_country;
+            }
+
+            $customer->set_shipping_first_name( $shipping_first_name );
+            $customer->set_shipping_last_name( $shipping_last_name );
+            $customer->set_shipping_company( $shipping_company );
+            $customer->set_shipping_address_1( $shipping_address_1 );
+            $customer->set_shipping_address_2( $shipping_address_2 );
+            $customer->set_shipping_city( $shipping_city );
+            $customer->set_shipping_state( $shipping_state );
+            $customer->set_shipping_postcode( $shipping_postcode );
+            $customer->set_shipping_country( $shipping_country );
         } else {
             // Copy billing fields to shipping
-            $customer->set_shipping_first_name( sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ?? '' ) ) );
-            $customer->set_shipping_last_name( sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ?? '' ) ) );
-            $customer->set_shipping_company( sanitize_text_field( wp_unslash( $_POST['billing_company'] ?? '' ) ) );
-            $customer->set_shipping_address_1( sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ?? '' ) ) );
-            $customer->set_shipping_address_2( sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ?? '' ) ) );
-            $customer->set_shipping_city( sanitize_text_field( wp_unslash( $_POST['billing_city'] ?? '' ) ) );
-            $customer->set_shipping_state( sanitize_text_field( wp_unslash( $_POST['billing_state'] ?? '' ) ) );
-            $customer->set_shipping_postcode( sanitize_text_field( wp_unslash( $_POST['billing_postcode'] ?? '' ) ) );
-            $customer->set_shipping_country( ! empty( $_POST['billing_country'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_country'] ) ) : $base_country );
+            $customer->set_shipping_first_name( $billing_first_name );
+            $customer->set_shipping_last_name( $billing_last_name );
+            $customer->set_shipping_company( $billing_company );
+            $customer->set_shipping_address_1( $billing_address_1 );
+            $customer->set_shipping_address_2( $billing_address_2 );
+            $customer->set_shipping_city( $billing_city );
+            $customer->set_shipping_state( $billing_state );
+            $customer->set_shipping_postcode( $billing_postcode );
+            $customer->set_shipping_country( $billing_country );
         }
 
         $customer->save();
@@ -126,8 +155,8 @@ class W3_Opc_Ajax_Handler {
         // Persist session & recalculate totals
         WC()->session->set_customer_session_cookie( true );
         WC()->session->save_data();
-        WC()->cart->calculate_totals();
         WC()->cart->calculate_shipping();
+        WC()->cart->calculate_totals();
 
         // Build checkout fields
         $checkout = WC()->checkout();
