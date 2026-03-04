@@ -1,4 +1,4 @@
-# On Page Checkout for Elementor & WooCommerce
+# On-Page Checkout for Elementor
 
 A custom Elementor widget to display WooCommerce products and enable on-page checkout.
 
