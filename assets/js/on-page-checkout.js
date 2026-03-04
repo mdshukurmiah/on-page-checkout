@@ -30,6 +30,15 @@ jQuery(document).ready(function($) {
         var variation_id = form.find('select[name="variation_id"]').val() || 1;
         var checkoutFieldsContainer = widget.find('[id^="opc-checkout-fields-container-"]');
 
+        var widgetparent = widget.closest('.on-page-checkout-widget');
+        var widgetSettings = {}
+        widgetSettings['shippingTitle'] = widgetparent.attr('data-shipping-title');
+        widgetSettings['billingTitle'] = widgetparent.attr('data-billing-title');
+        widgetSettings['additionalInfoTitle'] = widgetparent.attr('data-additional-info-title');
+        widgetSettings['orderSummaryTitle'] = widgetparent.attr('data-order-summery-title');
+        widgetSettings['paymentMethodTitle'] = widgetparent.attr('data-payment-method-title');
+        widgetSettings['orderButtonName'] = widgetparent.attr('data-order-button-name');
+
         if (!productId) {
             checkoutFieldsContainer.html('<p class="opc-info">' + (opc_ajax_object.no_product_selected_text || 'Please select a product.') + '</p>');
             return;
@@ -49,6 +58,7 @@ jQuery(document).ready(function($) {
         formDataObj.product_id = productId;
         formDataObj.quantity = quantity;
         formDataObj.variation_id = variation_id;
+        formDataObj.widgetSettings = widgetSettings;
 
         w3_opc_showLoading(widget);
         // checkoutFieldsContainer.html('<p>' + (opc_ajax_object.loading_text || 'Loading...') + '</p>');
@@ -100,7 +110,7 @@ jQuery(document).ready(function($) {
         w3_opc_loadCheckoutFields(widget);
     });
 
-    $(document).on('change', '.opc-product-selection select[name="variation_id"]', function() {
+    $(document).on('change', '.opc-products-wrapper select[name="variation_id"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
         w3_opc_loadCheckoutFields(widget);
     });
@@ -194,5 +204,23 @@ jQuery(document).ready(function($) {
             shippingAddress.slideUp();
         }
     });
+    
+    // quantity Selector
+    $(document).on('click', '.on-page-checkout-widget .qty-increment', function() {
+        var input = $(this).siblings('#opc_quantity');
+        var value = parseInt(input.val()) || 1;
+        input.val(value + 1).trigger('change');
+    });
+
+    $(document).on('click', '.on-page-checkout-widget .qty-decrement', function() {
+        var input = $(this).siblings('#opc_quantity');
+        var value = parseInt(input.val()) || 1;
+        var min = parseInt(input.attr('min')) || 1;
+        if (value > min) {
+            input.val(value - 1).trigger('change');
+        }
+    });
+
+
 });
 

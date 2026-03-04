@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: On Page Checkout for Elementor & WooCommerce
- * Plugin URI:  https://example.com/on-page-checkout
+ * Plugin Name: On-Page Checkout for Elementor
+ * Plugin URI:  https://w3relations.com/on-page-checkout
  * Description: A custom Elementor widget to display WooCommerce products and enable on-page checkout.
  * Version:     1.0.0
- * Author:      Manus
- * Author URI:  https://example.com/
+ * Author:      W3 Relations
+ * Author URI:  https://w3relations.com/
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain: on-page-checkout
+ * Text Domain: on-page-checkout-for-elementor
  * Domain Path: /languages
  */
 
@@ -173,13 +173,13 @@ final class W3_Opc_On_Page_Checkout {
     public function admin_notice_missing_dependencies() {
         $message = sprintf(
             /* translators: 1: Plugin name, 2: Elementor, 3: WooCommerce */
-            esc_html__( '%1$s requires %2$s and %3$s to be installed and activated.', 'on-page-checkout' ),
-            '<strong>' . esc_html__( 'On Page Checkout', 'on-page-checkout' ) . '</strong>',
-            '<strong>' . esc_html__( 'Elementor', 'on-page-checkout' ) . '</strong>',
-            '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout' ) . '</strong>'
+            esc_html__( '%1$s requires %2$s and %3$s to be installed and activated.', 'on-page-checkout-for-elementor' ),
+            '<strong>' . esc_html__( 'On Page Checkout', 'on-page-checkout-for-elementor' ) . '</strong>',
+            '<strong>' . esc_html__( 'Elementor', 'on-page-checkout-for-elementor' ) . '</strong>',
+            '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout-for-elementor' ) . '</strong>'
         );
 
-        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
     }
 
     /**
@@ -231,7 +231,7 @@ final class W3_Opc_On_Page_Checkout {
      */
     private function init_hooks() {
         add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_forntend_scripts' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
         add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_elementor_scripts' ] );
     }
@@ -251,43 +251,42 @@ final class W3_Opc_On_Page_Checkout {
     }
 
     /**
-     * Enqueue Frontent Scripts
+     * Enqueue Frontend Scripts
      *
      * Enqueue plugin scripts and styles.
      *
      * @since 1.0.0
      * @access public
      */
-    public function enqueue_forntend_scripts() {
+    public function enqueue_frontend_scripts() {
         wp_enqueue_style( 'on-page-checkout-style', OPC_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], OPC_VERSION );
         wp_enqueue_script( 'on-page-checkout-script', OPC_PLUGIN_URL . 'assets/js/on-page-checkout.js', [ 'jquery' ], OPC_VERSION, true );
 
         wp_localize_script( 'on-page-checkout-script', 'opc_ajax_object', [
             'ajax_url'               => admin_url( 'admin-ajax.php' ),
             'nonce'                  => wp_create_nonce( 'opc-nonce' ),
-            'loading_text'           => esc_html__( 'Loading...', 'on-page-checkout' ),
-            'error_text'             => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout' ),
-            'processing_text'        => esc_html__( 'Processing...', 'on-page-checkout' ),
-            'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout' ),
-            'place_order_text'       => esc_html__( 'Place Order', 'on-page-checkout' ),
+            'loading_text'           => esc_html__( 'Loading...', 'on-page-checkout-for-elementor' ),
+            'error_text'             => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout-for-elementor' ),
+            'processing_text'        => esc_html__( 'Processing...', 'on-page-checkout-for-elementor' ),
+            'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout-for-elementor' ),
+            'place_order_text'       => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),
         ] );
     }
 
     /**
-     * Enqueue Frontent Scripts
+     * Enqueue Admin Scripts
      *
-     * Enqueue plugin scripts and styles.
+     * Enqueue plugin admin scripts and styles.
      *
      * @since 1.0.0
      * @access public
      */
-    public function enqueue_admin_scripts($hook) {
+    public function enqueue_admin_scripts( $hook ) {
         $allowed_pages = [
-            'toplevel_page_w3_opc_settings',
-            'w3-opc_page_w3_opc_checkout_fields_edit',
+            'toplevel_page_w3_opc_checkout_fields_edit',
         ];
 
-        if (!in_array($hook, $allowed_pages)) {
+        if (!in_array($hook, $allowed_pages)) { 
             return; // Don't load on other admin pages
         }
 
@@ -320,4 +319,4 @@ final class W3_Opc_On_Page_Checkout {
     }
 }
 
-W3_Opc_On_Page_Checkout::instance();
+W3_Opc_On_Page_Checkout::instance(); 
