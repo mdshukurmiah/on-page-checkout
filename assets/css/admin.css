@@ -1,0 +1,10 @@
+/* On Page Checkout — Admin Styles */
+
+.w3-opc-field-wrapper {
+    margin-bottom: 12px;
+}
+
+.w3-opc-dependent-fields label {
+    display: block;
+    margin-bottom: 4px;
+}

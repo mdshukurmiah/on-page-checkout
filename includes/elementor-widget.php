@@ -1,4 +1,4 @@
 <?php
-// Placeholder for Elementor widget related functions
-
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}

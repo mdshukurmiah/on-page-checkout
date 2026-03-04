@@ -111,6 +111,8 @@ final class W3_Opc_On_Page_Checkout {
      * @access public
      */
     public function on_plugins_loaded() {
+        load_plugin_textdomain( 'on-page-checkout', false, dirname( plugin_basename( OPC_PLUGIN_FILE ) ) . '/languages' );
+
         if ( ! $this->check_dependencies() ) {
             add_action( 'admin_notices', [ $this, 'admin_notice_missing_dependencies' ] );
             return;
@@ -231,7 +233,7 @@ final class W3_Opc_On_Page_Checkout {
      */
     private function init_hooks() {
         add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_forntend_scripts' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
         add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_elementor_scripts' ] );
     }
@@ -251,14 +253,14 @@ final class W3_Opc_On_Page_Checkout {
     }
 
     /**
-     * Enqueue Frontent Scripts
+     * Enqueue Frontend Scripts
      *
      * Enqueue plugin scripts and styles.
      *
      * @since 1.0.0
      * @access public
      */
-    public function enqueue_forntend_scripts() {
+    public function enqueue_frontend_scripts() {
         wp_enqueue_style( 'on-page-checkout-style', OPC_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], OPC_VERSION );
         wp_enqueue_script( 'on-page-checkout-script', OPC_PLUGIN_URL . 'assets/js/on-page-checkout.js', [ 'jquery' ], OPC_VERSION, true );
 
@@ -274,14 +276,14 @@ final class W3_Opc_On_Page_Checkout {
     }
 
     /**
-     * Enqueue Frontent Scripts
+     * Enqueue Admin Scripts
      *
-     * Enqueue plugin scripts and styles.
+     * Enqueue plugin admin scripts and styles.
      *
      * @since 1.0.0
      * @access public
      */
-    public function enqueue_admin_scripts($hook) {
+    public function enqueue_admin_scripts( $hook ) {
         $allowed_pages = [
             'toplevel_page_w3_opc_settings',
             'w3-opc_page_w3_opc_checkout_fields_edit',

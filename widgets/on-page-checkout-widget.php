@@ -212,15 +212,15 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
             $preselected_product_id = absint( $_GET[ $settings['preselect_product_param'] ] );
         }
 
-        echo '<div class="on-page-checkout-widget" data-widget-id="' . $this->get_id() . '" data-shipping-title="'.esc_html__($settings['shipping_details_heading'] ).'" data-billing-title="'.esc_html__($settings['billing_details_heading'] ).'" data-order-summery-title="'.esc_html__($settings['order_summary_heading'] ).'" data-payment-method-title="'.esc_html__($settings['payment_method_heading'] ).'" data-additional-info-title="'.esc_html__($settings['additional_info_heading'] ).'" data-order-button-name="'.esc_html__($settings['order_button_name'] ).'">';
+        echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ) . '">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
 
 
         // Product selection (radio buttons or hidden input if only one product)
         if ( count( $product_ids ) > 1 ) {
             echo '<div class="opc-product-selection">';
-            if(!empty($settings['product_selection_heading'])){
-                echo '<h3>' . esc_html__($settings['product_selection_heading'], 'on-page-checkout' ) . '</h3>';
+            if ( ! empty( $settings['product_selection_heading'] ) ) {
+                echo '<h3>' . esc_html( $settings['product_selection_heading'] ) . '</h3>';
             }
             echo '<div class="opc-products-wrapper">';
             $first_product = true;
@@ -448,10 +448,10 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         // Checkout form container
         $form_heading = $settings['form_heading'];
         echo '<div class="opc-checkout-form-fields">';
-        if(!empty($form_heading)){
-            echo '<h3>' . esc_html__( $form_heading , 'on-page-checkout' ) . '</h3>';
+        if ( ! empty( $form_heading ) ) {
+            echo '<h3>' . esc_html( $form_heading ) . '</h3>';
         }
-        echo '<div id="opc-checkout-fields-container-' . $this->get_id() . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout' ) . '</div>';
+        echo '<div id="opc-checkout-fields-container-' . esc_attr( $this->get_id() ) . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout' ) . '</div>';
         echo '</div>';
         echo '</form>';
         echo '</div>';
