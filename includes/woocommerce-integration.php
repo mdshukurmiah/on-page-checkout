@@ -24,7 +24,7 @@ class W3_Opc_WooCommerce_Integration {
         $product      = wc_get_product( $product_id );
 
         if ( ! $product_id ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         WC()->cart->empty_cart();
@@ -74,7 +74,7 @@ class W3_Opc_WooCommerce_Integration {
         $product      = wc_get_product( $product_id );
 
         if ( ! $product_id ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         // Reset cart
@@ -139,12 +139,12 @@ class W3_Opc_WooCommerce_Integration {
 
         // Validate payment method
         if ( empty( $posted_data['payment_method'] ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Please select a payment method.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Please select a payment method.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
         if ( ! isset( $available_gateways[ $posted_data['payment_method'] ] ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid payment method.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid payment method.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         try {
@@ -153,14 +153,13 @@ class W3_Opc_WooCommerce_Integration {
             if ( isset( $result['result'] ) && 'success' === $result['result'] ) {
                 wp_send_json_success( [ 'redirect' => $result['redirect'] ] );
             }
-            wp_send_json_error( [ 'message' => esc_html__( 'Checkout failed. Please try again.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Checkout failed. Please try again.', 'on-page-checkout-for-elementor' ) ] );
 
         } catch ( Exception $e ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'An error occurred while processing your order. Please try again.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'An error occurred while processing your order. Please try again.', 'on-page-checkout-for-elementor' ) ] );
         }
     }
 
 }
 
 new W3_Opc_WooCommerce_Integration();
- 

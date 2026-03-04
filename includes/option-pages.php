@@ -8,8 +8,8 @@ add_action( 'admin_menu', 'w3_opc_register_settings_pages' );
 function w3_opc_register_settings_pages() {
     // Top-level/default page: Checkout Fields Edit
     add_menu_page(
-        __( 'Checkout Fields Edit', 'on-page-checkout' ),
-        __( 'W3 OPC', 'on-page-checkout' ),
+        __( 'Checkout Fields Edit', 'on-page-checkout-for-elementor' ),
+        __( 'W3 OPC', 'on-page-checkout-for-elementor' ),
         'manage_options',
         'w3_opc_checkout_fields_edit',
         'w3_opc_checkout_fields_edit_page',
@@ -21,7 +21,7 @@ function w3_opc_register_settings_pages() {
 function w3_opc_general_settings_page() {
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( 'W3 OPC General Settings', 'on-page-checkout' ); ?></h1>
+        <h1><?php esc_html_e( 'W3 OPC General Settings', 'on-page-checkout-for-elementor' ); ?></h1>
         <form method="post" action="options.php">
             <?php
             settings_fields( 'w3_opc_general_settings_group' );
@@ -36,7 +36,7 @@ function w3_opc_general_settings_page() {
 function w3_opc_checkout_fields_edit_page() {
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( 'W3 OPC Checkout Fields Edit', 'on-page-checkout' ); ?></h1>
+        <h1><?php esc_html_e( 'W3 OPC Checkout Fields Edit', 'on-page-checkout-for-elementor' ); ?></h1>
         <?php settings_errors( 'w3_opc_checkout_fields_group' ); ?>
         <form method="post" action="options.php">
             <?php
@@ -73,7 +73,7 @@ function w3_opc_maybe_show_saved_notice() {
         add_settings_error(
             'w3_opc_checkout_fields_group',
             'w3_opc_settings_saved',
-            __( 'Checkout fields settings saved successfully!', 'on-page-checkout' ),
+            __( 'Checkout fields settings saved successfully!', 'on-page-checkout-for-elementor' ),
             'updated'
         );
     }
@@ -93,16 +93,16 @@ function w3_opc_register_settings() {
 
     add_settings_section(
         'w3_opc_general_section',
-        __( 'General Options', 'on-page-checkout' ),
+        __( 'General Options', 'on-page-checkout-for-elementor' ),
         function () {
-            echo '<p>' . esc_html__( 'Set up your general plugin options here.', 'on-page-checkout' ) . '</p>';
+            echo '<p>' . esc_html__( 'Set up your general plugin options here.', 'on-page-checkout-for-elementor' ) . '</p>';
         },
         'w3_opc_general_settings'
     );
 
     add_settings_field(
         'enable_opc',
-        __( 'Enable One Page Checkout', 'on-page-checkout' ),
+        __( 'Enable One Page Checkout', 'on-page-checkout-for-elementor' ),
         function () {
             $options = get_option( 'w3_opc_general_options' );
             ?>
@@ -158,27 +158,27 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 
         add_settings_section(
             'w3_opc_checkout_fields_billing_section',
-            __( 'Billing Fields Settings', 'on-page-checkout' ),
+            __( 'Billing Fields Settings', 'on-page-checkout-for-elementor' ),
             '__return_false',
             'w3-opc-checkout-fields'
         );
 
         add_settings_section(
             'w3_opc_checkout_fields_shipping_section',
-            __( 'Shipping Fields Settings', 'on-page-checkout' ),
+            __( 'Shipping Fields Settings', 'on-page-checkout-for-elementor' ),
             '__return_false',
             'w3-opc-checkout-fields'
         );
 
         add_settings_section(
             'w3_opc_checkout_fields_other_section',
-            __( 'Other Settings', 'on-page-checkout' ),
+            __( 'Other Settings', 'on-page-checkout-for-elementor' ),
             '__return_false',
             'w3-opc-checkout-fields'
         );
 
         $other_fields = [
-            'order_notes' => [ 'label' => __( 'Order note', 'on-page-checkout' ) ],
+            'order_notes' => [ 'label' => __( 'Order note', 'on-page-checkout-for-elementor' ) ],
         ];
 
         $checkout        = WC()->checkout();
@@ -235,13 +235,13 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                 <input class="opc-enable-field" type="checkbox"
                     name="<?php echo esc_attr( $this->option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]"
                     value="1" <?php checked( 1, $enabled ); ?>>
-                <?php esc_html_e( 'Enable', 'on-page-checkout' ); ?>
+                <?php esc_html_e( 'Enable', 'on-page-checkout-for-elementor' ); ?>
             </label>
 
             <div class="w3-opc-dependent-fields"
                 style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?> margin-left:20px;">
                 <label style="margin-bottom:4px;">
-                    <strong><?php esc_html_e( 'Label:', 'on-page-checkout' ); ?></strong>
+                    <strong><?php esc_html_e( 'Label:', 'on-page-checkout-for-elementor' ); ?></strong>
                     <input type="text"
                         name="<?php echo esc_attr( $this->option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][label]"
                         value="<?php echo esc_attr( $label ); ?>"
@@ -254,7 +254,7 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                     <input type="checkbox"
                         name="<?php echo esc_attr( $this->option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][required]"
                         value="1" <?php checked( 1, $required ); ?>>
-                    <?php esc_html_e( 'Required', 'on-page-checkout' ); ?>
+                    <?php esc_html_e( 'Required', 'on-page-checkout-for-elementor' ); ?>
                 </label>
             </div>
         </div>
@@ -276,12 +276,12 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                 <input class="opc-enable-field" type="checkbox"
                     name="<?php echo esc_attr( $this->option_name ); ?>[other_<?php echo esc_attr( $field_key ); ?>][enabled]"
                     value="1" <?php checked( 1, $enabled ); ?>>
-                <?php esc_html_e( 'Enable', 'on-page-checkout' ); ?>
+                <?php esc_html_e( 'Enable', 'on-page-checkout-for-elementor' ); ?>
             </label>
 
             <div class="w3-opc-dependent-fields" style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?> margin-left:20px;">
                 <label style="display:block; margin-bottom:4px;">
-                    <?php esc_html_e( 'Label:', 'on-page-checkout' ); ?>
+                    <?php esc_html_e( 'Label:', 'on-page-checkout-for-elementor' ); ?>
                     <input type="text"
                         name="<?php echo esc_attr( $this->option_name ); ?>[other_<?php echo esc_attr( $field_key ); ?>][label]"
                         value="<?php echo esc_attr( $label ); ?>"
@@ -360,4 +360,3 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 }
 
 new W3_Opc_On_Page_Checkout_Fields_Settings();
- 

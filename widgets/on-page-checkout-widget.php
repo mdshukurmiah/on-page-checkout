@@ -16,7 +16,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
     }
 
     public function get_title() {
-        return esc_html__( 'On Page Checkout', 'on-page-checkout' );
+        return esc_html__( 'On Page Checkout', 'on-page-checkout-for-elementor' );
     }
 
     public function get_icon() {
@@ -35,7 +35,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_content',
             [
-                'label' => esc_html__( 'Products', 'on-page-checkout' ),
+                'label' => esc_html__( 'Products', 'on-page-checkout-for-elementor' ),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -45,10 +45,10 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $repeater->add_control(
             'product_id',
             [
-                'label' => esc_html__( 'Product ID or SKU', 'on-page-checkout' ),
+                'label' => esc_html__( 'Product ID or SKU', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Enter Product ID or SKU', 'on-page-checkout' ),
-                'description' => esc_html__( 'Enter the ID or SKU of the WooCommerce product.', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Enter Product ID or SKU', 'on-page-checkout-for-elementor' ),
+                'description' => esc_html__( 'Enter the ID or SKU of the WooCommerce product.', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
             ]
         );
@@ -56,7 +56,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_list',
             [
-                'label' => esc_html__( 'Product List', 'on-page-checkout' ),
+                'label' => esc_html__( 'Product List', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::REPEATER,
                 'fields' => $repeater->get_controls(),
                 'default' => [
@@ -73,7 +73,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_settings',
             [
-                'label' => esc_html__( 'Settings', 'on-page-checkout' ),
+                'label' => esc_html__( 'Settings', 'on-page-checkout-for-elementor' ),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -81,9 +81,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_selection_heading',
             [
-                'label' => esc_html__( 'Product selection heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Product selection heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Select a Product'
             ]
@@ -92,10 +92,10 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'show_quantity',
             [
-                'label' => esc_html__( 'Show Quantity Selector', 'on-page-checkout' ),
+                'label' => esc_html__( 'Show Quantity Selector', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__( 'Show', 'on-page-checkout' ),
-                'label_off' => esc_html__( 'Hide', 'on-page-checkout' ),
+                'label_on' => esc_html__( 'Show', 'on-page-checkout-for-elementor' ),
+                'label_off' => esc_html__( 'Hide', 'on-page-checkout-for-elementor' ),
                 'return_value' => 'yes',
                 'default' => 'yes',
             ]
@@ -104,10 +104,10 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'preselect_product_param',
             [
-                'label' => esc_html__( 'Preselect Product by Query String Parameter', 'on-page-checkout' ),
+                'label' => esc_html__( 'Preselect Product by Query String Parameter', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'e.g., product_id', 'on-page-checkout' ),
-                'description' => esc_html__( 'Enter the query string parameter name (e.g., product_id) to preselect a product.', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'e.g., product_id', 'on-page-checkout-for-elementor' ),
+                'description' => esc_html__( 'Enter the query string parameter name (e.g., product_id) to preselect a product.', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
             ]
         );
@@ -115,9 +115,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'form_heading',
             [
-                'label' => esc_html__( 'Checkout form heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Checkout form heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Your Details'
             ]
@@ -126,9 +126,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'billing_details_heading',
             [
-                'label' => esc_html__( 'Billing details heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Billing details heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Billing Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Billing Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Billing Details'
             ]
@@ -137,9 +137,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'shipping_details_heading',
             [
-                'label' => esc_html__( 'Shipping details heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Shipping details heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Shipping Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Shipping Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Shipping Details'
             ]
@@ -148,9 +148,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'additional_info_heading',
             [
-                'label' => esc_html__( 'Additional info heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Additional info heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Additional info', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Additional info', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Additional Information'
             ]
@@ -159,9 +159,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'order_summary_heading',
             [
-                'label' => esc_html__( 'Order summary heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Order summary heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Your Order', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Your Order', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Your Order'
             ]
@@ -170,9 +170,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_method_heading',
             [
-                'label' => esc_html__( 'Payment method heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Payment method heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Payment Method', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Payment Method', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Payment Method'
             ]
@@ -180,9 +180,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'order_button_name',
             [
-                'label' => esc_html__( 'Order button name', 'on-page-checkout' ),
+                'label' => esc_html__( 'Order button name', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Place Order', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Place Order'
             ]
@@ -203,7 +203,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         }
 
         if ( empty( $product_ids ) ) {
-            echo '<div class="opc-no-products">' . esc_html__( 'No products selected for On Page Checkout.', 'on-page-checkout' ) . '</div>';
+            echo '<div class="opc-no-products">' . esc_html__( 'No products selected for On Page Checkout.', 'on-page-checkout-for-elementor' ) . '</div>';
             return;
         }
 
@@ -436,7 +436,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         // Quantity selector
         if ( 'yes' === $settings['show_quantity'] ) {
             echo '<div class="opc-quantity-selector">';
-            echo '<label for="opc_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout' ) . '</label>';
+            echo '<label for="opc_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout-for-elementor' ) . '</label>';
             echo '<div class="quantity-input-wrapper">';
                 echo '<button class="qty-decrement">-</button>';
                 echo '<input type="text" id="opc_quantity" name="opc_quantity" value="1" min="1">';
@@ -453,9 +453,9 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         if ( ! empty( $form_heading ) ) {
             echo '<h3>' . esc_html( $form_heading ) . '</h3>';
         }
-        echo '<div id="opc-checkout-fields-container-' . esc_attr( $this->get_id() ) . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout' ) . '</div>';
+        echo '<div id="opc-checkout-fields-container-' . esc_attr( $this->get_id() ) . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout-for-elementor' ) . '</div>';
         echo '</div>';
         echo '</form>';
         echo '</div>';
     }
-}
+} 

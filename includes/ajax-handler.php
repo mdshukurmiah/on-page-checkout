@@ -22,7 +22,7 @@ class W3_Opc_Ajax_Handler {
         $product    = wc_get_product( $product_id );
 
         if ( ! $product ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid product selected.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         // Try to add product (handle variable)
@@ -59,7 +59,7 @@ class W3_Opc_Ajax_Handler {
                 wp_send_json_error( [
                     'message' => wp_kses_post( sprintf(
                         /* translators: 1: URL to product page, 2: product name */
-                        __( 'Please choose product options by visiting <a href="%1$s">%2$s</a>.', 'on-page-checkout' ),
+                        __( 'Please choose product options by visiting <a href="%1$s">%2$s</a>.', 'on-page-checkout-for-elementor' ),
                         esc_url( get_permalink( $product_id ) ),
                         esc_html( $product->get_name() )
                     ) ),
@@ -73,7 +73,7 @@ class W3_Opc_Ajax_Handler {
         }
 
         if ( ! $added_to_cart ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart. Please verify product options.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart. Please verify product options.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $customer     = WC()->customer;
@@ -200,7 +200,7 @@ class W3_Opc_Ajax_Handler {
                     <p class="form-row form-row-wide">
                         <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
                             <input id="ship-to-different-address-checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" type="checkbox" name="ship_to_different_address" value="1" />
-                            <span class="woocommerce-form__label-text"><?php esc_html_e( 'Ship to a different address?', 'on-page-checkout' ); ?></span>
+                            <span class="woocommerce-form__label-text"><?php esc_html_e( 'Ship to a different address?', 'on-page-checkout-for-elementor' ); ?></span>
                         </label>
                     </p>
                     <div class="shipping_address" style="display: none;">
@@ -231,8 +231,8 @@ class W3_Opc_Ajax_Handler {
                     <table class="shop_table woocommerce-checkout-review-order-table">
                         <thead>
                             <tr>
-                                <th class="product-name"><?php esc_html_e( 'Product', 'on-page-checkout' ); ?></th>
-                                <th class="product-total"><?php esc_html_e( 'Subtotal', 'on-page-checkout' ); ?></th>
+                                <th class="product-name"><?php esc_html_e( 'Product', 'on-page-checkout-for-elementor' ); ?></th>
+                                <th class="product-total"><?php esc_html_e( 'Subtotal', 'on-page-checkout-for-elementor' ); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -258,7 +258,7 @@ class W3_Opc_Ajax_Handler {
                         </tbody>
                         <tfoot>
                             <tr class="cart-subtotal">
-                                <th><?php esc_html_e( 'Subtotal', 'on-page-checkout' ); ?></th>
+                                <th><?php esc_html_e( 'Subtotal', 'on-page-checkout-for-elementor' ); ?></th>
                                 <td><?php wc_cart_totals_subtotal_html(); ?></td>
                             </tr>
                             <?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
@@ -292,7 +292,7 @@ class W3_Opc_Ajax_Handler {
                                 <?php endif; ?>
                             <?php endif; ?>
                             <tr class="order-total">
-                                <th><?php esc_html_e( 'Total', 'on-page-checkout' ); ?></th>
+                                <th><?php esc_html_e( 'Total', 'on-page-checkout-for-elementor' ); ?></th>
                                 <td><?php wc_cart_totals_order_total_html(); ?></td>
                             </tr>
                         </tfoot>
@@ -327,7 +327,7 @@ class W3_Opc_Ajax_Handler {
                     </ul>
                 </div>
                 <?php
-                $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout' );
+                $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout-for-elementor' );
                 echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html( $order_button_name ) . '</button>';
                 ?>
             </div>
@@ -345,17 +345,17 @@ class W3_Opc_Ajax_Handler {
         $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
 
         if ( ! $product_id ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $result = WC()->cart->add_to_cart( $product_id, $quantity );
 
         if ( $result ) {
-            wp_send_json_success( [ 'message' => esc_html__( 'Product added to cart.', 'on-page-checkout' ) ] );
+            wp_send_json_success( [ 'message' => esc_html__( 'Product added to cart.', 'on-page-checkout-for-elementor' ) ] );
         } else {
-            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart.', 'on-page-checkout-for-elementor' ) ] );
         }
     }
 }
 
-new W3_Opc_Ajax_Handler();
+new W3_Opc_Ajax_Handler(); 
