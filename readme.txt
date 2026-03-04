@@ -1,4 +1,4 @@
-=== On Page Checkout for Elementor & WooCommerce ===
+=== On-Page Checkout for Elementor ===
 Contributors: w3relations
 Tags: woocommerce, checkout, elementor, one-page-checkout, woocommerce-checkout
 Requires at least: 6.0
@@ -12,7 +12,7 @@ A custom Elementor widget that lets customers browse WooCommerce products and co
 
 == Description ==
 
-On Page Checkout for Elementor & WooCommerce adds a drag-and-drop Elementor widget that combines product selection and the full WooCommerce checkout form into a single page. No redirects, no separate cart page needed.
+On-Page Checkout for Elementor adds a drag-and-drop Elementor widget that combines product selection and the full WooCommerce checkout form into a single page. No redirects, no separate cart page needed.
 
 **Key Features**
 
