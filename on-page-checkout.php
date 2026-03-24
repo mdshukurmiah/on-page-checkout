@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name: On-Page Checkout for Elementor
- * Plugin URI:  https://w3relations.com/
  * Description: A custom Elementor widget to display WooCommerce products and enable on-page checkout.
  * Version:     1.0.0
  * Author:      W3 Relations
