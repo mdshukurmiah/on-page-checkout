@@ -1,11 +1,12 @@
 <?php
 /**
  * Plugin Name: On-Page Checkout for Elementor
- * Plugin URI:  https://w3relations.com/on-page-checkout
+ * Plugin URI:  https://w3relations.com/
  * Description: A custom Elementor widget to display WooCommerce products and enable on-page checkout.
  * Version:     1.0.0
  * Author:      W3 Relations
  * Author URI:  https://w3relations.com/
+ * Requires Plugins: elementor, woocommerce
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: on-page-checkout-for-elementor
@@ -17,10 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define Constants
-define( 'OPC_PLUGIN_FILE', __FILE__ );
-define( 'OPC_PLUGIN_DIR', plugin_dir_path( OPC_PLUGIN_FILE ) );
-define( 'OPC_PLUGIN_URL', plugin_dir_url( OPC_PLUGIN_FILE ) );
-define( 'OPC_VERSION', '1.0.0' );
+define( 'W3OPCFE_PLUGIN_FILE', __FILE__ );
+define( 'W3OPCFE_PLUGIN_DIR', plugin_dir_path( W3OPCFE_PLUGIN_FILE ) );
+define( 'W3OPCFE_PLUGIN_URL', plugin_dir_url( W3OPCFE_PLUGIN_FILE ) );
+define( 'W3OPCFE_VERSION', '1.0.0' );
 
 /**
  * Main On Page Checkout Class.
@@ -38,7 +39,7 @@ final class W3_Opc_On_Page_Checkout {
      * @since 1.0.0
      * @var string The plugin version.
      */
-    const VERSION = OPC_VERSION;
+    const VERSION = W3OPCFE_VERSION;
 
     /**
      * Minimum Elementor Version
@@ -199,7 +200,7 @@ final class W3_Opc_On_Page_Checkout {
         $filename = str_replace( '_', '-', strtolower( $class ) );
         $filename = str_replace( __NAMESPACE__ . '-', '', $filename );
 
-        $file = OPC_PLUGIN_DIR . 'includes/' . $filename . '.php';
+        $file = W3OPCFE_PLUGIN_DIR . 'includes/' . $filename . '.php';
 
         if ( file_exists( $file ) ) {
             require $file;
@@ -215,10 +216,10 @@ final class W3_Opc_On_Page_Checkout {
      * @access private
      */
     private function includes() {
-        require_once OPC_PLUGIN_DIR . 'includes/elementor-widget.php';
-        require_once OPC_PLUGIN_DIR . 'includes/woocommerce-integration.php';
-        require_once OPC_PLUGIN_DIR . 'includes/ajax-handler.php';
-        require_once OPC_PLUGIN_DIR . 'includes/option-pages.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/elementor-widget.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/woocommerce-integration.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/ajax-handler.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/option-pages.php';
     }
 
     /**
@@ -246,8 +247,8 @@ final class W3_Opc_On_Page_Checkout {
      * @param \Elementor\Widgets_Manager $widgets_manager Elementor widgets manager.
      */
     public function register_widgets( $widgets_manager ) {
-        require_once( OPC_PLUGIN_DIR . 'widgets/on-page-checkout-widget.php' );
-        $widgets_manager->register( new \OnPageCheckout\Widgets\W3_Opc_On_Page_Checkout_Widget() );
+        require_once( W3OPCFE_PLUGIN_DIR . 'widgets/on-page-checkout-widget.php' );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3_Opc_On_Page_Checkout_Widget() );
     }
 
     /**
@@ -259,12 +260,12 @@ final class W3_Opc_On_Page_Checkout {
      * @access public
      */
     public function enqueue_frontend_scripts() {
-        wp_enqueue_style( 'on-page-checkout-style', OPC_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], OPC_VERSION );
-        wp_enqueue_script( 'on-page-checkout-script', OPC_PLUGIN_URL . 'assets/js/on-page-checkout.js', [ 'jquery' ], OPC_VERSION, true );
+        wp_enqueue_style( 'w3opcfe-frontend-style', W3OPCFE_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], W3OPCFE_VERSION );
+        wp_enqueue_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', [ 'jquery' ], W3OPCFE_VERSION, true );
 
-        wp_localize_script( 'on-page-checkout-script', 'opc_ajax_object', [
+        wp_localize_script( 'w3opcfe-frontend-script', 'w3opcfe_ajax_object', [
             'ajax_url'               => admin_url( 'admin-ajax.php' ),
-            'nonce'                  => wp_create_nonce( 'opc-nonce' ),
+            'nonce'                  => wp_create_nonce( 'w3opcfe_nonce' ),
             'loading_text'           => esc_html__( 'Loading...', 'on-page-checkout-for-elementor' ),
             'error_text'             => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout-for-elementor' ),
             'processing_text'        => esc_html__( 'Processing...', 'on-page-checkout-for-elementor' ),
@@ -286,22 +287,22 @@ final class W3_Opc_On_Page_Checkout {
             'toplevel_page_w3_opc_checkout_fields_edit',
         ];
 
-        if (!in_array($hook, $allowed_pages)) { 
+        if ( ! in_array( $hook, $allowed_pages, true ) ) {
             return; // Don't load on other admin pages
         }
 
         wp_enqueue_style(
-            'w3-opc-admin-style',
-            OPC_PLUGIN_URL . 'assets/css/admin.css',
+            'w3opcfe-admin-style',
+            W3OPCFE_PLUGIN_URL . 'assets/css/admin.css',
             [],
-            OPC_VERSION
+            W3OPCFE_VERSION
         );
 
         wp_enqueue_script(
-            'w3-opc-admin-script',
-            OPC_PLUGIN_URL . 'assets/js/admin.js',
-            ['jquery'],
-            OPC_VERSION,
+            'w3opcfe-admin-script',
+            W3OPCFE_PLUGIN_URL . 'assets/js/admin.js',
+            [ 'jquery' ],
+            W3OPCFE_VERSION,
             true
         );
     }

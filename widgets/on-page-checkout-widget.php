@@ -1,5 +1,5 @@
 <?php
-namespace OnPageCheckout\Widgets;
+namespace W3OPCFE\Widgets;
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
 
     public function get_name() {
-        return 'on-page-checkout';
+        return 'w3opcfe-on-page-checkout';
     }
 
     public function get_title() {
@@ -256,7 +256,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
                 // Product item wrapper — include product id and available variations
                 echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . wp_kses_post( $data_attr ) . '>';
                     echo '<label>';
-                        echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product_id ) . '" ' . checked( $checked, true, false ) . '>';
+                        echo '<input type="radio" name="w3opcfe_product_id" value="' . esc_attr( $product_id ) . '" ' . checked( $checked, true, false ) . '>';
                         echo '<div class="product-card">';
                             echo wp_kses_post( $product->get_image( 'woocommerce_thumbnail' ) );
                             echo '<div class="product-information">';
@@ -353,7 +353,7 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
                 echo '<div class="opc-products-wrapper">';
                     echo '<div class="opc-product-item" data-product-id="' . esc_attr( $product_id ) . '"' . wp_kses_post( $data_attr ) . '>';
                         echo '<label>';
-                            echo '<input type="radio" name="opc_product_id" value="' . esc_attr( $product->get_id() ) . '" checked>';
+                            echo '<input type="radio" name="w3opcfe_product_id" value="' . esc_attr( $product->get_id() ) . '" checked>';
                                 echo '<div class="product-card">';
                                 echo wp_kses_post( $product->get_image( 'woocommerce_thumbnail' ) ); 
                                 echo '<div class="product-information">';
@@ -436,15 +436,15 @@ class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
         // Quantity selector
         if ( 'yes' === $settings['show_quantity'] ) {
             echo '<div class="opc-quantity-selector">';
-            echo '<label for="opc_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout-for-elementor' ) . '</label>';
+            echo '<label for="w3opcfe_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout-for-elementor' ) . '</label>';
             echo '<div class="quantity-input-wrapper">';
                 echo '<button class="qty-decrement">-</button>';
-                echo '<input type="text" id="opc_quantity" name="opc_quantity" value="1" min="1">';
+                echo '<input type="text" id="w3opcfe_quantity" name="w3opcfe_quantity" value="1" min="1">';
                 echo '<button class="qty-increment">+</button>';
             echo '</div>';
             echo '</div>';
         } else {
-            echo '<input type="hidden" name="opc_quantity" value="1">';
+            echo '<input type="hidden" name="w3opcfe_quantity" value="1">';
         }
 
         // Checkout form container
