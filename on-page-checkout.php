@@ -31,7 +31,7 @@ define( 'W3OPCFE_VERSION', '1.0.0' );
  *
  * @since 1.0.0
  */
-final class W3_Opc_On_Page_Checkout {
+final class W3OPCFE_On_Page_Checkout {
 
     /**
      * Plugin Version
@@ -71,7 +71,7 @@ final class W3_Opc_On_Page_Checkout {
      * @since 1.0.0
      * @access private
      * @static
-     * @var W3_Opc_On_Page_Checkout The single instance of the class.
+     * @var W3OPCFE_On_Page_Checkout The single instance of the class.
      */
     private static $_instance = null;
 
@@ -83,7 +83,7 @@ final class W3_Opc_On_Page_Checkout {
      * @since 1.0.0
      * @access public
      * @static
-     * @return W3_Opc_On_Page_Checkout An instance of the class.
+     * @return W3OPCFE_On_Page_Checkout An instance of the class.
      */
     public static function instance() {
         if ( is_null( self::$_instance ) ) {
@@ -248,7 +248,7 @@ final class W3_Opc_On_Page_Checkout {
      */
     public function register_widgets( $widgets_manager ) {
         require_once( W3OPCFE_PLUGIN_DIR . 'widgets/on-page-checkout-widget.php' );
-        $widgets_manager->register( new \W3OPCFE\Widgets\W3_Opc_On_Page_Checkout_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_On_Page_Checkout_Widget() );
     }
 
     /**
@@ -284,7 +284,7 @@ final class W3_Opc_On_Page_Checkout {
      */
     public function enqueue_admin_scripts( $hook ) {
         $allowed_pages = [
-            'toplevel_page_w3_opc_checkout_fields_edit',
+            'toplevel_page_w3opcfe_checkout_fields_edit',
         ];
 
         if ( ! in_array( $hook, $allowed_pages, true ) ) {
@@ -320,4 +320,4 @@ final class W3_Opc_On_Page_Checkout {
     }
 }
 
-W3_Opc_On_Page_Checkout::instance(); 
+W3OPCFE_On_Page_Checkout::instance();

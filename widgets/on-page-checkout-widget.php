@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-class W3_Opc_On_Page_Checkout_Widget extends Widget_Base {
+class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
 
     public function get_name() {
         return 'w3opcfe-on-page-checkout';

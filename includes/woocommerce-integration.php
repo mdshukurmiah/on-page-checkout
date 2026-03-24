@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-class W3_Opc_WooCommerce_Integration {
+class W3OPCFE_WooCommerce_Integration {
 
     public function __construct() {
         add_action( 'wp_ajax_w3opcfe_get_checkout_form', [ $this, 'get_checkout_form' ] );
@@ -162,4 +162,4 @@ class W3_Opc_WooCommerce_Integration {
 
 }
 
-new W3_Opc_WooCommerce_Integration();
+new W3OPCFE_WooCommerce_Integration();
