@@ -3,29 +3,48 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-add_action( 'admin_menu', 'w3_opc_register_settings_pages' );
+/**
+ * One-time migration from legacy `w3_opc_*` option keys to `w3opcfe_*`.
+ */
+function w3opcfe_migrate_options() {
+    $migrations = [
+        'w3_opc_general_options'        => 'w3opcfe_general_options',
+        'w3_opc_checkout_fields'        => 'w3opcfe_checkout_fields',
+        'w3_opc_checkout_fields_master' => 'w3opcfe_checkout_fields_master',
+    ];
 
-function w3_opc_register_settings_pages() {
+    foreach ( $migrations as $old_key => $new_key ) {
+        if ( false !== get_option( $old_key, false ) && false === get_option( $new_key, false ) ) {
+            update_option( $new_key, get_option( $old_key ) );
+        }
+    }
+}
+
+w3opcfe_migrate_options();
+
+add_action( 'admin_menu', 'w3opcfe_register_settings_pages' );
+
+function w3opcfe_register_settings_pages() {
     // Top-level/default page: Checkout Fields Edit
     add_menu_page(
         __( 'Checkout Fields Edit', 'on-page-checkout-for-elementor' ),
         __( 'W3 OPC', 'on-page-checkout-for-elementor' ),
         'manage_options',
-        'w3_opc_checkout_fields_edit',
-        'w3_opc_checkout_fields_edit_page',
+        'w3opcfe_checkout_fields_edit',
+        'w3opcfe_checkout_fields_edit_page',
         'dashicons-admin-generic',
         60
     );
 }
 
-function w3_opc_general_settings_page() {
+function w3opcfe_general_settings_page() {
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'W3 OPC General Settings', 'on-page-checkout-for-elementor' ); ?></h1>
         <form method="post" action="options.php">
             <?php
-            settings_fields( 'w3_opc_general_settings_group' );
-            do_settings_sections( 'w3_opc_general_settings' );
+            settings_fields( 'w3opcfe_general_settings_group' );
+            do_settings_sections( 'w3opcfe_general_settings' );
             submit_button();
             ?>
         </form>
@@ -33,15 +52,15 @@ function w3_opc_general_settings_page() {
     <?php
 }
 
-function w3_opc_checkout_fields_edit_page() {
+function w3opcfe_checkout_fields_edit_page() {
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'W3 OPC Checkout Fields Edit', 'on-page-checkout-for-elementor' ); ?></h1>
-        <?php settings_errors( 'w3_opc_checkout_fields_group' ); ?>
+        <?php settings_errors( 'w3opcfe_checkout_fields_group' ); ?>
         <form method="post" action="options.php">
             <?php
-            settings_fields( 'w3_opc_checkout_fields_group' );
-            do_settings_sections( 'w3-opc-checkout-fields' );
+            settings_fields( 'w3opcfe_checkout_fields_group' );
+            do_settings_sections( 'w3opcfe-checkout-fields' );
             submit_button();
             ?>
         </form>
@@ -49,16 +68,16 @@ function w3_opc_checkout_fields_edit_page() {
     <?php
 }
 
-add_action( 'admin_init', 'w3_opc_register_settings' );
+add_action( 'admin_init', 'w3opcfe_register_settings' );
 
-add_action( 'admin_init', 'w3_opc_maybe_show_saved_notice' );
+add_action( 'admin_init', 'w3opcfe_maybe_show_saved_notice' );
 
-function w3_opc_maybe_show_saved_notice() {
+function w3opcfe_maybe_show_saved_notice() {
     $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
     if ( ! $screen ) {
         return;
     }
-    $opc_screens = [ 'toplevel_page_w3_opc_checkout_fields_edit' ];
+    $opc_screens = [ 'toplevel_page_w3opcfe_checkout_fields_edit' ];
     if ( ! in_array( $screen->id, $opc_screens, true ) ) {
         return;
     }
@@ -69,52 +88,52 @@ function w3_opc_maybe_show_saved_notice() {
     $settings_updated = isset( $_GET['settings-updated'] ) ? sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) : '';
     $nonce            = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 
-    if ( '1' === $settings_updated && ! empty( $nonce ) && wp_verify_nonce( $nonce, 'w3_opc_checkout_fields_group-options' ) ) {
+    if ( '1' === $settings_updated && ! empty( $nonce ) && wp_verify_nonce( $nonce, 'w3opcfe_checkout_fields_group-options' ) ) {
         add_settings_error(
-            'w3_opc_checkout_fields_group',
-            'w3_opc_settings_saved',
+            'w3opcfe_checkout_fields_group',
+            'w3opcfe_settings_saved',
             __( 'Checkout fields settings saved successfully!', 'on-page-checkout-for-elementor' ),
             'updated'
         );
     }
 }
 
-function w3_opc_register_settings() {
+function w3opcfe_register_settings() {
     // General Settings
     register_setting(
-        'w3_opc_general_settings_group',
-        'w3_opc_general_options',
+        'w3opcfe_general_settings_group',
+        'w3opcfe_general_options',
         [
-            'sanitize_callback' => 'w3_opc_sanitize_general_options',
+            'sanitize_callback' => 'w3opcfe_sanitize_general_options',
             'type'              => 'array',
             'default'           => [],
         ]
     );
 
     add_settings_section(
-        'w3_opc_general_section',
+        'w3opcfe_general_section',
         __( 'General Options', 'on-page-checkout-for-elementor' ),
         function () {
             echo '<p>' . esc_html__( 'Set up your general plugin options here.', 'on-page-checkout-for-elementor' ) . '</p>';
         },
-        'w3_opc_general_settings'
+        'w3opcfe_general_settings'
     );
 
     add_settings_field(
         'enable_opc',
         __( 'Enable One Page Checkout', 'on-page-checkout-for-elementor' ),
         function () {
-            $options = get_option( 'w3_opc_general_options' );
+            $options = get_option( 'w3opcfe_general_options' );
             ?>
-            <input type="checkbox" name="w3_opc_general_options[enable_opc]" value="1" <?php checked( 1, $options['enable_opc'] ?? 0 ); ?> />
+            <input type="checkbox" name="w3opcfe_general_options[enable_opc]" value="1" <?php checked( 1, $options['enable_opc'] ?? 0 ); ?> />
             <?php
         },
-        'w3_opc_general_settings',
-        'w3_opc_general_section'
+        'w3opcfe_general_settings',
+        'w3opcfe_general_section'
     );
 }
 
-function w3_opc_sanitize_general_options( $input ) {
+function w3opcfe_sanitize_general_options( $input ) {
     if ( ! is_array( $input ) ) {
         return [];
     }
@@ -124,9 +143,9 @@ function w3_opc_sanitize_general_options( $input ) {
     ];
 }
 
-class W3_Opc_On_Page_Checkout_Fields_Settings {
+class W3OPCFE_Checkout_Fields_Settings {
 
-    private $option_name = 'w3_opc_checkout_fields';
+    private $option_name = 'w3opcfe_checkout_fields';
 
     public function __construct() {
         add_action( 'admin_init', [ $this, 'register_settings' ] );
@@ -135,7 +154,7 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 
     public function register_settings() {
         register_setting(
-            'w3_opc_checkout_fields_group',
+            'w3opcfe_checkout_fields_group',
             $this->option_name,
             [
                 'sanitize_callback' => [ $this, 'sanitize_fields' ],
@@ -145,8 +164,8 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         ); 
 
         register_setting(
-            'w3_opc_checkout_fields_group',
-            'w3_opc_checkout_fields_master',
+            'w3opcfe_checkout_fields_group',
+            'w3opcfe_checkout_fields_master',
             [
                 'type'              => 'boolean',
                 'sanitize_callback' => function ( $val ) {
@@ -157,24 +176,24 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         );
 
         add_settings_section(
-            'w3_opc_checkout_fields_billing_section',
+            'w3opcfe_checkout_fields_billing_section',
             __( 'Billing Fields Settings', 'on-page-checkout-for-elementor' ),
             '__return_false',
-            'w3-opc-checkout-fields'
+            'w3opcfe-checkout-fields'
         );
 
         add_settings_section(
-            'w3_opc_checkout_fields_shipping_section',
+            'w3opcfe_checkout_fields_shipping_section',
             __( 'Shipping Fields Settings', 'on-page-checkout-for-elementor' ),
             '__return_false',
-            'w3-opc-checkout-fields'
+            'w3opcfe-checkout-fields'
         );
 
         add_settings_section(
-            'w3_opc_checkout_fields_other_section',
+            'w3opcfe_checkout_fields_other_section',
             __( 'Other Settings', 'on-page-checkout-for-elementor' ),
             '__return_false',
-            'w3-opc-checkout-fields'
+            'w3opcfe-checkout-fields'
         );
 
         $other_fields = [
@@ -190,8 +209,8 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                 "billing_{$field_key}",
                 isset( $field['label'] ) ? $field['label'] : $field_key,
                 [ $this, 'render_field' ],
-                'w3-opc-checkout-fields',
-                'w3_opc_checkout_fields_billing_section',
+                'w3opcfe-checkout-fields',
+                'w3opcfe_checkout_fields_billing_section',
                 [ 'field_key' => "billing_$field_key", 'field' => $field ]
             );
         }
@@ -201,8 +220,8 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                 "shipping_{$field_key}",
                 isset( $field['label'] ) ? $field['label'] : $field_key,
                 [ $this, 'render_field' ],
-                'w3-opc-checkout-fields',
-                'w3_opc_checkout_fields_shipping_section',
+                'w3opcfe-checkout-fields',
+                'w3opcfe_checkout_fields_shipping_section',
                 [ 'field_key' => "shipping_$field_key", 'field' => $field ]
             );
         }
@@ -212,8 +231,8 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
                 "other_{$field_key}",
                 $field['label'],
                 [ $this, 'render_other_field' ],
-                'w3-opc-checkout-fields',
-                'w3_opc_checkout_fields_other_section',
+                'w3opcfe-checkout-fields',
+                'w3opcfe_checkout_fields_other_section',
                 [ 'field_key' => $field_key, 'field' => $field ]
             );
         }
@@ -229,16 +248,16 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         $label    = isset( $saved['label'] ) ? $saved['label'] : ( $field['label'] ?? '' );
         $required = isset( $saved['required'] ) ? $saved['required'] : ( ! empty( $field['required'] ) ? 1 : 0 );
         ?>
-        <div class="w3-opc-field-wrapper" style="margin-bottom: 12px;">
+        <div class="w3opcfe-field-wrapper" style="margin-bottom: 12px;">
             <label style="margin-right:10px;">
                 <input type="hidden" name="<?php echo esc_attr( $this->option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]" value="0">
-                <input class="opc-enable-field" type="checkbox"
+                <input class="w3opcfe-enable-field" type="checkbox"
                     name="<?php echo esc_attr( $this->option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]"
                     value="1" <?php checked( 1, $enabled ); ?>>
                 <?php esc_html_e( 'Enable', 'on-page-checkout-for-elementor' ); ?>
             </label>
 
-            <div class="w3-opc-dependent-fields"
+            <div class="w3opcfe-dependent-fields"
                 style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?> margin-left:20px;">
                 <label style="margin-bottom:4px;">
                     <strong><?php esc_html_e( 'Label:', 'on-page-checkout-for-elementor' ); ?></strong>
@@ -270,16 +289,16 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
         $enabled = isset( $saved['enabled'] ) ? $saved['enabled'] : 1;
         $label   = isset( $saved['label'] ) ? $saved['label'] : $field['label'];
         ?>
-        <div class="w3-opc-field-wrapper">
+        <div class="w3opcfe-field-wrapper">
             <label style="margin-right:10px;">
                 <input type="hidden" name="<?php echo esc_attr( $this->option_name ); ?>[other_<?php echo esc_attr( $field_key ); ?>][enabled]" value="0">
-                <input class="opc-enable-field" type="checkbox"
+                <input class="w3opcfe-enable-field" type="checkbox"
                     name="<?php echo esc_attr( $this->option_name ); ?>[other_<?php echo esc_attr( $field_key ); ?>][enabled]"
                     value="1" <?php checked( 1, $enabled ); ?>>
                 <?php esc_html_e( 'Enable', 'on-page-checkout-for-elementor' ); ?>
             </label>
 
-            <div class="w3-opc-dependent-fields" style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?> margin-left:20px;">
+            <div class="w3opcfe-dependent-fields" style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?> margin-left:20px;">
                 <label style="display:block; margin-bottom:4px;">
                     <?php esc_html_e( 'Label:', 'on-page-checkout-for-elementor' ); ?>
                     <input type="text"
@@ -359,4 +378,4 @@ class W3_Opc_On_Page_Checkout_Fields_Settings {
 
 }
 
-new W3_Opc_On_Page_Checkout_Fields_Settings();
+new W3OPCFE_Checkout_Fields_Settings();

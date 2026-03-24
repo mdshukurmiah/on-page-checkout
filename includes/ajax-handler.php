@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-class W3_Opc_Ajax_Handler {
+class W3OPCFE_Ajax_Handler {
 
     public function __construct() {
         add_action( 'wp_ajax_w3opcfe_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
@@ -358,4 +358,4 @@ class W3_Opc_Ajax_Handler {
     }
 }
 
-new W3_Opc_Ajax_Handler(); 
+new W3OPCFE_Ajax_Handler();

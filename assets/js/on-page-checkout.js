@@ -1,20 +1,22 @@
 jQuery(document).ready(function($) {
     'use strict';
 
+    var w3opcfe_ajax_object = window.w3opcfe_ajax_object || {};
+
     // Function to show loading overlay
-    function w3_opc_showLoading(widget) {
+    function w3opcfe_showLoading(widget) {
         widget.addClass('opc-loading');
         widget.append('<div class="opc-loading-overlay"><div class="opc-loading-spinner"></div></div>');
     }
 
     // Function to hide loading overlay
-    function w3_opc_hideLoading(widget) {
+    function w3opcfe_hideLoading(widget) {
         widget.removeClass('opc-loading');
         widget.find('.opc-loading-overlay').remove();
     }
 
     // Function to get selected product ID
-    function w3_opc_getSelectedProductId(form) {
+    function w3opcfe_getSelectedProductId(form) {
         var productId = form.find('input[name="w3opcfe_product_id"]:checked').val();
         if (!productId) {
             productId = form.find('input[name="w3opcfe_product_id"]').val(); // For hidden input (single product)
@@ -23,9 +25,14 @@ jQuery(document).ready(function($) {
     }
 
     // Function to load checkout fields via AJAX
-    function w3_opc_loadCheckoutFields(widget) {
+    function w3opcfe_loadCheckoutFields(widget) {
+        if (!w3opcfe_ajax_object.ajax_url) {
+            console.error('w3opcfe_ajax_object.ajax_url is missing. Check wp_localize_script and caching/minify.');
+            return;
+        }
+
         var form = widget.find('.opc-checkout-form');
-        var productId = w3_opc_getSelectedProductId(form);
+        var productId = w3opcfe_getSelectedProductId(form);
         var quantity = form.find('input[name="w3opcfe_quantity"]').val() || 1;
         var variation_id = form.find('select[name="variation_id"]').val() || 1;
         var checkoutFieldsContainer = widget.find('[id^="opc-checkout-fields-container-"]');
@@ -60,7 +67,7 @@ jQuery(document).ready(function($) {
         formDataObj.variation_id = variation_id;
         formDataObj.widgetSettings = widgetSettings;
 
-        w3_opc_showLoading(widget);
+        w3opcfe_showLoading(widget);
         // checkoutFieldsContainer.html('<p>' + (w3opcfe_ajax_object.loading_text || 'Loading...') + '</p>');
 
         $.ajax({
@@ -94,43 +101,43 @@ jQuery(document).ready(function($) {
                 checkoutFieldsContainer.html('<p class="opc-error">' + (w3opcfe_ajax_object.error_text || 'An error occurred. Please try again.') + '</p>');
             },
             complete: function() {
-                w3_opc_hideLoading(widget);
+                w3opcfe_hideLoading(widget);
             }
         });
     }
 
     // Initial load of checkout fields for each widget on the page
     $('.on-page-checkout-widget').each(function() {
-        w3_opc_loadCheckoutFields($(this));
+        w3opcfe_loadCheckoutFields($(this));
     });
 
     // Event handler for product selection change
     $(document).on('change', '.opc-product-selection input[name="w3opcfe_product_id"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     $(document).on('change', '.opc-products-wrapper select[name="variation_id"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for state change
     $(document).on('change', '.opc-checkout-form #billing_state', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for shipping change
     $(document).on('change', '#shipping_method input[type="radio"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for quantity change
     $(document).on('change', '.opc-quantity-selector input[name="w3opcfe_quantity"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for payment method selection
@@ -147,7 +154,7 @@ jQuery(document).ready(function($) {
         var form = $(this);
         var widget = form.closest('.on-page-checkout-widget');
         var submitButton = form.find('.opc-place-order-button');
-        var productId = w3_opc_getSelectedProductId(form);
+        var productId = w3opcfe_getSelectedProductId(form);
         var quantity = form.find('input[name="w3opcfe_quantity"]').val() || 1;
 
         if (!productId) {
@@ -162,7 +169,7 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        w3_opc_showLoading(widget);
+        w3opcfe_showLoading(widget);
         submitButton.prop('disabled', true).text(w3opcfe_ajax_object.processing_text || 'Processing...');
 
         var formData = form.serialize();
@@ -190,7 +197,7 @@ jQuery(document).ready(function($) {
                 submitButton.prop('disabled', false).text(w3opcfe_ajax_object.place_order_text || 'Place Order');
             },
             complete: function() {
-                w3_opc_hideLoading(widget);
+                w3opcfe_hideLoading(widget);
             }
         });
     });
