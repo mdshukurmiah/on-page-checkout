@@ -5,17 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-class W3_Opc_WooCommerce_Integration {
+class W3OPCFE_WooCommerce_Integration {
 
     public function __construct() {
-        add_action( 'wp_ajax_opc_get_checkout_form', [ $this, 'get_checkout_form' ] );
-        add_action( 'wp_ajax_nopriv_opc_get_checkout_form', [ $this, 'get_checkout_form' ] );
-        add_action( 'wp_ajax_opc_process_checkout', [ $this, 'process_checkout' ] );
-        add_action( 'wp_ajax_nopriv_opc_process_checkout', [ $this, 'process_checkout' ] );
+        add_action( 'wp_ajax_w3opcfe_get_checkout_form', [ $this, 'get_checkout_form' ] );
+        add_action( 'wp_ajax_nopriv_w3opcfe_get_checkout_form', [ $this, 'get_checkout_form' ] );
+        add_action( 'wp_ajax_w3opcfe_process_checkout', [ $this, 'process_checkout' ] );
+        add_action( 'wp_ajax_nopriv_w3opcfe_process_checkout', [ $this, 'process_checkout' ] );
     }
 
     public function get_checkout_form() {
-        check_ajax_referer( 'opc-nonce', 'nonce' );
+        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
         $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
@@ -65,7 +65,7 @@ class W3_Opc_WooCommerce_Integration {
     }
 
     public function process_checkout() {
-        check_ajax_referer( 'opc-nonce', 'nonce' );
+        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
         $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
@@ -162,4 +162,4 @@ class W3_Opc_WooCommerce_Integration {
 
 }
 
-new W3_Opc_WooCommerce_Integration();
+new W3OPCFE_WooCommerce_Integration();

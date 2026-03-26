@@ -1,32 +1,39 @@
 jQuery(document).ready(function($) {
     'use strict';
 
+    var w3opcfe_ajax_object = window.w3opcfe_ajax_object || {};
+
     // Function to show loading overlay
-    function w3_opc_showLoading(widget) {
+    function w3opcfe_showLoading(widget) {
         widget.addClass('opc-loading');
         widget.append('<div class="opc-loading-overlay"><div class="opc-loading-spinner"></div></div>');
     }
 
     // Function to hide loading overlay
-    function w3_opc_hideLoading(widget) {
+    function w3opcfe_hideLoading(widget) {
         widget.removeClass('opc-loading');
         widget.find('.opc-loading-overlay').remove();
     }
 
     // Function to get selected product ID
-    function w3_opc_getSelectedProductId(form) {
-        var productId = form.find('input[name="opc_product_id"]:checked').val();
+    function w3opcfe_getSelectedProductId(form) {
+        var productId = form.find('input[name="w3opcfe_product_id"]:checked').val();
         if (!productId) {
-            productId = form.find('input[name="opc_product_id"]').val(); // For hidden input (single product)
+            productId = form.find('input[name="w3opcfe_product_id"]').val(); // For hidden input (single product)
         }
         return productId;
     }
 
     // Function to load checkout fields via AJAX
-    function w3_opc_loadCheckoutFields(widget) {
+    function w3opcfe_loadCheckoutFields(widget) {
+        if (!w3opcfe_ajax_object.ajax_url) {
+            console.error('w3opcfe_ajax_object.ajax_url is missing. Check wp_localize_script and caching/minify.');
+            return;
+        }
+
         var form = widget.find('.opc-checkout-form');
-        var productId = w3_opc_getSelectedProductId(form);
-        var quantity = form.find('input[name="opc_quantity"]').val() || 1;
+        var productId = w3opcfe_getSelectedProductId(form);
+        var quantity = form.find('input[name="w3opcfe_quantity"]').val() || 1;
         var variation_id = form.find('select[name="variation_id"]').val() || 1;
         var checkoutFieldsContainer = widget.find('[id^="opc-checkout-fields-container-"]');
 
@@ -40,7 +47,7 @@ jQuery(document).ready(function($) {
         widgetSettings['orderButtonName'] = widgetparent.attr('data-order-button-name');
 
         if (!productId) {
-            checkoutFieldsContainer.html('<p class="opc-info">' + (opc_ajax_object.no_product_selected_text || 'Please select a product.') + '</p>');
+            checkoutFieldsContainer.html('<p class="opc-info">' + (w3opcfe_ajax_object.no_product_selected_text || 'Please select a product.') + '</p>');
             return;
         }
 
@@ -53,19 +60,19 @@ jQuery(document).ready(function($) {
         });
 
         // Add product_id and quantity
-        formDataObj.action = 'opc_load_checkout_fields';
-        formDataObj.nonce = opc_ajax_object.nonce;
+        formDataObj.action = 'w3opcfe_load_checkout_fields';
+        formDataObj.nonce = w3opcfe_ajax_object.nonce;
         formDataObj.product_id = productId;
         formDataObj.quantity = quantity;
         formDataObj.variation_id = variation_id;
         formDataObj.widgetSettings = widgetSettings;
 
-        w3_opc_showLoading(widget);
-        // checkoutFieldsContainer.html('<p>' + (opc_ajax_object.loading_text || 'Loading...') + '</p>');
+        w3opcfe_showLoading(widget);
+        // checkoutFieldsContainer.html('<p>' + (w3opcfe_ajax_object.loading_text || 'Loading...') + '</p>');
 
         $.ajax({
             type: 'POST',
-            url: opc_ajax_object.ajax_url,
+            url: w3opcfe_ajax_object.ajax_url,
             data: formDataObj, // send all data
             success: function(response) {
                 if (response.success) {
@@ -91,46 +98,46 @@ jQuery(document).ready(function($) {
 
 
             error: function() {
-                checkoutFieldsContainer.html('<p class="opc-error">' + (opc_ajax_object.error_text || 'An error occurred. Please try again.') + '</p>');
+                checkoutFieldsContainer.html('<p class="opc-error">' + (w3opcfe_ajax_object.error_text || 'An error occurred. Please try again.') + '</p>');
             },
             complete: function() {
-                w3_opc_hideLoading(widget);
+                w3opcfe_hideLoading(widget);
             }
         });
     }
 
     // Initial load of checkout fields for each widget on the page
     $('.on-page-checkout-widget').each(function() {
-        w3_opc_loadCheckoutFields($(this));
+        w3opcfe_loadCheckoutFields($(this));
     });
 
     // Event handler for product selection change
-    $(document).on('change', '.opc-product-selection input[name="opc_product_id"]', function() {
+    $(document).on('change', '.opc-product-selection input[name="w3opcfe_product_id"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     $(document).on('change', '.opc-products-wrapper select[name="variation_id"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for state change
     $(document).on('change', '.opc-checkout-form #billing_state', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for shipping change
     $(document).on('change', '#shipping_method input[type="radio"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for quantity change
-    $(document).on('change', '.opc-quantity-selector input[name="opc_quantity"]', function() {
+    $(document).on('change', '.opc-quantity-selector input[name="w3opcfe_quantity"]', function() {
         var widget = $(this).closest('.on-page-checkout-widget');
-        w3_opc_loadCheckoutFields(widget);
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for payment method selection
@@ -147,11 +154,11 @@ jQuery(document).ready(function($) {
         var form = $(this);
         var widget = form.closest('.on-page-checkout-widget');
         var submitButton = form.find('.opc-place-order-button');
-        var productId = w3_opc_getSelectedProductId(form);
-        var quantity = form.find('input[name="opc_quantity"]').val() || 1;
+        var productId = w3opcfe_getSelectedProductId(form);
+        var quantity = form.find('input[name="w3opcfe_quantity"]').val() || 1;
 
         if (!productId) {
-            alert(opc_ajax_object.no_product_selected_text || 'Please select a product.');
+            alert(w3opcfe_ajax_object.no_product_selected_text || 'Please select a product.');
             return;
         }
 
@@ -162,15 +169,15 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        w3_opc_showLoading(widget);
-        submitButton.prop('disabled', true).text(opc_ajax_object.processing_text || 'Processing...');
+        w3opcfe_showLoading(widget);
+        submitButton.prop('disabled', true).text(w3opcfe_ajax_object.processing_text || 'Processing...');
 
         var formData = form.serialize();
 
         $.ajax({
             type: 'POST',
-            url: opc_ajax_object.ajax_url,
-            data: formData + '&action=opc_process_checkout&nonce=' + opc_ajax_object.nonce + '&product_id=' + productId + '&quantity=' + quantity,
+            url: w3opcfe_ajax_object.ajax_url,
+            data: formData + '&action=w3opcfe_process_checkout&nonce=' + w3opcfe_ajax_object.nonce + '&product_id=' + productId + '&quantity=' + quantity,
             success: function(response) {
                 if (response.result == 'success') {
                     if (response.redirect) {
@@ -182,15 +189,15 @@ jQuery(document).ready(function($) {
                 } else {
                     console.log(response);
                     // alert(response.message || 'An error occurred while processing your order.');
-                    submitButton.prop('disabled', false).text(opc_ajax_object.place_order_text || 'Place Order');
+                    submitButton.prop('disabled', false).text(w3opcfe_ajax_object.place_order_text || 'Place Order');
                 }
             },
             error: function() {
-                alert(opc_ajax_object.error_text || 'An error occurred. Please try again.');
-                submitButton.prop('disabled', false).text(opc_ajax_object.place_order_text || 'Place Order');
+                alert(w3opcfe_ajax_object.error_text || 'An error occurred. Please try again.');
+                submitButton.prop('disabled', false).text(w3opcfe_ajax_object.place_order_text || 'Place Order');
             },
             complete: function() {
-                w3_opc_hideLoading(widget);
+                w3opcfe_hideLoading(widget);
             }
         });
     });
@@ -207,13 +214,13 @@ jQuery(document).ready(function($) {
     
     // quantity Selector
     $(document).on('click', '.on-page-checkout-widget .qty-increment', function() {
-        var input = $(this).siblings('#opc_quantity');
+        var input = $(this).siblings('#w3opcfe_quantity');
         var value = parseInt(input.val()) || 1;
         input.val(value + 1).trigger('change');
     });
 
     $(document).on('click', '.on-page-checkout-widget .qty-decrement', function() {
-        var input = $(this).siblings('#opc_quantity');
+        var input = $(this).siblings('#w3opcfe_quantity');
         var value = parseInt(input.val()) || 1;
         var min = parseInt(input.attr('min')) || 1;
         if (value > min) {
@@ -223,4 +230,3 @@ jQuery(document).ready(function($) {
 
 
 });
-

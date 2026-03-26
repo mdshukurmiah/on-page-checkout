@@ -5,17 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-class W3_Opc_Ajax_Handler {
+class W3OPCFE_Ajax_Handler {
 
     public function __construct() {
-        add_action( 'wp_ajax_opc_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
-        add_action( 'wp_ajax_nopriv_opc_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
-        add_action( 'wp_ajax_opc_add_to_cart', [ $this, 'add_to_cart' ] );
-        add_action( 'wp_ajax_nopriv_opc_add_to_cart', [ $this, 'add_to_cart' ] );
+        add_action( 'wp_ajax_w3opcfe_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
+        add_action( 'wp_ajax_nopriv_w3opcfe_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
+        add_action( 'wp_ajax_w3opcfe_add_to_cart', [ $this, 'add_to_cart' ] );
+        add_action( 'wp_ajax_nopriv_w3opcfe_add_to_cart', [ $this, 'add_to_cart' ] );
     }
 
     public function load_checkout_fields() {
-        check_ajax_referer( 'opc-nonce', 'nonce' );
+        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
         $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
@@ -339,7 +339,7 @@ class W3_Opc_Ajax_Handler {
     }
 
     public function add_to_cart() {
-        check_ajax_referer( 'opc-nonce', 'nonce' );
+        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
         $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
@@ -358,4 +358,4 @@ class W3_Opc_Ajax_Handler {
     }
 }
 
-new W3_Opc_Ajax_Handler(); 
+new W3OPCFE_Ajax_Handler();
