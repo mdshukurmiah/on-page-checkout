@@ -21,63 +21,103 @@ class W3OPCFE_Ajax_Handler {
             wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) ] );
         }
 
-        $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
-        $quantity   = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
-        $product    = $product_id ? wc_get_product( $product_id ) : false;
+        $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
+        $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
 
-        if ( ! $product instanceof WC_Product ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) ] );
+        $selected_products = [];
+        if ( ! empty( $_POST['selected_products'] ) ) {
+            $raw = $_POST['selected_products'];
+            if ( is_string( $raw ) ) {
+                $raw = json_decode( wp_unslash( $raw ), true );
+            }
+            if ( is_array( $raw ) ) {
+                foreach ( $raw as $sp ) {
+                    $sp_pid = isset( $sp['product_id'] ) ? absint( $sp['product_id'] ) : 0;
+                    $sp_vid = isset( $sp['variation_id'] ) ? absint( $sp['variation_id'] ) : 0;
+                    $sp_qty = isset( $sp['quantity'] ) ? max( 1, absint( $sp['quantity'] ) ) : 1;
+                    if ( $sp_pid > 0 ) {
+                        $selected_products[] = [
+                            'product_id'   => $sp_pid,
+                            'variation_id' => $sp_vid,
+                            'quantity'     => $sp_qty,
+                        ];
+                    }
+                }
+            }
         }
 
-        if ( ! $product->is_purchasable() ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ) ] );
+        if ( empty( $selected_products ) && $product_id > 0 ) {
+            $selected_products[] = [
+                'product_id'   => $product_id,
+                'variation_id' => $variation_id,
+                'quantity'     => $quantity,
+            ];
         }
 
-        // Try to add product (handle variable)
-        $added_to_cart = false;
+        if ( empty( $selected_products ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Please select at least one product.', 'on-page-checkout-for-elementor' ) ] );
+        }
+
+        WC()->cart->empty_cart();
+        $added_to_cart  = false;
         $added_item_key = false;
 
-        if ( $product->is_type( 'variable' ) ) {
-            $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
+        foreach ( $selected_products as $item_info ) {
+            $p_id = $item_info['product_id'];
+            $v_id = $item_info['variation_id'];
+            $qty  = $item_info['quantity'];
 
-            // Collect attribute_* fields from POST
-            $variation = [];
-            foreach ( $_POST as $k => $v ) {
-                if ( strpos( $k, 'attribute_' ) === 0 ) {
-                    $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
-                }
+            $item_product = wc_get_product( $p_id );
+            if ( ! $item_product instanceof WC_Product || ! $item_product->is_purchasable() ) {
+                continue;
             }
 
-            // Try server-side matching if no variation_id but attributes present
-            if ( ! $variation_id && ! empty( $variation ) ) {
-                $data_store = WC_Data_Store::load( 'product' );
-                $matching   = $data_store->find_matching_product_variation( $product, $variation );
-                if ( $matching ) {
-                    $variation_id = $matching;
-                }
+            if ( $item_product->is_type( 'variation' ) ) {
+                $v_id         = $item_product->get_id();
+                $p_id         = $item_product->get_parent_id();
+                $item_product = wc_get_product( $p_id );
             }
 
-            if ( $variation_id ) {
-                WC()->cart->empty_cart();
-                $added_item_key = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation );
-                if ( $added_item_key ) {
-                    $added_to_cart = true;
+            if ( $item_product->is_type( 'variable' ) ) {
+                $variation = [];
+                if ( 1 === count( $selected_products ) ) {
+                    foreach ( $_POST as $k => $v ) {
+                        if ( strpos( $k, 'attribute_' ) === 0 ) {
+                            $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
+                        }
+                    }
+                }
+
+                if ( $v_id && empty( $variation ) ) {
+                    $var_product = wc_get_product( $v_id );
+                    if ( $var_product instanceof WC_Product_Variation ) {
+                        $variation = $var_product->get_variation_attributes();
+                    }
+                }
+
+                if ( ! $v_id && ! empty( $variation ) ) {
+                    $data_store = WC_Data_Store::load( 'product' );
+                    $matching   = $data_store->find_matching_product_variation( $item_product, $variation );
+                    if ( $matching ) {
+                        $v_id = $matching;
+                    }
+                }
+
+                if ( $v_id ) {
+                    $key = WC()->cart->add_to_cart( $p_id, $qty, $v_id, $variation );
+                    if ( $key ) {
+                        $added_to_cart  = true;
+                        $added_item_key = $key;
+                    }
                 }
             } else {
-                wp_send_json_error( [
-                    'message' => wp_kses_post( sprintf(
-                        /* translators: 1: URL to product page, 2: product name */
-                        __( 'Please choose product options by visiting <a href="%1$s">%2$s</a>.', 'on-page-checkout-for-elementor' ),
-                        esc_url( get_permalink( $product_id ) ),
-                        esc_html( $product->get_name() )
-                    ) ),
-                ] );
+                $key = WC()->cart->add_to_cart( $p_id, $qty );
+                if ( $key ) {
+                    $added_to_cart  = true;
+                    $added_item_key = $key;
+                }
             }
-        } else {
-            // Simple product
-            WC()->cart->empty_cart();
-            $added_item_key = WC()->cart->add_to_cart( $product_id, $quantity );
-            $added_to_cart  = (bool) $added_item_key;
         }
 
         if ( ! $added_to_cart ) {
@@ -182,15 +222,21 @@ class W3OPCFE_Ajax_Handler {
         $raw_settings_input = filter_input( INPUT_POST, 'widgetSettings', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
         $raw_settings       = is_array( $raw_settings_input ) ? wp_unslash( $raw_settings_input ) : [];
         $widgetSettings = [
-            'billingTitle'        => sanitize_text_field( $raw_settings['billingTitle'] ?? '' ),
-            'shippingTitle'       => sanitize_text_field( $raw_settings['shippingTitle'] ?? '' ),
-            'additionalInfoTitle' => sanitize_text_field( $raw_settings['additionalInfoTitle'] ?? '' ),
-            'orderSummaryTitle'   => sanitize_text_field( $raw_settings['orderSummaryTitle'] ?? '' ),
-            'paymentMethodTitle'  => sanitize_text_field( $raw_settings['paymentMethodTitle'] ?? '' ),
-            'orderButtonName'     => sanitize_text_field( $raw_settings['orderButtonName'] ?? '' ),
+            'billingTitle'            => sanitize_text_field( $raw_settings['billingTitle'] ?? '' ),
+            'shippingTitle'           => sanitize_text_field( $raw_settings['shippingTitle'] ?? '' ),
+            'shippingMethodTitle'     => sanitize_text_field( $raw_settings['shippingMethodTitle'] ?? 'Shipping Method' ),
+            'additionalInfoTitle'     => sanitize_text_field( $raw_settings['additionalInfoTitle'] ?? '' ),
+            'orderSummaryTitle'       => sanitize_text_field( $raw_settings['orderSummaryTitle'] ?? '' ),
+            'paymentMethodTitle'      => sanitize_text_field( $raw_settings['paymentMethodTitle'] ?? '' ),
+            'orderButtonName'         => sanitize_text_field( $raw_settings['orderButtonName'] ?? '' ),
+            'mobileSummaryLabel'      => sanitize_text_field( $raw_settings['mobileSummaryLabel'] ?? 'Order summary' ),
+            'mobileSummaryCollapsed'  => sanitize_text_field( $raw_settings['mobileSummaryCollapsed'] ?? 'yes' ),
         ];
 
-        ob_start();
+        $mobile_collapsed = ( 'no' !== $widgetSettings['mobileSummaryCollapsed'] );
+        $initial_expanded_attr = $mobile_collapsed ? 'false' : 'true';
+        $initial_wrapper_class = ( ! $mobile_collapsed ) ? ' opc-summary-open' : '';
+        $mobile_btn_label = ! empty( $widgetSettings['mobileSummaryLabel'] ) ? $widgetSettings['mobileSummaryLabel'] : esc_html__( 'Order summary', 'on-page-checkout-for-elementor' );
         ?>
 
         <div class="opc-checkout-fields">
@@ -237,12 +283,118 @@ class W3OPCFE_Ajax_Handler {
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
+
+            <?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
+                <div class="opc-shipping-methods" id="opc_shipping_method_section">
+                    <?php if ( ! empty( $widgetSettings['shippingMethodTitle'] ) ) : ?>
+                        <h4><?php echo esc_html( $widgetSettings['shippingMethodTitle'] ); ?></h4>
+                    <?php endif; ?>
+                    <div class="opc-shipping-methods-content">
+                        <?php
+                        $packages = WC()->shipping()->get_packages();
+                        $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+                        foreach ( $packages as $i => $package ) {
+                            $chosen_method = isset( $chosen_methods[ $i ] ) ? $chosen_methods[ $i ] : '';
+                            $available_methods = $package['rates'];
+                            ?>
+                            <ul id="shipping_method" class="woocommerce-shipping-methods">
+                                <?php if ( ! empty( $available_methods ) ) : ?>
+                                    <?php foreach ( $available_methods as $method ) : ?>
+                                        <li>
+                                            <label for="shipping_method_<?php echo esc_attr( $i ); ?>_<?php echo esc_attr( sanitize_title( $method->id ) ); ?>">
+                                                <input type="radio" name="shipping_method[<?php echo esc_attr( $i ); ?>]" data-index="<?php echo esc_attr( $i ); ?>" id="shipping_method_<?php echo esc_attr( $i ); ?>_<?php echo esc_attr( sanitize_title( $method->id ) ); ?>" value="<?php echo esc_attr( $method->id ); ?>" class="shipping_method" <?php checked( $method->id, $chosen_method ); ?> />
+                                                <?php echo wp_kses_post( wc_cart_totals_shipping_method_label( $method ) ); ?>
+                                            </label>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <li><?php esc_html_e( 'No shipping methods available for your address.', 'on-page-checkout-for-elementor' ); ?></li>
+                                <?php endif; ?>
+                            </ul>
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php do_action( 'woocommerce_review_order_before_payment' ); ?>
+
+            <div class="opc-payment-methods woocommerce-checkout-payment" id="payment">
+                <?php if ( ! empty( $widgetSettings['paymentMethodTitle'] ) ) : ?>
+                    <h4><?php echo esc_html( $widgetSettings['paymentMethodTitle'] ); ?></h4>
+                <?php endif; ?>
+                <ul class="wc_payment_methods payment_methods methods">
+                <?php
+                $available_gateways = WC()->payment_gateways ? WC()->payment_gateways->get_available_payment_gateways() : [];
+                $chosen_gateway     = WC()->session ? WC()->session->get( 'chosen_payment_method' ) : '';
+                if ( empty( $chosen_gateway ) && ! empty( $available_gateways ) ) {
+                    $chosen_gateway = current( array_keys( $available_gateways ) );
+                }
+
+                if ( ! empty( $available_gateways ) ) :
+                    foreach ( $available_gateways as $gateway ) :
+                        ?>
+                        <li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+                            <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+                                <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="input-radio" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->id, $chosen_gateway ); ?> />
+                                <?php echo esc_html( $gateway->get_title() ); ?>
+                                <?php echo wp_kses_post( $gateway->get_icon() ); ?>
+                            </label>
+                            <?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
+                                <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" style="<?php echo ( $gateway->id === $chosen_gateway ) ? '' : 'display:none;'; ?>">
+                                    <?php $gateway->payment_fields(); ?>
+                                </div>
+                            <?php endif; ?>
+                        </li>
+                        <?php
+                    endforeach;
+                else :
+                    echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'woocommerce' ) . '</li>';
+                endif;
+                ?>
+                </ul>
+            </div>
+
+            <?php if ( function_exists( 'wc_terms_and_conditions_page_id' ) && wc_terms_and_conditions_page_id() > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) : ?>
+                <div class="woocommerce-terms-and-conditions-wrapper" style="margin-top:15px; margin-bottom:15px;">
+                    <?php do_action( 'woocommerce_checkout_before_terms_and_conditions' ); ?>
+                    <p class="form-row validate-required">
+                        <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+                            <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
+                            <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout-for-elementor' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'woocommerce' ); ?>">*</abbr>
+                        </label>
+                        <input type="hidden" name="terms-field" value="1" />
+                    </p>
+                    <?php do_action( 'woocommerce_checkout_after_terms_and_conditions' ); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php do_action( 'woocommerce_review_order_after_payment' ); ?>
+
+            <?php
+            $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout-for-elementor' );
+            echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html( $order_button_name ) . '</button>';
+            ?>
         </div>
         <div id="order_review" class="order-details woocommerce-checkout-review-order">
-            <div class="order-details-wrapper">
+            <div class="order-details-wrapper<?php echo esc_attr( $initial_wrapper_class ); ?>">
+                <!-- Mobile Collapsible Order Summary Bar -->
+                <button type="button" class="opc-mobile-order-summary-toggle" aria-expanded="<?php echo esc_attr( $initial_expanded_attr ); ?>">
+                    <span class="opc-toggle-left">
+                        <span class="opc-toggle-label"><?php echo esc_html( $mobile_btn_label ); ?></span>
+                        <svg class="opc-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </span>
+                    <span class="opc-toggle-total">
+                        <?php echo wp_kses_post( WC()->cart->get_total() ); ?>
+                    </span>
+                </button>
+
                 <div class="opc-order-review">
                     <?php if ( ! empty( $widgetSettings['orderSummaryTitle'] ) ) : ?>
-                        <h4><?php echo esc_html( $widgetSettings['orderSummaryTitle'] ); ?></h4>
+                        <h4 class="opc-order-summary-desktop-title"><?php echo esc_html( $widgetSettings['orderSummaryTitle'] ); ?></h4>
                     <?php endif; ?>
                     <table class="shop_table woocommerce-checkout-review-order-table">
                         <thead>
@@ -284,7 +436,31 @@ class W3OPCFE_Ajax_Handler {
                                 </tr>
                             <?php endforeach; ?>
                             <?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
-                                <?php wc_cart_totals_shipping_html(); ?>
+                                <tr class="woocommerce-shipping-totals shipping">
+                                    <th><?php esc_html_e( 'Shipment', 'on-page-checkout-for-elementor' ); ?></th>
+                                    <td data-title="<?php esc_attr_e( 'Shipment', 'on-page-checkout-for-elementor' ); ?>">
+                                        <?php
+                                        $packages = WC()->shipping()->get_packages();
+                                        $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+                                        $summary_output = [];
+                                        foreach ( $packages as $i => $package ) {
+                                            $chosen = isset( $chosen_methods[ $i ] ) ? $chosen_methods[ $i ] : '';
+                                            if ( ! empty( $package['rates'] ) && isset( $package['rates'][ $chosen ] ) ) {
+                                                $rate = $package['rates'][ $chosen ];
+                                                $cost = (float) $rate->cost;
+                                                $tax  = (float) array_sum( $rate->taxes );
+                                                $total_rate_cost = $cost + ( WC()->cart->display_prices_including_tax() ? $tax : 0 );
+                                                $summary_output[] = esc_html( $rate->get_label() ) . ': ' . ( $total_rate_cost > 0 ? wc_price( $total_rate_cost ) : esc_html__( 'Free shipping', 'on-page-checkout-for-elementor' ) );
+                                            }
+                                        }
+                                        if ( ! empty( $summary_output ) ) {
+                                            echo wp_kses_post( implode( '<br>', $summary_output ) );
+                                        } else {
+                                            echo esc_html__( 'Calculated at checkout', 'on-page-checkout-for-elementor' );
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
                             <?php endif; ?>
                             <?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
                                 <tr class="fee">
@@ -314,64 +490,6 @@ class W3OPCFE_Ajax_Handler {
                         </tfoot>
                     </table>
                 </div>
-                <?php do_action( 'woocommerce_review_order_before_payment' ); ?>
-
-                <div class="opc-payment-methods woocommerce-checkout-payment" id="payment">
-                    <?php if ( ! empty( $widgetSettings['paymentMethodTitle'] ) ) : ?>
-                        <h4><?php echo esc_html( $widgetSettings['paymentMethodTitle'] ); ?></h4>
-                    <?php endif; ?>
-                    <ul class="wc_payment_methods payment_methods methods">
-                    <?php
-                    $available_gateways = WC()->payment_gateways ? WC()->payment_gateways->get_available_payment_gateways() : [];
-                    $chosen_gateway     = WC()->session ? WC()->session->get( 'chosen_payment_method' ) : '';
-                    if ( empty( $chosen_gateway ) && ! empty( $available_gateways ) ) {
-                        $chosen_gateway = current( array_keys( $available_gateways ) );
-                    }
-
-                    if ( ! empty( $available_gateways ) ) :
-                        foreach ( $available_gateways as $gateway ) :
-                            ?>
-                            <li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
-                                <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">
-                                    <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="input-radio" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->id, $chosen_gateway ); ?> />
-                                    <?php echo esc_html( $gateway->get_title() ); ?>
-                                    <?php echo wp_kses_post( $gateway->get_icon() ); ?>
-                                </label>
-                                <?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
-                                    <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" style="<?php echo ( $gateway->id === $chosen_gateway ) ? '' : 'display:none;'; ?>">
-                                        <?php $gateway->payment_fields(); ?>
-                                    </div>
-                                <?php endif; ?>
-                            </li>
-                            <?php
-                        endforeach;
-                    else :
-                        echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'woocommerce' ) . '</li>';
-                    endif;
-                    ?>
-                    </ul>
-                </div>
-
-                <?php if ( function_exists( 'wc_terms_and_conditions_page_id' ) && wc_terms_and_conditions_page_id() > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) : ?>
-                    <div class="woocommerce-terms-and-conditions-wrapper" style="margin-top:15px; margin-bottom:15px;">
-                        <?php do_action( 'woocommerce_checkout_before_terms_and_conditions' ); ?>
-                        <p class="form-row validate-required">
-                            <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
-                                <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
-                                <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout-for-elementor' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'woocommerce' ); ?>">*</abbr>
-                            </label>
-                            <input type="hidden" name="terms-field" value="1" />
-                        </p>
-                        <?php do_action( 'woocommerce_checkout_after_terms_and_conditions' ); ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php do_action( 'woocommerce_review_order_after_payment' ); ?>
-
-                <?php
-                $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout-for-elementor' );
-                echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html( $order_button_name ) . '</button>';
-                ?>
             </div>
         </div>
         <?php

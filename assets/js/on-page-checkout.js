@@ -15,13 +15,52 @@ jQuery(document).ready(function($) {
         widget.find('.opc-loading-overlay').remove();
     }
 
-    // Function to get selected product ID
-    function w3opcfe_getSelectedProductId(form) {
-        var productId = form.find('input[name="w3opcfe_product_id"]:checked').val();
-        if (!productId) {
-            productId = form.find('input[name="w3opcfe_product_id"]').val(); // For hidden input (single product)
+    // Function to get selected products array (supports single and multi-selection)
+    function w3opcfe_getSelectedProducts(form) {
+        var selectedProducts = [];
+        var widget = form.closest('.on-page-checkout-widget');
+        var isMulti = widget.attr('data-multi-select') === 'yes';
+
+        var checkedInputs = form.find('.opc-products-wrapper input[name^="w3opcfe_product_id"]:checked');
+        if (!checkedInputs.length && !isMulti) {
+            var firstInput = form.find('.opc-products-wrapper input[name^="w3opcfe_product_id"]:not(:disabled)').first();
+            if (firstInput.length) {
+                firstInput.prop('checked', true);
+                checkedInputs = firstInput;
+            }
         }
-        return productId;
+
+        var globalQty = parseInt(form.find('input[name="w3opcfe_quantity"]').val(), 10) || 1;
+
+        checkedInputs.each(function() {
+            var $input = $(this);
+            var $item = $input.closest('.opc-product-item');
+            if ($input.is(':disabled') || $item.hasClass('opc-out-of-stock')) {
+                return;
+            }
+            var pId = parseInt($input.val(), 10) || parseInt($item.attr('data-product-id'), 10) || 0;
+            var vId = parseInt($input.attr('data-variation-id'), 10) || parseInt($item.attr('data-variation-id'), 10) || parseInt($item.find('select[name="variation_id"]').val(), 10) || 0;
+
+            // Separate card quantity if present in multi-select mode
+            var $cardQtyInput = $item.find('.opc-card-qty-input');
+            var itemQty = ($cardQtyInput.length && isMulti) ? (parseInt($cardQtyInput.val(), 10) || 1) : globalQty;
+
+            if (pId > 0) {
+                selectedProducts.push({
+                    product_id: pId,
+                    variation_id: vId,
+                    quantity: itemQty
+                });
+            }
+        });
+
+        return selectedProducts;
+    }
+
+    // Function to get selected product ID (backward compatibility)
+    function w3opcfe_getSelectedProductId(form) {
+        var products = w3opcfe_getSelectedProducts(form);
+        return products.length > 0 ? products[0].product_id : '';
     }
 
     // Function to load checkout fields via AJAX
@@ -32,19 +71,30 @@ jQuery(document).ready(function($) {
         }
 
         var form = widget.find('.opc-checkout-form');
-        var productId = w3opcfe_getSelectedProductId(form);
-        var quantity = form.find('input[name="w3opcfe_quantity"]').val() || 1;
-        var variation_id = form.find('select[name="variation_id"]').val() || 0;
+        var selectedProducts = w3opcfe_getSelectedProducts(form);
         var checkoutFieldsContainer = widget.find('[id^="opc-checkout-fields-container-"]');
+
+        if (!selectedProducts.length) {
+            checkoutFieldsContainer.html('<p class="opc-info">' + (w3opcfe_ajax_object.no_product_selected_text || 'Please select at least one product.') + '</p>');
+            return;
+        }
+
+        var productId = selectedProducts[0].product_id;
+        var variation_id = selectedProducts[0].variation_id;
+        var quantity = selectedProducts[0].quantity;
+        form.find('input[name="variation_id"].opc-selected-variation-id').val(variation_id);
 
         var widgetparent = widget.closest('.on-page-checkout-widget');
         var widgetSettings = {}
         widgetSettings['shippingTitle'] = widgetparent.attr('data-shipping-title');
+        widgetSettings['shippingMethodTitle'] = widgetparent.attr('data-shipping-method-title') || 'Shipping Method';
         widgetSettings['billingTitle'] = widgetparent.attr('data-billing-title');
         widgetSettings['additionalInfoTitle'] = widgetparent.attr('data-additional-info-title');
         widgetSettings['orderSummaryTitle'] = widgetparent.attr('data-order-summery-title');
         widgetSettings['paymentMethodTitle'] = widgetparent.attr('data-payment-method-title');
         widgetSettings['orderButtonName'] = widgetparent.attr('data-order-button-name');
+        widgetSettings['mobileSummaryLabel'] = widgetparent.attr('data-mobile-summary-label') || 'Order summary';
+        widgetSettings['mobileSummaryCollapsed'] = widgetparent.attr('data-mobile-summary-collapsed') || 'yes';
 
         if (!productId) {
             checkoutFieldsContainer.html('<p class="opc-info">' + (w3opcfe_ajax_object.no_product_selected_text || 'Please select a product.') + '</p>');
@@ -65,6 +115,7 @@ jQuery(document).ready(function($) {
         formDataObj.product_id = productId;
         formDataObj.quantity = quantity;
         formDataObj.variation_id = variation_id;
+        formDataObj.selected_products = JSON.stringify(selectedProducts);
         formDataObj.widgetSettings = widgetSettings;
 
         w3opcfe_showLoading(widget);
@@ -104,10 +155,17 @@ jQuery(document).ready(function($) {
                             })()
                     );
 
+                    var trackingIds = selectedProducts.map(function(p) {
+                        return String(p.variation_id || p.product_id);
+                    });
+                    var totalQuantity = selectedProducts.reduce(function(sum, p) {
+                        return sum + (parseInt(p.quantity, 10) || 1);
+                    }, 0);
+
                     var trackingPayload = response.data.tracking || {
-                        content_ids: [ String(productId) ],
+                        content_ids: trackingIds,
                         content_type: 'product',
-                        num_items: parseInt(quantity, 10) || 1,
+                        num_items: totalQuantity,
                         value: response.data && response.data.value ? response.data.value : undefined,
                         currency: response.data && response.data.currency ? response.data.currency : (w3opcfe_ajax_object.currency || 'USD')
                     };
@@ -175,46 +233,120 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // Initial load of checkout fields for each widget on the page
-    $('.on-page-checkout-widget').each(function() {
-        w3opcfe_loadCheckoutFields($(this));
+    // Helper function to initialize widget instance(s)
+    function w3opcfe_initWidget(container) {
+        var $target = $(container);
+        var $widgets = $target.hasClass('on-page-checkout-widget') ? $target : $target.find('.on-page-checkout-widget');
+        $widgets.each(function() {
+            w3opcfe_loadCheckoutFields($(this));
+        });
+    }
+
+    // Initial load of checkout fields on page ready
+    w3opcfe_initWidget(document);
+
+    // Elementor editor preview & frontend lifecycle hooks
+    var w3opcfe_bindElementorHooks = function() {
+        if (window.elementorFrontend && window.elementorFrontend.hooks) {
+            elementorFrontend.hooks.addAction('frontend/element_ready/w3opcfe-on-page-checkout.default', function($scope) {
+                w3opcfe_initWidget($scope);
+            });
+        }
+    };
+
+    if (window.elementorFrontend && window.elementorFrontend.hooks) {
+        w3opcfe_bindElementorHooks();
+    } else {
+        $(window).on('elementor/frontend/init', w3opcfe_bindElementorHooks);
+    }
+
+    // Prevent selecting out of stock cards
+    $(document).on('click', '.opc-product-item.opc-out-of-stock label', function(e) {
+        if ($(e.target).closest('.opc-combined-variants').length) {
+            return; // Allow interacting with variation dropdown to switch to an in-stock variant
+        }
+        e.preventDefault();
+        return false;
     });
 
     // Event handler for product selection change
-    $(document).on('change', '.opc-product-selection input[name="w3opcfe_product_id"]', function() {
+    $(document).on('change', '.opc-products-wrapper input[name^="w3opcfe_product_id"], .opc-product-selection input[name^="w3opcfe_product_id"]', function(e) {
+        if ($(this).is(':disabled') || $(this).closest('.opc-product-item').hasClass('opc-out-of-stock')) {
+            e.preventDefault();
+            $(this).prop('checked', false);
+            return false;
+        }
         var widget = $(this).closest('.on-page-checkout-widget');
+        var isMulti = widget.attr('data-multi-select') === 'yes';
+        if (!isMulti) {
+            var variationId = $(this).attr('data-variation-id') || 0;
+            widget.find('input[name="variation_id"].opc-selected-variation-id').val(variationId);
+        }
         w3opcfe_loadCheckoutFields(widget);
     });
 
-    // Event handler for variation selection with CustomizeProduct tracking
+    // Event handler for variation selection with CustomizeProduct tracking and stock status check
     $(document).on('change', '.opc-products-wrapper select[name="variation_id"]', function() {
         var variationId = $(this).val();
         var widget = $(this).closest('.on-page-checkout-widget');
         var $item = $(this).closest('.opc-product-item');
+        var $input = $item.find('input[name^="w3opcfe_product_id"]');
+
+        var availableVariations = $item.data('available-variations') || [];
+        if (typeof availableVariations === 'string') {
+            try {
+                availableVariations = JSON.parse(availableVariations);
+            } catch(e) {
+                availableVariations = [];
+            }
+        }
+
+        var matchedVar = null;
+        if (Array.isArray(availableVariations)) {
+            for (var v = 0; v < availableVariations.length; v++) {
+                if (String(availableVariations[v].variation_id) === String(variationId)) {
+                    matchedVar = availableVariations[v];
+                    break;
+                }
+            }
+        }
+
+        // Check if selected variation is in stock
+        var inStock = true;
+        if (matchedVar) {
+            inStock = (matchedVar.is_in_stock === true || matchedVar.is_in_stock === '1' || matchedVar.is_in_stock === 1);
+        } else {
+            var selectedOpt = $(this).find('option:selected');
+            if (selectedOpt.length && selectedOpt.attr('data-in-stock') === '0') {
+                inStock = false;
+            }
+        }
+
+        var $badge = $item.find('.opc-stock-badge');
+        if (!inStock) {
+            $item.addClass('opc-out-of-stock');
+            $input.prop('disabled', true);
+            $input.prop('checked', false);
+            if ($badge.length) {
+                $badge.show();
+            } else {
+                $item.find('> label').prepend('<span class="opc-stock-badge opc-out-of-stock-badge">' + (w3opcfe_ajax_object.out_of_stock_text || 'Out of Stock') + '</span>');
+            }
+        } else {
+            $item.removeClass('opc-out-of-stock');
+            $input.prop('disabled', false);
+            $badge.hide();
+            // Automatically ensure the item is checked if it's a checkbox or radio in single-select mode
+            var isMulti = widget.attr('data-multi-select') === 'yes';
+            if (!isMulti || !widget.find('.opc-product-input:checked').length) {
+                $input.prop('checked', true);
+            }
+        }
 
         if (variationId && variationId !== '0') {
             var eventId = (window.PixelBeaconTracker && typeof window.PixelBeaconTracker.guidv4 === 'function')
                 ? window.PixelBeaconTracker.guidv4()
                 : (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : 'pb-' + Date.now());
-
-            var availableVariations = $item.data('available-variations') || [];
-            if (typeof availableVariations === 'string') {
-                try {
-                    availableVariations = JSON.parse(availableVariations);
-                } catch(e) {
-                    availableVariations = [];
-                }
-            }
-
-            var matchedVar = null;
-            if (Array.isArray(availableVariations)) {
-                for (var v = 0; v < availableVariations.length; v++) {
-                    if (String(availableVariations[v].variation_id) === String(variationId)) {
-                        matchedVar = availableVariations[v];
-                        break;
-                    }
-                }
-            }
 
             var varPrice = matchedVar ? (parseFloat(matchedVar.display_price) || 0) : 0;
             var selectedText = $(this).find('option:selected').text();
@@ -335,9 +467,80 @@ jQuery(document).ready(function($) {
         w3opcfe_loadCheckoutFields(widget);
     });
 
-    // Prevent clicking variation dropdown from toggling the outer product label
-    $(document).on('click mousedown touchstart', '.opc-combined-variants select', function(e) {
+    // Prevent clicking variation dropdown or card quantity from toggling the outer product label
+    $(document).on('click mousedown touchstart', '.opc-combined-variants select, .opc-card-quantity', function(e) {
         e.stopPropagation();
+    });
+
+    // Card Quantity Increment / Decrement
+    $(document).on('click', '.opc-card-qty-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $btn = $(this);
+        var $item = $btn.closest('.opc-product-item');
+        var $input = $btn.siblings('.opc-card-qty-input');
+        var val = parseInt($input.val(), 10) || 1;
+        var min = parseInt($input.attr('min'), 10) || 1;
+
+        if ($btn.hasClass('qty-increment')) {
+            $input.val(val + 1);
+        } else if ($btn.hasClass('qty-decrement')) {
+            if (val > min) {
+                $input.val(val - 1);
+            }
+        }
+
+        // Auto-check product card checkbox if unchecked
+        var $checkbox = $item.find('input[name^="w3opcfe_product_id"]');
+        if ($checkbox.length && !$checkbox.is(':checked')) {
+            $checkbox.prop('checked', true);
+        }
+
+        var widget = $btn.closest('.on-page-checkout-widget');
+        w3opcfe_loadCheckoutFields(widget);
+    });
+
+    // Card Quantity manual input change
+    $(document).on('change', '.opc-card-qty-input', function(e) {
+        e.stopPropagation();
+        var $input = $(this);
+        var $item = $input.closest('.opc-product-item');
+        var val = parseInt($input.val(), 10) || 1;
+        var min = parseInt($input.attr('min'), 10) || 1;
+        if (val < min) {
+            $input.val(min);
+        }
+
+        // Auto-check product card checkbox if unchecked
+        var $checkbox = $item.find('input[name^="w3opcfe_product_id"]');
+        if ($checkbox.length && !$checkbox.is(':checked')) {
+            $checkbox.prop('checked', true);
+        }
+
+        var widget = $input.closest('.on-page-checkout-widget');
+        w3opcfe_loadCheckoutFields(widget);
+    });
+
+    // Event handler for mobile order summary accordion toggle
+    $(document).on('click', '.opc-mobile-order-summary-toggle', function(e) {
+        e.preventDefault();
+        var toggleBtn = $(this);
+        var wrapper = toggleBtn.closest('.order-details-wrapper');
+        var reviewTable = wrapper.find('.opc-order-review');
+        var isExpanded = toggleBtn.attr('aria-expanded') === 'true';
+
+        if (isExpanded) {
+            toggleBtn.attr('aria-expanded', 'false');
+            reviewTable.slideUp(200, function() {
+                wrapper.removeClass('opc-summary-open');
+                reviewTable.css('display', '');
+            });
+        } else {
+            toggleBtn.attr('aria-expanded', 'true');
+            wrapper.addClass('opc-summary-open');
+            reviewTable.hide().slideDown(200);
+        }
     });
 
     // Event handler for form submission
@@ -347,8 +550,7 @@ jQuery(document).ready(function($) {
         var form = $(this);
         var widget = form.closest('.on-page-checkout-widget');
         var submitButton = form.find('.opc-place-order-button');
-        var productId = w3opcfe_getSelectedProductId(form);
-        var quantity = form.find('input[name="w3opcfe_quantity"]').val() || 1;
+        var selectedProducts = w3opcfe_getSelectedProducts(form);
         var noticesContainer = widget.find('.opc-checkout-notices');
 
         // Clear previous notices
@@ -356,8 +558,8 @@ jQuery(document).ready(function($) {
             noticesContainer.empty().hide();
         }
 
-        if (!productId) {
-            var noProductMsg = w3opcfe_ajax_object.no_product_selected_text || 'Please select a product.';
+        if (!selectedProducts.length) {
+            var noProductMsg = w3opcfe_ajax_object.no_product_selected_text || 'Please select at least one product.';
             if (noticesContainer.length) {
                 noticesContainer.html('<div class="woocommerce-error">' + noProductMsg + '</div>').slideDown();
             } else {
@@ -365,6 +567,11 @@ jQuery(document).ready(function($) {
             }
             return;
         }
+
+        var productId = selectedProducts[0].product_id;
+        var variationId = selectedProducts[0].variation_id;
+        var quantity = selectedProducts[0].quantity;
+        form.find('input[name="variation_id"].opc-selected-variation-id').val(variationId);
 
         // Check if payment method is selected
         var paymentMethod = form.find('input[name="payment_method"]:checked').val();
@@ -391,7 +598,7 @@ jQuery(document).ready(function($) {
         $.ajax({
             type: 'POST',
             url: w3opcfe_ajax_object.ajax_url,
-            data: formData + '&action=w3opcfe_process_checkout&nonce=' + encodeURIComponent(w3opcfe_ajax_object.nonce) + '&product_id=' + encodeURIComponent(productId) + '&quantity=' + encodeURIComponent(quantity),
+            data: formData + '&action=w3opcfe_process_checkout&nonce=' + encodeURIComponent(w3opcfe_ajax_object.nonce) + '&product_id=' + encodeURIComponent(productId) + '&variation_id=' + encodeURIComponent(variationId) + '&quantity=' + encodeURIComponent(quantity) + '&selected_products=' + encodeURIComponent(JSON.stringify(selectedProducts)),
             dataType: 'json',
             success: function(response) {
                 var isSuccess = false;
@@ -472,15 +679,15 @@ jQuery(document).ready(function($) {
         }
     });
     
-    // Quantity Selector
-    $(document).on('click', '.on-page-checkout-widget .qty-increment', function(e) {
+    // Global Quantity Selector
+    $(document).on('click', '.opc-quantity-selector .qty-increment', function(e) {
         e.preventDefault();
         var input = $(this).siblings('#w3opcfe_quantity');
         var value = parseInt(input.val(), 10) || 1;
         input.val(value + 1).trigger('change');
     });
 
-    $(document).on('click', '.on-page-checkout-widget .qty-decrement', function(e) {
+    $(document).on('click', '.opc-quantity-selector .qty-decrement', function(e) {
         e.preventDefault();
         var input = $(this).siblings('#w3opcfe_quantity');
         var value = parseInt(input.val(), 10) || 1;

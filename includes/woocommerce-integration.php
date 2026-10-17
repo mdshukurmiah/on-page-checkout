@@ -25,42 +25,11 @@ class W3OPCFE_WooCommerce_Integration {
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
         $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
+        $selected_products = isset( $_POST['selected_products'] ) ? $_POST['selected_products'] : [];
 
-        if ( ! $product_id ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
-        }
-
-        $product = wc_get_product( $product_id );
-        if ( ! $product instanceof WC_Product ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) ] );
-        }
-
-        if ( ! $product->is_purchasable() ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ) ] );
-        }
-
-        WC()->cart->empty_cart();
-
-        if ( $product->is_type( 'variable' ) ) {
-            $variation = [];
-            foreach ( $_POST as $k => $v ) {
-                if ( strpos( $k, 'attribute_' ) === 0 ) {
-                    $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
-                }
-            }
-
-            // Try server-side matching if no variation_id but attributes present
-            if ( ! $variation_id && ! empty( $variation ) ) {
-                $data_store = WC_Data_Store::load( 'product' );
-                $matching   = $data_store->find_matching_product_variation( $product, $variation );
-                if ( $matching ) {
-                    $variation_id = $matching;
-                }
-            }
-            WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation );
-
-        } else {
-            WC()->cart->add_to_cart( $product_id, $quantity );
+        $added = $this->populate_cart( $selected_products, $product_id, $variation_id, $quantity );
+        if ( ! $added ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Please select at least one valid product.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         if ( ! empty( $coupon_code ) ) {
@@ -91,63 +60,15 @@ class W3OPCFE_WooCommerce_Integration {
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
         $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
+        $selected_products = isset( $_POST['selected_products'] ) ? $_POST['selected_products'] : [];
 
-        if ( ! $product_id ) {
+        $added = $this->populate_cart( $selected_products, $product_id, $variation_id, $quantity );
+        if ( ! $added ) {
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
-                'message'  => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Please select at least one valid product.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Please select at least one valid product.', 'on-page-checkout-for-elementor' ),
             ] );
-        }
-
-        $product = wc_get_product( $product_id );
-        if ( ! $product instanceof WC_Product ) {
-            wp_send_json( [
-                'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
-                'message'  => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ),
-            ] );
-        }
-
-        if ( ! $product->is_purchasable() ) {
-            wp_send_json( [
-                'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
-                'message'  => esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ),
-            ] );
-        }
-
-        if ( ! $product->is_in_stock() ) {
-            wp_send_json( [
-                'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Sorry, this product is currently out of stock.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
-                'message'  => esc_html__( 'Sorry, this product is currently out of stock.', 'on-page-checkout-for-elementor' ),
-            ] );
-        }
-
-        // Reset cart and add item
-        WC()->cart->empty_cart();
-
-        if ( $product->is_type( 'variable' ) ) {
-            $variation = [];
-            foreach ( $_POST as $k => $v ) {
-                if ( strpos( $k, 'attribute_' ) === 0 ) {
-                    $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
-                }
-            }
-
-            // Try server-side matching if no variation_id but attributes present
-            if ( ! $variation_id && ! empty( $variation ) ) {
-                $data_store = WC_Data_Store::load( 'product' );
-                $matching   = $data_store->find_matching_product_variation( $product, $variation );
-                if ( $matching ) {
-                    $variation_id = $matching;
-                }
-            }
-            WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation );
-
-        } else {
-            WC()->cart->add_to_cart( $product_id, $quantity );
         }
 
         if ( ! empty( $coupon_code ) ) {
@@ -223,6 +144,111 @@ class W3OPCFE_WooCommerce_Integration {
                 'message'  => esc_html( $e->getMessage() ),
             ] );
         }
+    }
+
+    /**
+     * Add selected products to WooCommerce cart.
+     *
+     * @param mixed $selected_products
+     * @param int   $fallback_product_id
+     * @param int   $fallback_variation_id
+     * @param int   $fallback_quantity
+     * @return bool Whether at least one product was added.
+     */
+    public function populate_cart( $selected_products, $fallback_product_id = 0, $fallback_variation_id = 0, $fallback_quantity = 1 ) {
+        $items = [];
+        if ( ! empty( $selected_products ) ) {
+            $raw = $selected_products;
+            if ( is_string( $raw ) ) {
+                $raw = json_decode( wp_unslash( $raw ), true );
+            }
+            if ( is_array( $raw ) ) {
+                foreach ( $raw as $sp ) {
+                    $p_id = isset( $sp['product_id'] ) ? absint( $sp['product_id'] ) : 0;
+                    $v_id = isset( $sp['variation_id'] ) ? absint( $sp['variation_id'] ) : 0;
+                    $qty  = isset( $sp['quantity'] ) ? max( 1, absint( $sp['quantity'] ) ) : 1;
+                    if ( $p_id > 0 ) {
+                        $items[] = [
+                            'product_id'   => $p_id,
+                            'variation_id' => $v_id,
+                            'quantity'     => $qty,
+                        ];
+                    }
+                }
+            }
+        }
+
+        if ( empty( $items ) && $fallback_product_id > 0 ) {
+            $items[] = [
+                'product_id'   => $fallback_product_id,
+                'variation_id' => $fallback_variation_id,
+                'quantity'     => $fallback_quantity,
+            ];
+        }
+
+        if ( empty( $items ) ) {
+            return false;
+        }
+
+        WC()->cart->empty_cart();
+        $added_any = false;
+
+        foreach ( $items as $it ) {
+            $p_id = $it['product_id'];
+            $v_id = $it['variation_id'];
+            $qty  = $it['quantity'];
+
+            $product = wc_get_product( $p_id );
+            if ( ! $product instanceof WC_Product || ! $product->is_purchasable() ) {
+                continue;
+            }
+
+            if ( $product->is_type( 'variation' ) ) {
+                $v_id    = $product->get_id();
+                $p_id    = $product->get_parent_id();
+                $product = wc_get_product( $p_id );
+            }
+
+            if ( $product->is_type( 'variable' ) ) {
+                $variation = [];
+                if ( 1 === count( $items ) ) {
+                    foreach ( $_POST as $k => $v ) {
+                        if ( strpos( $k, 'attribute_' ) === 0 ) {
+                            $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
+                        }
+                    }
+                }
+
+                if ( $v_id && empty( $variation ) ) {
+                    $var_product = wc_get_product( $v_id );
+                    if ( $var_product instanceof WC_Product_Variation ) {
+                        $variation = $var_product->get_variation_attributes();
+                    }
+                }
+
+                if ( ! $v_id && ! empty( $variation ) ) {
+                    $data_store = WC_Data_Store::load( 'product' );
+                    $matching   = $data_store->find_matching_product_variation( $product, $variation );
+                    if ( $matching ) {
+                        $v_id = $matching;
+                    }
+                }
+
+                if ( $v_id ) {
+                    $res = WC()->cart->add_to_cart( $p_id, $qty, $v_id, $variation );
+                    if ( $res ) {
+                        $added_any = true;
+                    }
+                }
+            } else {
+                $res = WC()->cart->add_to_cart( $p_id, $qty );
+                if ( $res ) {
+                    $added_any = true;
+                }
+            }
+        }
+
+        return $added_any;
     }
 
 }

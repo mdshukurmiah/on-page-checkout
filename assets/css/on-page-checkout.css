@@ -8,7 +8,6 @@
 
 .opc-checkout-form-fields {
     margin-top: 20px;
-    border-top: 1px solid #eee;
     padding-top: 20px;
 }
 
@@ -20,6 +19,7 @@
     color: red;
     font-weight: bold;
 }
+
 .opc-products-wrapper .product-card img {
     height: 80px;
     width: 80px;
@@ -31,7 +31,15 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1;
+    min-width: 0;
 }
+
+.opc-products-wrapper .product-information {
+    flex: 1;
+    min-width: 0;
+}
+
 .opc-products-wrapper .opc-product-item>label {
     display: flex;
     align-items: center;
@@ -41,50 +49,164 @@
     border: 1px solid #eee;
     padding: 10px;
     border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
 }
-.opc-products-wrapper label:has(input:checked){
-    border: none;
+
+/* Out of Stock Badge */
+.opc-stock-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background-color: #e53e3e;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 5;
+    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Out of Stock Card State */
+.opc-products-wrapper .opc-product-item.opc-out-of-stock > label {
+    opacity: 0.55;
+    cursor: not-allowed !important;
+    background-color: #fafafa;
+    border-color: #e2e8f0;
+}
+.opc-products-wrapper .opc-product-item.opc-out-of-stock input[type="radio"],
+.opc-products-wrapper .opc-product-item.opc-out-of-stock input[type="checkbox"] {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+}
+.opc-products-wrapper .opc-product-item.opc-out-of-stock .opc-card-quantity {
+    opacity: 0.4;
+    pointer-events: none;
+}
+.opc-products-wrapper .opc-product-item.opc-out-of-stock .opc-stock-badge {
+    opacity: 1 !important;
+}
+
+.opc-products-wrapper .opc-product-item input[type="radio"],
+.opc-products-wrapper .opc-product-item input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: #016520;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.opc-products-wrapper label:has(input:checked) {
     outline: 2px solid #016520;
 }
+
 .opc-products-wrapper {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
-    gap: 30px;
+    gap: 20px;
 }
+
 .opc-products-wrapper .opc-product-item {
-    max-width: 545px;
+    width: 100%;
 }
+
 .opc-checkout-fields-container {
     display: flex;
     gap: 64px;
     position: relative
 }
 
-.opc-checkout-fields-container .opc-checkout-fields, .order-details  {
+.opc-checkout-fields-container .opc-checkout-fields,
+.order-details {
     flex: 1
 }
+
 .opc-checkout-fields-container .form-row.payment_method {
     display: flex;
     align-self: center;
 }
+
 .opc-checkout-fields-container .form-row.payment_method label {
     margin: 0
 }
-.opc-checkout-fields-container div#order_review{
+
+.opc-checkout-fields-container div#order_review {
     border: 0 !important;
     padding: unset !important;
 }
+
+.woocommerce-checkout-review-order-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.woocommerce-checkout-review-order-table th,
+.woocommerce-checkout-review-order-table td {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 10px 14px;
+}
+
+.woocommerce-checkout-review-order-table thead,
+.woocommerce-checkout-review-order-table thead tr,
+.woocommerce-checkout-review-order-table thead th {
+    background-color: transparent;
+}
+
+.woocommerce-checkout-review-order-table thead th {
+    border-bottom-width: 1px;
+}
+
 .opc-checkout-fields-container li.wc_payment_method .payment_box {
     display: none;
 }
 
-.opc-checkout-fields-container li.wc_payment_method:has(input:checked) .payment_box{
+.opc-checkout-fields-container li.wc_payment_method:has(input:checked) .payment_box {
     display: block;
 }
+
 .order-details-wrapper {
     position: sticky;
     top: 50px;
+}
+
+/* Shipping Method Selector Styling */
+.opc-shipping-methods {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.opc-shipping-methods ul.woocommerce-shipping-methods {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.opc-shipping-methods ul.woocommerce-shipping-methods li {
+    list-style: none;
+    margin-bottom: 8px;
+}
+
+.opc-shipping-methods ul.woocommerce-shipping-methods label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+    font-weight: 500;
+}
+
+.opc-shipping-methods ul.woocommerce-shipping-methods input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
 }
 
 /* WooCommerce form field styling */
@@ -138,26 +260,135 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 
 /* Media styles */
-@media only screen and (min-width: 770px){
+@media only screen and (min-width: 770px) {
     .opc-product-item {
         flex: 1 1 0;
     }
 
 }
 
+/* Mobile Order Summary Toggle (Hidden on Desktop) */
+.opc-mobile-order-summary-toggle {
+    display: none;
+    width: 100%;
+    background-color: #f7f7f7;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 15px;
+    line-height: 1.4;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.opc-mobile-order-summary-toggle:hover {
+    background-color: #f0f2f5;
+}
+
+.opc-mobile-order-summary-toggle .opc-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0969da;
+    font-weight: 500;
+}
+
+.opc-mobile-order-summary-toggle .opc-toggle-icon {
+    transition: transform 0.25s ease;
+    stroke: currentColor;
+}
+
+.opc-mobile-order-summary-toggle[aria-expanded="true"] .opc-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.opc-mobile-order-summary-toggle .opc-toggle-total {
+    font-weight: 700;
+    color: #1f2328;
+    font-size: 16px;
+}
+
+/* Desktop: order summary is always visible; mobile button is never shown */
+@media only screen and (min-width: 770px) {
+    .order-details {
+        display: block !important;
+    }
+
+    .opc-order-review {
+        display: block !important;
+    }
+
+    .opc-mobile-order-summary-toggle {
+        display: none !important;
+    }
+
+    .opc-order-summary-desktop-title {
+        display: block !important;
+    }
+}
+
+/* Mobile: order summary below form, collapsible toggle button, hidden by default if configured */
 @media only screen and (max-width: 769px) {
     .opc-checkout-fields-container {
+        display: flex;
         flex-direction: column;
+        gap: 25px;
     }
+
     .opc-products-wrapper {
-        flex-direction: column;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
         gap: 15px;
+    }
+
+    /* Move order-details container below the checkout form fields on mobile */
+    .opc-checkout-fields-container .opc-checkout-fields {
+        order: 1;
+    }
+
+    .opc-checkout-fields-container .order-details {
+        order: 2;
+        width: 100%;
+        display: block !important;
+    }
+
+    .order-details-wrapper {
+        position: static !important;
+        top: unset !important;
+    }
+
+    /* Show mobile order summary toggle button */
+    .opc-mobile-order-summary-toggle {
+        display: flex !important;
+    }
+
+    /* Hide desktop H4 heading when mobile toggle button is visible */
+    .opc-order-summary-desktop-title {
+        display: none !important;
+    }
+
+    /* Hide order review table on mobile when collapsed */
+    .order-details-wrapper:not(.opc-summary-open) .opc-order-review {
+        display: none;
+    }
+
+    .order-details-wrapper.opc-summary-open .opc-order-review {
+        display: block;
+        margin-top: 10px;
     }
 }
 
@@ -169,29 +400,61 @@ select.opc-combined-variant-select {
 .opc-quantity-selector {
     margin-top: 20px;
 }
+
+.opc-card-quantity {
+    margin-top: 8px;
+}
+
+.opc-card-quantity .quantity-input-wrapper {
+    min-height: 30px;
+    width: fit-content;
+}
+
+.opc-card-quantity .quantity-input-wrapper button {
+    padding: 2px 10px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.opc-card-quantity .quantity-input-wrapper input {
+    max-width: 36px;
+    height: 100%;
+    font-size: 14px;
+    padding: 0;
+    border-radius: 0;
+}
+
 .quantity-input-wrapper button {
     padding: 6px 20px;
     font-size: 24px;
     background: #ffffff;
-    color: var(--ast-global-color-3);
+    color: var(--ast-global-color-3, #333333);
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s ease;
 }
-.quantity-input-wrapper{
-    border: 1px solid var(--ast-border-color);
-    color: var(--ast-global-color-3);
+
+.quantity-input-wrapper {
+    border: 1px solid var(--ast-border-color, #e2e8f0);
+    color: var(--ast-global-color-3, #333333);
     width: fit-content;
     display: flex;
     align-items: center;
+    border-radius: 4px;
 }
-.quantity-input-wrapper input{
+
+.quantity-input-wrapper input {
     border: unset;
-    border-left: 1px solid var(--ast-border-color);
-    border-right: 1px solid var(--ast-border-color);
+    border-left: 1px solid var(--ast-border-color, #e2e8f0);
+    border-right: 1px solid var(--ast-border-color, #e2e8f0);
     text-align: center;
-    max-width: 40px;
+    max-width: 48px;
     width: 100%;
     padding-top: unset;
     padding-bottom: unset;
 }
+
 .woocommerce-js form .form-row select {
     width: 100%;
 }
@@ -200,6 +463,7 @@ select.opc-combined-variant-select {
 .opc-checkout-notices {
     margin-bottom: 20px;
 }
+
 .opc-checkout-notices .woocommerce-error {
     background-color: #fcf0f2;
     color: #cc1818;
@@ -210,10 +474,12 @@ select.opc-combined-variant-select {
     border-radius: 3px;
     font-size: 14px;
 }
+
 .opc-checkout-notices .woocommerce-error li {
     margin: 4px 0;
     list-style: none;
 }
+
 .opc-checkout-notices .woocommerce-message {
     background-color: #f4fbf6;
     color: #1a7f37;

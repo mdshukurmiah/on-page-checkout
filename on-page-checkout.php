@@ -271,8 +271,10 @@ final class W3OPCFE_On_Page_Checkout {
             $script_deps[] = 'w3-pixel-public';
         }
 
-        wp_enqueue_style( 'w3opcfe-frontend-style', W3OPCFE_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], W3OPCFE_VERSION );
-        wp_enqueue_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', $script_deps, W3OPCFE_VERSION, true );
+        wp_register_style( 'w3opcfe-frontend-style', W3OPCFE_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', $script_deps, W3OPCFE_VERSION, true );
+        wp_enqueue_style( 'w3opcfe-frontend-style' );
+        wp_enqueue_script( 'w3opcfe-frontend-script' );
 
         $pixelbeacon_active = class_exists( 'PixelBeacon' ) || class_exists( 'FacebookPixelCAPI' );
         $pb_settings        = class_exists( 'PixelBeacon_Helpers' ) ? \PixelBeacon_Helpers::get_settings() : [];
@@ -290,6 +292,7 @@ final class W3OPCFE_On_Page_Checkout {
             'test_event_code'          => ! empty( $pb_settings['test_event_code'] ) ? esc_js( $pb_settings['test_event_code'] ) : '',
             'currency'                 => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
             'rest_url'                 => esc_url_raw( rest_url( 'pixelbeacon/v1/event' ) ),
+            'out_of_stock_text'        => esc_html__( 'Out of Stock', 'on-page-checkout-for-elementor' ),
         ] );
     }
 
@@ -335,7 +338,7 @@ final class W3OPCFE_On_Page_Checkout {
      * @access public
      */
     public function enqueue_elementor_scripts() {
-        // Enqueue scripts specific to Elementor frontend editing if needed
+        $this->enqueue_frontend_scripts();
     }
 }
 
