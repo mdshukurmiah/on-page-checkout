@@ -195,3 +195,31 @@ select.opc-combined-variant-select {
 .woocommerce-js form .form-row select {
     width: 100%;
 }
+
+/* OPC Checkout Notices */
+.opc-checkout-notices {
+    margin-bottom: 20px;
+}
+.opc-checkout-notices .woocommerce-error {
+    background-color: #fcf0f2;
+    color: #cc1818;
+    border-top: 3px solid #cc1818;
+    padding: 12px 18px;
+    margin: 0 0 15px;
+    list-style: none;
+    border-radius: 3px;
+    font-size: 14px;
+}
+.opc-checkout-notices .woocommerce-error li {
+    margin: 4px 0;
+    list-style: none;
+}
+.opc-checkout-notices .woocommerce-message {
+    background-color: #f4fbf6;
+    color: #1a7f37;
+    border-top: 3px solid #1a7f37;
+    padding: 12px 18px;
+    margin: 0 0 15px;
+    border-radius: 3px;
+    font-size: 14px;
+}

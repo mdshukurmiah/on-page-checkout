@@ -192,12 +192,12 @@ final class W3OPCFE_On_Page_Checkout {
      * @param string $class The name of the class to load.
      */
     private function autoload( $class ) {
-        if ( 0 !== strpos( $class, __NAMESPACE__ ) ) {
+        if ( 0 !== strpos( $class, 'W3OPCFE_' ) ) {
             return;
         }
 
         $filename = str_replace( '_', '-', strtolower( $class ) );
-        $filename = str_replace( __NAMESPACE__ . '-', '', $filename );
+        $filename = str_replace( 'w3opcfe-', '', $filename );
 
         $file = W3OPCFE_PLUGIN_DIR . 'includes/' . $filename . '.php';
 
@@ -259,17 +259,37 @@ final class W3OPCFE_On_Page_Checkout {
      * @access public
      */
     public function enqueue_frontend_scripts() {
+        if ( class_exists( 'WooCommerce' ) ) {
+            wp_enqueue_script( 'wc-country-select' );
+            wp_enqueue_script( 'wc-address-i18n' );
+        }
+
+        $script_deps = [ 'jquery' ];
+        if ( wp_script_is( 'pixelbeacon-public', 'registered' ) ) {
+            $script_deps[] = 'pixelbeacon-public';
+        } elseif ( wp_script_is( 'w3-pixel-public', 'registered' ) ) {
+            $script_deps[] = 'w3-pixel-public';
+        }
+
         wp_enqueue_style( 'w3opcfe-frontend-style', W3OPCFE_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], W3OPCFE_VERSION );
-        wp_enqueue_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+        wp_enqueue_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', $script_deps, W3OPCFE_VERSION, true );
+
+        $pixelbeacon_active = class_exists( 'PixelBeacon' ) || class_exists( 'FacebookPixelCAPI' );
+        $pb_settings        = class_exists( 'PixelBeacon_Helpers' ) ? \PixelBeacon_Helpers::get_settings() : [];
 
         wp_localize_script( 'w3opcfe-frontend-script', 'w3opcfe_ajax_object', [
-            'ajax_url'               => admin_url( 'admin-ajax.php' ),
-            'nonce'                  => wp_create_nonce( 'w3opcfe_nonce' ),
-            'loading_text'           => esc_html__( 'Loading...', 'on-page-checkout-for-elementor' ),
-            'error_text'             => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout-for-elementor' ),
-            'processing_text'        => esc_html__( 'Processing...', 'on-page-checkout-for-elementor' ),
+            'ajax_url'                 => admin_url( 'admin-ajax.php' ),
+            'nonce'                    => wp_create_nonce( 'w3opcfe_nonce' ),
+            'loading_text'             => esc_html__( 'Loading...', 'on-page-checkout-for-elementor' ),
+            'error_text'               => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout-for-elementor' ),
+            'processing_text'          => esc_html__( 'Processing...', 'on-page-checkout-for-elementor' ),
             'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout-for-elementor' ),
-            'place_order_text'       => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),
+            'place_order_text'         => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),
+            'pixelbeacon_active'       => $pixelbeacon_active,
+            'pixel_id'                 => ! empty( $pb_settings['pixel_id'] ) ? esc_js( $pb_settings['pixel_id'] ) : '',
+            'test_event_code'          => ! empty( $pb_settings['test_event_code'] ) ? esc_js( $pb_settings['test_event_code'] ) : '',
+            'currency'                 => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
+            'rest_url'                 => esc_url_raw( rest_url( 'pixelbeacon/v1/event' ) ),
         ] );
     }
 

@@ -192,6 +192,90 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
 
     }
 
+    /**
+     * Resolve product ID or SKU to a WC_Product object
+     *
+     * @param string|int $id_or_sku
+     * @return \WC_Product|false
+     */
+    private function get_product_by_id_or_sku( $id_or_sku ) {
+        if ( empty( $id_or_sku ) ) {
+            return false;
+        }
+
+        $id_or_sku = trim( (string) $id_or_sku );
+        $product_id = is_numeric( $id_or_sku ) ? absint( $id_or_sku ) : ( function_exists( 'wc_get_product_id_by_sku' ) ? wc_get_product_id_by_sku( $id_or_sku ) : 0 );
+        if ( ! $product_id ) {
+            return false;
+        }
+
+        $product = wc_get_product( $product_id );
+        return ( $product instanceof \WC_Product ) ? $product : false;
+    }
+
+    /**
+     * Render variation dropdown for variable products
+     *
+     * @param \WC_Product $product
+     */
+    private function render_variation_select( $product ) {
+        if ( ! $product || ! $product->is_type( 'variable' ) ) {
+            return;
+        }
+
+        $product_id = $product->get_id();
+        $available_variations = $product->get_available_variations();
+        if ( empty( $available_variations ) ) {
+            return;
+        }
+
+        $options = [];
+        foreach ( $available_variations as $variation ) {
+            $variation_id = isset( $variation['variation_id'] ) ? $variation['variation_id'] : 0;
+            $attrs = isset( $variation['attributes'] ) ? (array) $variation['attributes'] : [];
+
+            $parts = [];
+            foreach ( $attrs as $attr_key => $attr_value ) {
+                if ( '' === $attr_value || null === $attr_value ) {
+                    continue;
+                }
+
+                $readable = $attr_value;
+                if ( strpos( $attr_key, 'attribute_pa_' ) === 0 ) {
+                    $taxonomy = str_replace( 'attribute_', '', $attr_key );
+                    $term     = get_term_by( 'slug', $attr_value, $taxonomy );
+                    if ( $term && ! is_wp_error( $term ) ) {
+                        $readable = $term->name;
+                    } else {
+                        $readable = ucfirst( str_replace( '-', ' ', $attr_value ) );
+                    }
+                }
+
+                $parts[] = $readable;
+            }
+
+            $label = ! empty( $parts ) ? implode( ' - ', $parts ) : '#' . $variation_id;
+            if ( $variation_id ) {
+                $options[ $variation_id ] = $label;
+            }
+        }
+
+        if ( empty( $options ) ) {
+            return;
+        }
+
+        echo '<div class="opc-combined-variants">';
+        echo '<select name="variation_id" class="opc-combined-variant-select" data-product-id="' . esc_attr( $product_id ) . '">';
+        $i = 0;
+        foreach ( $options as $vid => $lab ) {
+            echo '<option value="' . esc_attr( $vid ) . '"' . selected( $i, 0, false ) . '>' . esc_html( $lab ) . '</option>';
+            $i++;
+        }
+        echo '</select>';
+        echo '<input type="hidden" class="opc-avail-variations" value=\'' . esc_attr( wp_json_encode( $available_variations ) ) . '\' />';
+        echo '</div>';
+    }
+
     protected function render() {
         $settings = $this->get_settings_for_display();
 
@@ -218,7 +302,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
 
         echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ) . '">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
-
+        echo '<div class="opc-checkout-notices" style="display:none;"></div>';
 
         // Product selection (radio buttons or hidden input if only one product)
         if ( count( $product_ids ) > 1 ) {
@@ -229,7 +313,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             echo '<div class="opc-products-wrapper">';
             $first_product = true;
             foreach ( $product_ids as $id_or_sku ) {
-                $product = wc_get_product( $id_or_sku );
+                $product = $this->get_product_by_id_or_sku( $id_or_sku );
                 if ( ! $product ) {
                     continue;
                 }
@@ -248,9 +332,8 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 // Prepare available variations JSON if variable
                 $data_attr = '';
                 if ( $is_variable ) {
-                    $available_variations = $product->get_available_variations(); // array
-                    $json_variations = wp_json_encode( $available_variations );
-                    $data_attr = ' data-available-variations=\'' . esc_attr( $json_variations ) . '\'';
+                    $available_variations = $product->get_available_variations();
+                    $data_attr = ' data-available-variations=\'' . esc_attr( wp_json_encode( $available_variations ) ) . '\'';
                 }
 
                 // Product item wrapper — include product id and available variations
@@ -262,72 +345,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                             echo '<div class="product-information">';
                                 echo '<div class="product-title">' . esc_html( $product->get_name() ) . '</div>';
                                 echo '<div class="product-price">' . wp_kses_post( $product->get_price_html() ) . '</div>';
-                                 // Variation selects container — render selects for the product's attributes (hidden by default)
-                                if ( $is_variable ) {
-                                    $available_variations = $product->get_available_variations(); // array
-                                    if ( ! empty( $available_variations ) ) {
-
-                                        // Build options array: variation_id => label
-                                        $options = [];
-                                        foreach ( $available_variations as $variation ) {
-                                            $variation_id = isset( $variation['variation_id'] ) ? $variation['variation_id'] : 0;
-                                            $attrs = isset( $variation['attributes'] ) ? (array) $variation['attributes'] : [];
-
-                                            // Build label from attributes: normalize values to readable text
-                                            $parts = [];
-                                            foreach ( $attrs as $attr_key => $attr_value ) {
-                                                if ( empty( $attr_value ) ) continue;
-
-                                                // $attr_key example: 'attribute_pa_grade' or 'attribute_grade'
-                                                // Convert attribute key label:
-                                                $label = wc_attribute_label( str_replace( 'attribute_', '', $attr_key ) );
-
-                                                // Attribute value can be slug. Try to get human readable term if possible
-                                                $readable = $attr_value;
-
-                                                // If it's a pa_ taxonomy, get term name if exists
-                                                if ( strpos( $attr_key, 'attribute_pa_' ) === 0 ) {
-                                                    $term = get_term_by( 'slug', $attr_value, str_replace( 'attribute_', '', $attr_key ) );
-                                                    if ( $term && ! is_wp_error( $term ) ) {
-                                                        $readable = $term->name;
-                                                    } else {
-                                                        // sometimes value already human readable
-                                                        $readable = ucfirst( str_replace( '-', ' ', $attr_value ) );
-                                                    }
-                                                } else {
-                                                    // not pa_ taxonomy — likely direct option label
-                                                    $readable = $attr_value;
-                                                }
-
-                                                $parts[] = $readable;
-                                            }
-
-                                            // Example label: "Grade A - 500 GM" or "A / 500GM" — choose format
-                                            $label = implode( ' - ', $parts );
-
-                                            if ( $variation_id ) {
-                                                $options[ $variation_id ] = $label;
-                                            }
-                                        }
-
-                                        if ( ! empty( $options ) ) {
-                                            echo '<div class="opc-combined-variants">';
-                                            echo '<select name="variation_id" class="opc-combined-variant-select" data-product-id="' . esc_attr( $product_id ) . '">';
-
-                                            $i = 0;
-                                            foreach ( $options as $vid => $lab ) {
-                                                echo '<option value="' . esc_attr( $vid ) . '"' . selected( $i, 0, false ) . '>' . esc_html( $lab ) . '</option>';
-                                                $i++;
-                                            }
-
-                                            echo '</select>';
-
-                                            // embed full available_variations JSON for JS matching if needed
-                                            echo '<input type="hidden" class="opc-avail-variations" value=\'' . esc_attr( wp_json_encode( $available_variations ) ) . '\' />';
-                                            echo '</div>';
-                                        }
-                                    }
-                                }
+                                $this->render_variation_select( $product );
                             echo '</div>';
                         echo '</div>';
                     echo '</label>';
@@ -337,7 +355,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
 
         } else {
             // If only one product, pre-select it and hide the radio button
-            $product = wc_get_product( $product_ids[0] );
+            $product = $this->get_product_by_id_or_sku( $product_ids[0] );
             if ( $product ) {
                 $product_id = $product->get_id();
                 $is_variable = $product->is_type( 'variable' );
@@ -345,9 +363,8 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 // Prepare available variations JSON if variable
                 $data_attr = '';
                 if ( $is_variable ) {
-                    $available_variations = $product->get_available_variations(); // array
-                    $json_variations = wp_json_encode( $available_variations );
-                    $data_attr = ' data-available-variations=\'' . esc_attr( $json_variations ) . '\'';
+                    $available_variations = $product->get_available_variations();
+                    $data_attr = ' data-available-variations=\'' . esc_attr( wp_json_encode( $available_variations ) ) . '\'';
                 }
 
                 echo '<div class="opc-products-wrapper">';
@@ -358,73 +375,8 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                                 echo wp_kses_post( $product->get_image( 'woocommerce_thumbnail' ) ); 
                                 echo '<div class="product-information">';
                                 echo '<div class="product-title">'. esc_html( $product->get_name() ) .'</div>';
-                                echo '<div class="product-price">'. wp_kses_post( $product->get_price_html()) .'</div>';
-                                // Variation selects container — render selects for the product's attributes (hidden by default)
-                                if ( $is_variable ) {
-                                    $available_variations = $product->get_available_variations(); // array
-                                    if ( ! empty( $available_variations ) ) {
-
-                                        // Build options array: variation_id => label
-                                        $options = [];
-                                        foreach ( $available_variations as $variation ) {
-                                            $variation_id = isset( $variation['variation_id'] ) ? $variation['variation_id'] : 0;
-                                            $attrs = isset( $variation['attributes'] ) ? (array) $variation['attributes'] : [];
-
-                                            // Build label from attributes: normalize values to readable text
-                                            $parts = [];
-                                            foreach ( $attrs as $attr_key => $attr_value ) {
-                                                if ( empty( $attr_value ) ) continue;
-
-                                                // $attr_key example: 'attribute_pa_grade' or 'attribute_grade'
-                                                // Convert attribute key label:
-                                                $label = wc_attribute_label( str_replace( 'attribute_', '', $attr_key ) );
-
-                                                // Attribute value can be slug. Try to get human readable term if possible
-                                                $readable = $attr_value;
-
-                                                // If it's a pa_ taxonomy, get term name if exists
-                                                if ( strpos( $attr_key, 'attribute_pa_' ) === 0 ) {
-                                                    $term = get_term_by( 'slug', $attr_value, str_replace( 'attribute_', '', $attr_key ) );
-                                                    if ( $term && ! is_wp_error( $term ) ) {
-                                                        $readable = $term->name;
-                                                    } else {
-                                                        // sometimes value already human readable
-                                                        $readable = ucfirst( str_replace( '-', ' ', $attr_value ) );
-                                                    }
-                                                } else {
-                                                    // not pa_ taxonomy — likely direct option label
-                                                    $readable = $attr_value;
-                                                }
-
-                                                $parts[] = $readable;
-                                            }
-
-                                            // Example label: "Grade A - 500 GM" or "A / 500GM" — choose format
-                                            $label = implode( ' - ', $parts );
-
-                                            if ( $variation_id ) {
-                                                $options[ $variation_id ] = $label;
-                                            }
-                                        }
-
-                                        if ( ! empty( $options ) ) {
-                                            echo '<div class="opc-combined-variants">';
-                                            echo '<select name="variation_id" class="opc-combined-variant-select" data-product-id="' . esc_attr( $product_id ) . '">';
-
-                                            $i = 0;
-                                            foreach ( $options as $vid => $lab ) {
-                                                echo '<option value="' . esc_attr( $vid ) . '"' . selected( $i, 0, false ) . '>' . esc_html( $lab ) . '</option>';
-                                                $i++;
-                                            }
-
-                                            echo '</select>';
-
-                                            // embed full available_variations JSON for JS matching if needed
-                                            echo '<input type="hidden" class="opc-avail-variations" value=\'' . esc_attr( wp_json_encode( $available_variations ) ) . '\' />';
-                                            echo '</div>';
-                                        }
-                                    }
-                                }
+                                echo '<div class="product-price">'. wp_kses_post( $product->get_price_html() ) .'</div>';
+                                $this->render_variation_select( $product );
                                 echo '</div>';
                             echo '</div>';
                         echo '</label>';   
@@ -438,9 +390,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             echo '<div class="opc-quantity-selector">';
             echo '<label for="w3opcfe_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout-for-elementor' ) . '</label>';
             echo '<div class="quantity-input-wrapper">';
-                echo '<button class="qty-decrement">-</button>';
+                echo '<button type="button" class="qty-decrement" aria-label="' . esc_attr__( 'Decrease quantity', 'on-page-checkout-for-elementor' ) . '">-</button>';
                 echo '<input type="text" id="w3opcfe_quantity" name="w3opcfe_quantity" value="1" min="1">';
-                echo '<button class="qty-increment">+</button>';
+                echo '<button type="button" class="qty-increment" aria-label="' . esc_attr__( 'Increase quantity', 'on-page-checkout-for-elementor' ) . '">+</button>';
             echo '</div>';
             echo '</div>';
         } else {

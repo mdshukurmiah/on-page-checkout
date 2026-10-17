@@ -17,14 +17,26 @@ class W3OPCFE_WooCommerce_Integration {
     public function get_checkout_form() {
         check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
+        if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce cart is not initialized.', 'on-page-checkout-for-elementor' ) ] );
+        }
+
         $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
-        $quantity     = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
+        $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
-        $product      = wc_get_product( $product_id );
 
         if ( ! $product_id ) {
             wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
+        }
+
+        $product = wc_get_product( $product_id );
+        if ( ! $product instanceof WC_Product ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) ] );
+        }
+
+        if ( ! $product->is_purchasable() ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         WC()->cart->empty_cart();
@@ -67,17 +79,53 @@ class W3OPCFE_WooCommerce_Integration {
     public function process_checkout() {
         check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
-        $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
-        $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
-        $quantity     = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
-        $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
-        $product      = wc_get_product( $product_id );
-
-        if ( ! $product_id ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
+        if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->checkout() ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ),
+            ] );
         }
 
-        // Reset cart
+        $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
+        $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
+        $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
+
+        if ( ! $product_id ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ),
+            ] );
+        }
+
+        $product = wc_get_product( $product_id );
+        if ( ! $product instanceof WC_Product ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ),
+            ] );
+        }
+
+        if ( ! $product->is_purchasable() ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ),
+            ] );
+        }
+
+        if ( ! $product->is_in_stock() ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Sorry, this product is currently out of stock.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Sorry, this product is currently out of stock.', 'on-page-checkout-for-elementor' ),
+            ] );
+        }
+
+        // Reset cart and add item
         WC()->cart->empty_cart();
 
         if ( $product->is_type( 'variable' ) ) {
@@ -110,53 +158,70 @@ class W3OPCFE_WooCommerce_Integration {
 
         $checkout = WC()->checkout();
 
-        // Collect and sanitize checkout fields
-        $posted_data = [
-            'billing_first_name' => sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ?? '' ) ),
-            'billing_last_name'  => sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ?? '' ) ),
-            'billing_email'      => sanitize_email( wp_unslash( $_POST['billing_email'] ?? '' ) ),
-            'billing_phone'      => sanitize_text_field( wp_unslash( $_POST['billing_phone'] ?? '' ) ),
-            'billing_country'    => sanitize_text_field( wp_unslash( $_POST['billing_country'] ?? '' ) ),
-            'billing_address_1'  => sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ?? '' ) ),
-            'billing_address_2'  => sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ?? '' ) ),
-            'billing_city'       => sanitize_text_field( wp_unslash( $_POST['billing_city'] ?? '' ) ),
-            'billing_state'      => sanitize_text_field( wp_unslash( $_POST['billing_state'] ?? '' ) ),
-            'billing_postcode'   => sanitize_text_field( wp_unslash( $_POST['billing_postcode'] ?? '' ) ),
-
-            'shipping_first_name' => sanitize_text_field( wp_unslash( $_POST['shipping_first_name'] ?? '' ) ),
-            'shipping_last_name'  => sanitize_text_field( wp_unslash( $_POST['shipping_last_name'] ?? '' ) ),
-            'shipping_address_1'  => sanitize_text_field( wp_unslash( $_POST['shipping_address_1'] ?? '' ) ),
-            'shipping_address_2'  => sanitize_text_field( wp_unslash( $_POST['shipping_address_2'] ?? '' ) ),
-            'shipping_city'       => sanitize_text_field( wp_unslash( $_POST['shipping_city'] ?? '' ) ),
-            'shipping_state'      => sanitize_text_field( wp_unslash( $_POST['shipping_state'] ?? '' ) ),
-            'shipping_postcode'   => sanitize_text_field( wp_unslash( $_POST['shipping_postcode'] ?? '' ) ),
-            'shipping_country'    => sanitize_text_field( wp_unslash( $_POST['shipping_country'] ?? '' ) ),
-
-            'order_comments'            => sanitize_textarea_field( wp_unslash( $_POST['order_comments'] ?? '' ) ),
-            'payment_method'            => sanitize_text_field( wp_unslash( $_POST['payment_method'] ?? '' ) ),
-            'ship_to_different_address' => isset( $_POST['ship_to_different_address'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['ship_to_different_address'] ) ) ? 1 : 0,
-        ];
-
         // Validate payment method
-        if ( empty( $posted_data['payment_method'] ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Please select a payment method.', 'on-page-checkout-for-elementor' ) ] );
+        $payment_method = sanitize_text_field( wp_unslash( $_POST['payment_method'] ?? '' ) );
+        if ( empty( $payment_method ) ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Please select a payment method.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Please select a payment method.', 'on-page-checkout-for-elementor' ),
+            ] );
         }
 
-        $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
-        if ( ! isset( $available_gateways[ $posted_data['payment_method'] ] ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid payment method.', 'on-page-checkout-for-elementor' ) ] );
+        $available_gateways = WC()->payment_gateways ? WC()->payment_gateways->get_available_payment_gateways() : [];
+        if ( ! isset( $available_gateways[ $payment_method ] ) ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Invalid payment method selected.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Invalid payment method selected.', 'on-page-checkout-for-elementor' ),
+            ] );
         }
 
         try {
-            $result = $checkout->process_checkout( $posted_data );
+            $created_order_id = 0;
+            add_action( 'woocommerce_checkout_order_processed', function( $order_id ) use ( &$created_order_id ) {
+                $created_order_id = absint( $order_id );
+                if ( class_exists( 'PixelBeacon_Helpers' ) && method_exists( 'PixelBeacon_Helpers', 'save_fb_cookies_to_order' ) ) {
+                    \PixelBeacon_Helpers::save_fb_cookies_to_order( $order_id );
+                }
+            }, 5, 1 );
 
-            if ( isset( $result['result'] ) && 'success' === $result['result'] ) {
-                wp_send_json_success( [ 'redirect' => $result['redirect'] ] );
+            // Note: WooCommerce WC_Checkout::process_checkout reads directly from $_POST.
+            // In an AJAX context, WooCommerce will often output JSON and exit directly.
+            // If execution continues or returns an array, handle it below.
+            $result = $checkout->process_checkout();
+
+            if ( wc_notice_count( 'error' ) > 0 ) {
+                ob_start();
+                wc_print_notices();
+                $messages = ob_get_clean();
+                wp_send_json( [
+                    'result'   => 'failure',
+                    'messages' => $messages,
+                    'message'  => wp_strip_all_tags( $messages ),
+                ] );
             }
-            wp_send_json_error( [ 'message' => esc_html__( 'Checkout failed. Please try again.', 'on-page-checkout-for-elementor' ) ] );
+
+            if ( is_array( $result ) && isset( $result['result'] ) && 'success' === $result['result'] ) {
+                wp_send_json( [
+                    'result'   => 'success',
+                    'redirect' => $result['redirect'] ?? '',
+                    'order_id' => $created_order_id,
+                ] );
+            }
+
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Checkout failed. Please verify your fields and try again.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Checkout failed. Please verify your fields and try again.', 'on-page-checkout-for-elementor' ),
+            ] );
 
         } catch ( Exception $e ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'An error occurred while processing your order. Please try again.', 'on-page-checkout-for-elementor' ) ] );
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html( $e->getMessage() ) . '</li></ul>',
+                'message'  => esc_html( $e->getMessage() ),
+            ] );
         }
     }
 

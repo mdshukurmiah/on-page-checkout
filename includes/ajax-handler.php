@@ -17,12 +17,20 @@ class W3OPCFE_Ajax_Handler {
     public function load_checkout_fields() {
         check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
 
-        $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
-        $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
-        $product    = wc_get_product( $product_id );
+        if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->customer || ! WC()->session ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) ] );
+        }
 
-        if ( ! $product ) {
+        $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+        $quantity   = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
+        $product    = $product_id ? wc_get_product( $product_id ) : false;
+
+        if ( ! $product instanceof WC_Product ) {
             wp_send_json_error( [ 'message' => esc_html__( 'Invalid product selected.', 'on-page-checkout-for-elementor' ) ] );
+        }
+
+        if ( ! $product->is_purchasable() ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'This product is not currently available for purchase.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         // Try to add product (handle variable)
@@ -79,12 +87,20 @@ class W3OPCFE_Ajax_Handler {
         $customer     = WC()->customer;
         $base_country = wc_get_base_location()['country'];
 
+        // High Event Match Quality: Read persistent form cookies populated by PixelBeacon
+        $persisted = [];
+        if ( class_exists( 'PixelBeacon_Helpers' ) && method_exists( 'PixelBeacon_Helpers', 'get_persistence_user_data' ) ) {
+            $persisted = \PixelBeacon_Helpers::get_persistence_user_data();
+        } elseif ( class_exists( 'FBPixel_CAPI_Helpers' ) && method_exists( 'FBPixel_CAPI_Helpers', 'get_persistence_user_data' ) ) {
+            $persisted = \FBPixel_CAPI_Helpers::get_persistence_user_data();
+        }
+
         // Keep existing/default customer values when the field is absent from AJAX payload.
-        $billing_first_name = isset( $_POST['billing_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ) ) : $customer->get_billing_first_name();
-        $billing_last_name  = isset( $_POST['billing_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ) ) : $customer->get_billing_last_name();
+        $billing_first_name = isset( $_POST['billing_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ) ) : ( $customer->get_billing_first_name() ?: ( $persisted['fn'] ?? '' ) );
+        $billing_last_name  = isset( $_POST['billing_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ) ) : ( $customer->get_billing_last_name() ?: ( $persisted['ln'] ?? '' ) );
         $billing_company    = isset( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : $customer->get_billing_company();
-        $billing_email      = isset( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : $customer->get_billing_email();
-        $billing_phone      = isset( $_POST['billing_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_phone'] ) ) : $customer->get_billing_phone();
+        $billing_email      = isset( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : ( $customer->get_billing_email() ?: ( $persisted['em'] ?? '' ) );
+        $billing_phone      = isset( $_POST['billing_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_phone'] ) ) : ( $customer->get_billing_phone() ?: ( $persisted['ph'] ?? '' ) );
         $billing_address_1  = isset( $_POST['billing_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ) ) : $customer->get_billing_address_1();
         $billing_address_2  = isset( $_POST['billing_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ) ) : $customer->get_billing_address_2();
         $billing_city       = isset( $_POST['billing_city'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_city'] ) ) : $customer->get_billing_city();
@@ -222,7 +238,7 @@ class W3OPCFE_Ajax_Handler {
                 </div>
             <?php endif; ?>
         </div>
-        <div class="order-details" id="order_review" class="woocommerce-checkout-review-order">
+        <div id="order_review" class="order-details woocommerce-checkout-review-order">
             <div class="order-details-wrapper">
                 <div class="opc-order-review">
                     <?php if ( ! empty( $widgetSettings['orderSummaryTitle'] ) ) : ?>
@@ -298,34 +314,60 @@ class W3OPCFE_Ajax_Handler {
                         </tfoot>
                     </table>
                 </div>
+                <?php do_action( 'woocommerce_review_order_before_payment' ); ?>
+
                 <div class="opc-payment-methods woocommerce-checkout-payment" id="payment">
                     <?php if ( ! empty( $widgetSettings['paymentMethodTitle'] ) ) : ?>
                         <h4><?php echo esc_html( $widgetSettings['paymentMethodTitle'] ); ?></h4>
                     <?php endif; ?>
                     <ul class="wc_payment_methods payment_methods methods">
                     <?php
-                    $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+                    $available_gateways = WC()->payment_gateways ? WC()->payment_gateways->get_available_payment_gateways() : [];
+                    $chosen_gateway     = WC()->session ? WC()->session->get( 'chosen_payment_method' ) : '';
+                    if ( empty( $chosen_gateway ) && ! empty( $available_gateways ) ) {
+                        $chosen_gateway = current( array_keys( $available_gateways ) );
+                    }
+
                     if ( ! empty( $available_gateways ) ) :
                         foreach ( $available_gateways as $gateway ) :
                             ?>
                             <li class="wc_payment_method payment_method_<?php echo esc_attr( $gateway->id ); ?>">
                                 <label for="payment_method_<?php echo esc_attr( $gateway->id ); ?>">
-                                    <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="input-radio" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->id, WC()->session->get( 'chosen_payment_method', $gateway->id ) ); ?> />
+                                    <input id="payment_method_<?php echo esc_attr( $gateway->id ); ?>" type="radio" class="input-radio" name="payment_method" value="<?php echo esc_attr( $gateway->id ); ?>" <?php checked( $gateway->id, $chosen_gateway ); ?> />
                                     <?php echo esc_html( $gateway->get_title() ); ?>
                                     <?php echo wp_kses_post( $gateway->get_icon() ); ?>
                                 </label>
                                 <?php if ( $gateway->has_fields() || $gateway->get_description() ) : ?>
-                                    <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>">
+                                    <div class="payment_box payment_method_<?php echo esc_attr( $gateway->id ); ?>" style="<?php echo ( $gateway->id === $chosen_gateway ) ? '' : 'display:none;'; ?>">
                                         <?php $gateway->payment_fields(); ?>
                                     </div>
                                 <?php endif; ?>
                             </li>
                             <?php
                         endforeach;
+                    else :
+                        echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'woocommerce' ) . '</li>';
                     endif;
                     ?>
                     </ul>
                 </div>
+
+                <?php if ( function_exists( 'wc_terms_and_conditions_page_id' ) && wc_terms_and_conditions_page_id() > 0 && apply_filters( 'woocommerce_checkout_show_terms', true ) ) : ?>
+                    <div class="woocommerce-terms-and-conditions-wrapper" style="margin-top:15px; margin-bottom:15px;">
+                        <?php do_action( 'woocommerce_checkout_before_terms_and_conditions' ); ?>
+                        <p class="form-row validate-required">
+                            <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+                                <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
+                                <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout-for-elementor' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'woocommerce' ); ?>">*</abbr>
+                            </label>
+                            <input type="hidden" name="terms-field" value="1" />
+                        </p>
+                        <?php do_action( 'woocommerce_checkout_after_terms_and_conditions' ); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php do_action( 'woocommerce_review_order_after_payment' ); ?>
+
                 <?php
                 $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout-for-elementor' );
                 echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html( $order_button_name ) . '</button>';
@@ -335,7 +377,180 @@ class W3OPCFE_Ajax_Handler {
         <?php
         $checkout_fields = ob_get_clean();
 
-        wp_send_json_success( [ 'fields' => $checkout_fields, 'cart' => WC()->cart ] );
+        // Build structured tracking data matching Meta Pixel & PixelBeacon CAPI requirements
+        $content_ids    = [];
+        $contents       = [];
+        $content_names  = [];
+        $all_categories = [];
+        $all_tags       = [];
+        $all_skus       = [];
+        $all_brands     = [];
+        $total_quantity = 0;
+
+        if ( WC()->cart && ! WC()->cart->is_empty() ) {
+            foreach ( WC()->cart->get_cart() as $cart_item ) {
+                $item_id   = ! empty( $cart_item['variation_id'] ) ? $cart_item['variation_id'] : $cart_item['product_id'];
+                $qty       = (int) $cart_item['quantity'];
+                $price     = $qty > 0 ? (float) ( $cart_item['line_total'] / $qty ) : 0;
+                $_prod     = isset( $cart_item['data'] ) ? $cart_item['data'] : wc_get_product( $item_id );
+
+                if ( $_prod ) {
+                    $content_names[] = $_prod->get_name();
+                    $sku             = $_prod->get_sku();
+                    if ( ! empty( $sku ) ) {
+                        $all_skus[] = $sku;
+                    }
+                    $brand = $this->get_product_brand( $_prod );
+                    if ( ! empty( $brand ) && ! in_array( $brand, $all_brands, true ) ) {
+                        $all_brands[] = $brand;
+                    }
+
+                    $terms = get_the_terms( $cart_item['product_id'], 'product_cat' );
+                    if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+                        foreach ( $terms as $term ) {
+                            if ( ! in_array( $term->name, $all_categories, true ) ) {
+                                $all_categories[] = $term->name;
+                            }
+                        }
+                    }
+
+                    $tag_str = $this->get_product_tags( $cart_item['product_id'] );
+                    if ( ! empty( $tag_str ) && ! in_array( $tag_str, $all_tags, true ) ) {
+                        $all_tags[] = $tag_str;
+                    }
+                }
+
+                $content_ids[] = (string) $item_id;
+                $contents[]    = [
+                    'id'         => (string) $item_id,
+                    'quantity'   => $qty,
+                    'item_price' => round( $price, 2 ),
+                ];
+                $total_quantity += $qty;
+            }
+        }
+
+        $cat_string = implode( ', ', $all_categories );
+        $tracking_data = [
+            'content_name'     => implode( ', ', $content_names ),
+            'content_category' => $cat_string,
+            'category_name'    => $cat_string,
+            'content_ids'      => $content_ids,
+            'content_type'     => 'product',
+            'contents'         => $contents,
+            'value'            => WC()->cart ? (float) WC()->cart->get_total( 'edit' ) : 0,
+            'subtotal'         => WC()->cart ? (float) WC()->cart->get_subtotal() : 0,
+            'currency'         => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
+            'num_items'        => $total_quantity,
+            'shipping_cost'    => WC()->cart ? (float) WC()->cart->get_shipping_total() : 0,
+            'tax'              => WC()->cart ? (float) WC()->cart->get_total_tax() : 0,
+        ];
+
+        if ( ! empty( $all_tags ) ) {
+            $tracking_data['tags'] = implode( ', ', $all_tags );
+        }
+        if ( ! empty( $all_skus ) ) {
+            $tracking_data['content_sku'] = implode( ', ', $all_skus );
+        }
+        if ( ! empty( $all_brands ) ) {
+            $tracking_data['brand'] = implode( ', ', $all_brands );
+        }
+
+        $coupons = WC()->cart ? WC()->cart->get_applied_coupons() : [];
+        if ( ! empty( $coupons ) ) {
+            $tracking_data['coupon_used'] = 'yes';
+            $tracking_data['coupon_name'] = implode( ', ', $coupons );
+        }
+
+        // Generate consistent event ID matching PixelBeacon format for deduplication
+        $event_id = class_exists( 'PixelBeacon_Helpers' ) && method_exists( 'PixelBeacon_Helpers', 'guidv4' )
+            ? \PixelBeacon_Helpers::guidv4()
+            : ( function_exists( 'wp_generate_uuid4' ) ? wp_generate_uuid4() : sprintf( 'pb_%d_%s', time(), wp_generate_password( 8, false ) ) );
+
+        // Collect cart fragments populated by PixelBeacon's AddToCart hook for synchronized browser/server firing
+        $fragments = apply_filters( 'woocommerce_add_to_cart_fragments', [] );
+
+        wp_send_json_success( [
+            'fields'        => $checkout_fields,
+            'cart_total'    => WC()->cart ? WC()->cart->get_total() : '',
+            'cart_count'    => $total_quantity,
+            'cart_hash'     => WC()->cart ? WC()->cart->get_cart_hash() : '',
+            'fragments'     => $fragments,
+            'product_id'    => $product_id,
+            'variation_id'  => $variation_id,
+            'quantity'      => $quantity,
+            'currency'      => $tracking_data['currency'],
+            'value'         => $tracking_data['value'],
+            'event_id'      => $event_id,
+            'tracking'      => $tracking_data,
+        ] );
+    }
+
+    /**
+     * Get product brand matching PixelBeacon convention
+     *
+     * @param \WC_Product $product
+     * @return string
+     */
+    private function get_product_brand( $product ) {
+        if ( ! $product instanceof \WC_Product ) {
+            return '';
+        }
+
+        $brand            = '';
+        $attributes       = $product->get_attributes();
+        $brand_attributes = [ 'brand', 'pa_brand', 'product_brand', 'pa_product_brand' ];
+
+        foreach ( $brand_attributes as $brand_attr ) {
+            if ( isset( $attributes[ $brand_attr ] ) ) {
+                $attribute = $attributes[ $brand_attr ];
+                if ( is_object( $attribute ) && method_exists( $attribute, 'is_taxonomy' ) && $attribute->is_taxonomy() ) {
+                    $terms = wp_get_post_terms( $product->get_id(), $attribute->get_name() );
+                    if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+                        $brand = $terms[0]->name;
+                        break;
+                    }
+                } elseif ( is_object( $attribute ) && method_exists( $attribute, 'get_options' ) ) {
+                    $opts  = $attribute->get_options();
+                    $brand = ! empty( $opts[0] ) ? $opts[0] : '';
+                    if ( $brand ) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ( empty( $brand ) ) {
+            $custom_brand_fields = [ '_brand', '_product_brand', 'brand', 'product_brand' ];
+            foreach ( $custom_brand_fields as $field ) {
+                $brand = get_post_meta( $product->get_id(), $field, true );
+                if ( ! empty( $brand ) ) {
+                    break;
+                }
+            }
+        }
+
+        return sanitize_text_field( $brand );
+    }
+
+    /**
+     * Get product tags comma separated
+     *
+     * @param int $product_id
+     * @return string
+     */
+    private function get_product_tags( $product_id ) {
+        $terms = get_the_terms( $product_id, 'product_tag' );
+        if ( empty( $terms ) || is_wp_error( $terms ) ) {
+            return '';
+        }
+
+        $tags = [];
+        foreach ( $terms as $term ) {
+            $tags[] = $term->name;
+        }
+
+        return implode( ', ', $tags );
     }
 
     public function add_to_cart() {
