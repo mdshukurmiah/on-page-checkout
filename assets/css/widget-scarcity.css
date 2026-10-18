@@ -1,0 +1,57 @@
+/**
+ * Styles for Product Scarcity Widget
+ */
+
+.w3opcfe-scarcity-wrapper,
+.singlegrid-pdp-scarcity-wrapper {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.w3opcfe-scarcity-blinker,
+.singlegrid-pdp-scarcity-blinker {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+	margin-right: 6px;
+}
+
+.w3opcfe-scarcity-blinker svg,
+.singlegrid-pdp-scarcity-blinker svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.w3opcfe-scarcity-icon,
+.singlegrid-pdp-scarcity-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 6px;
+}
+
+.w3opcfe-scarcity-prefix,
+.w3opcfe-scarcity-suffix,
+.singlegrid-pdp-scarcity-prefix,
+.singlegrid-pdp-scarcity-suffix {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.w3opcfe-scarcity-number,
+.singlegrid-pdp-scarcity-number {
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.2;
+	display: inline-block;
+	box-sizing: border-box;
+	margin: 0 4px;
+}

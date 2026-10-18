@@ -28,7 +28,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
     }
 
     public function get_categories() {
-        return [ 'general' ];
+        return [ 'on-page-checkout', 'general' ];
     }
 
     public function get_keywords() {

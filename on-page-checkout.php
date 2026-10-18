@@ -2,7 +2,7 @@
 /**
  * Plugin Name: On-Page Checkout for Elementor
  * Description: A custom Elementor widget to display WooCommerce products and enable on-page checkout.
- * Version:     1.0.1
+ * Version:     1.0.2
  * Author:      W3 Relations, shukur5674
  * Author URI:  https://w3relations.com/
  * Requires Plugins: elementor, woocommerce
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'W3OPCFE_PLUGIN_FILE', __FILE__ );
 define( 'W3OPCFE_PLUGIN_DIR', plugin_dir_path( W3OPCFE_PLUGIN_FILE ) );
 define( 'W3OPCFE_PLUGIN_URL', plugin_dir_url( W3OPCFE_PLUGIN_FILE ) );
-define( 'W3OPCFE_VERSION', '1.0.0' );
+define( 'W3OPCFE_VERSION', '1.0.2' );
 
 /**
  * Main On Page Checkout Class.
@@ -230,10 +230,30 @@ final class W3OPCFE_On_Page_Checkout {
      * @access private
      */
     private function init_hooks() {
+        add_action( 'elementor/elements/categories_registered', [ $this, 'register_categories' ] );
         add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
         add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_elementor_scripts' ] );
+    }
+
+    /**
+     * Register Categories
+     *
+     * Register Elementor widget category.
+     *
+     * @since 1.0.2
+     * @access public
+     * @param \Elementor\Elements_Manager $elements_manager Elementor elements manager.
+     */
+    public function register_categories( $elements_manager ) {
+        $elements_manager->add_category(
+            'on-page-checkout',
+            [
+                'title' => esc_html__( 'On Page Checkout', 'on-page-checkout-for-elementor' ),
+                'icon'  => 'eicon-checkout',
+            ]
+        );
     }
 
     /**
@@ -247,7 +267,14 @@ final class W3OPCFE_On_Page_Checkout {
      */
     public function register_widgets( $widgets_manager ) {
         require_once( W3OPCFE_PLUGIN_DIR . 'widgets/on-page-checkout-widget.php' );
+        require_once( W3OPCFE_PLUGIN_DIR . 'widgets/countdown-widget.php' );
+        require_once( W3OPCFE_PLUGIN_DIR . 'widgets/scarcity-widget.php' );
+
         $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_On_Page_Checkout_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Countdown_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Singlegrid_Countdown_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Scarcity_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Singlegrid_Scarcity_Widget() );
     }
 
     /**
@@ -275,6 +302,18 @@ final class W3OPCFE_On_Page_Checkout {
         wp_register_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', $script_deps, W3OPCFE_VERSION, true );
         wp_enqueue_style( 'w3opcfe-frontend-style' );
         wp_enqueue_script( 'w3opcfe-frontend-script' );
+
+        // Register Countdown Widget Assets
+        wp_register_style( 'w3opcfe-countdown-style', W3OPCFE_PLUGIN_URL . 'assets/css/widget-countdown.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'w3opcfe-countdown-script', W3OPCFE_PLUGIN_URL . 'assets/js/widget-countdown.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+        wp_register_style( 'singlegrid-pdp-widget-product-countdown', W3OPCFE_PLUGIN_URL . 'assets/css/widget-countdown.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'singlegrid-pdp-widget-product-countdown', W3OPCFE_PLUGIN_URL . 'assets/js/widget-countdown.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+
+        // Register Scarcity Widget Assets
+        wp_register_style( 'w3opcfe-scarcity-style', W3OPCFE_PLUGIN_URL . 'assets/css/widget-scarcity.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'w3opcfe-scarcity-script', W3OPCFE_PLUGIN_URL . 'assets/js/widget-scarcity.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+        wp_register_style( 'singlegrid-pdp-widget-product-scarcity', W3OPCFE_PLUGIN_URL . 'assets/css/widget-scarcity.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'singlegrid-pdp-widget-product-scarcity', W3OPCFE_PLUGIN_URL . 'assets/js/widget-scarcity.js', [ 'jquery' ], W3OPCFE_VERSION, true );
 
         $pixelbeacon_active = class_exists( 'PixelBeacon' ) || class_exists( 'FacebookPixelCAPI' );
         $pb_settings        = class_exists( 'PixelBeacon_Helpers' ) ? \PixelBeacon_Helpers::get_settings() : [];

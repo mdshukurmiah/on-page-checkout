@@ -4,7 +4,7 @@ Tags: woocommerce, checkout, elementor, one-page-checkout, woocommerce-checkout
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,10 +18,18 @@ On-Page Checkout for Elementor adds a drag-and-drop Elementor widget that combin
 
 * Add the On Page Checkout widget anywhere in Elementor
 * Support for simple and variable products
-* Built-in quantity selector
+* Display variations as separate product cards with variation-specific images
+* Single and multi-product selection modes
+* Built-in per-card and global quantity selectors
+* Out-of-stock badge with dynamic disabled state handling
+* Searchable product selection control in Elementor editor
+* Product Countdown widget with target date, auto-reset, and custom styles
+* Product Scarcity widget with animated pulsing indicator and live stock counters
 * Configurable section headings (billing, shipping, order summary, payment, button text)
 * Pre-select a product via a URL query string parameter
 * Enable / disable and relabel individual checkout fields from the admin settings page
+* Mobile collapsible order summary toggle button
+* Responsive column controls and spacing controls
 * Full WooCommerce payment gateway compatibility
 * Responsive layout out of the box
 
@@ -49,11 +57,11 @@ Yes. The widget renders all payment gateways that WooCommerce makes available on
 
 = Can I use multiple products on the same widget? =
 
-Yes. Add as many Product IDs or SKUs as you need in the widget settings. Customers will see radio buttons to select a product before filling in their details.
+Yes. Add as many Product IDs or SKUs as you need in the widget settings. Customers can select a single product or enable multi-product selection to purchase multiple products at once.
 
 = Does it support variable products? =
 
-Yes. For variable products a dropdown is shown that lets the customer pick a variation before checkout.
+Yes. For variable products an in-card dropdown is shown that lets the customer pick a variation, or you can enable displaying variations as individual separate cards.
 
 = Can I pre-select a product using a URL parameter? =
 
@@ -61,10 +69,32 @@ Yes. Set the **Preselect Product by Query String Parameter** field in the widget
 
 == Changelog ==
 
+= 1.0.2 =
+* Feature: Added Countdown widget with target date/time, interval and daily auto-reset, Bangla number conversions, and full typography/box styling.
+* Feature: Added Scarcity widget with pulsing SVG indicator, customizable icons, count up/down modes, persistent localStorage counts, and style controls.
+* Feature: Added dedicated "On Page Checkout" Elementor widget category for all plugin widgets.
+* Feature: Added multi-product selection support with customizable selection types (checkbox vs radio).
+* Feature: Added individual per-card quantity selectors in multi-selection mode with responsive padding controls.
+* Feature: Added option to display product variations as standalone separate product cards with custom title and variation images.
+* Feature: Added out-of-stock badge display and disabled selection for out-of-stock products and variations, with dynamic in-card variation switching.
+* Feature: Added searchable product autocomplete selection for easily adding products in Elementor.
+* Feature: Added responsive column controls for product cards across desktop, tablet, and mobile.
+* Feature: Added responsive gap settings between checkout form and order review table.
+* Feature: Added styling controls for order review table header background.
+* Feature: Added collapsible mobile order summary toggle button with configurable initial state.
+* Fix: Resolved Elementor editor preview issue where the checkout form did not render for the default selected product.
+* Enhancement: Performance optimization with on-demand conditional asset loading.
+
+= 1.0.1 =
+* Fix: Minor bug fixes and improvements.
+
 = 1.0.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Adds new Countdown and Scarcity widgets, multi-product selection, variation card display, out-of-stock badges, searchable products, and responsive styling controls.
 
 = 1.0.1 =
 Fix minor issues
