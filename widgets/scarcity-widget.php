@@ -124,6 +124,23 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'custom_icon_color',
+			[
+				'label'     => esc_html__( 'Icon Color', 'on-page-checkout-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '#ff0d00',
+				'selectors' => [
+					'{{WRAPPER}} .w3opcfe-scarcity-icon, {{WRAPPER}} .singlegrid-pdp-scarcity-icon' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .w3opcfe-scarcity-icon i, {{WRAPPER}} .singlegrid-pdp-scarcity-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .w3opcfe-scarcity-icon svg, {{WRAPPER}} .singlegrid-pdp-scarcity-icon svg' => 'fill: {{VALUE}}; color: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type' => 'custom',
+				],
+			]
+		);
+
+		$this->add_control(
 			'prefix_text',
 			[
 				'label'       => esc_html__( 'Prefix Text', 'on-page-checkout-for-elementor' ),

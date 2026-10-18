@@ -75,6 +75,39 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Product Custom Badge */
+.opc-custom-badge {
+    position: absolute;
+    background-color: #016520;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 3px 9px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 4;
+    pointer-events: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+.opc-custom-badge.opc-badge-pos-top-right {
+    top: 6px;
+    right: 6px;
+}
+
+.opc-custom-badge.opc-badge-pos-top-left {
+    top: 6px;
+    left: 6px;
+}
+
+/* If out of stock badge is also at top-left, stack custom badge below it */
+.opc-product-item.opc-out-of-stock .opc-custom-badge.opc-badge-pos-top-left {
+    top: 30px;
+}
+
 /* Out of Stock Card State */
 .opc-products-wrapper .opc-product-item.opc-out-of-stock > label {
     opacity: 0.55;

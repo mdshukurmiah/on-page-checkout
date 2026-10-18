@@ -35,6 +35,20 @@
 	align-items: center;
 	justify-content: center;
 	margin-right: 6px;
+	line-height: 1;
+}
+
+.w3opcfe-scarcity-icon i,
+.singlegrid-pdp-scarcity-icon i {
+	line-height: 1;
+}
+
+.w3opcfe-scarcity-icon svg,
+.singlegrid-pdp-scarcity-icon svg {
+	width: 1em;
+	height: 1em;
+	display: block;
+	fill: currentColor;
 }
 
 .w3opcfe-scarcity-prefix,

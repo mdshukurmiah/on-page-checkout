@@ -95,6 +95,38 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             ]
         );
 
+        $repeater->add_control(
+            'custom_badge_text',
+            [
+                'label'       => esc_html__( 'Custom Badge Text', 'on-page-checkout-for-elementor' ),
+                'type'        => Controls_Manager::TEXT,
+                'placeholder' => esc_html__( 'e.g. Best Value, Popular, 20% Off', 'on-page-checkout-for-elementor' ),
+                'label_block' => true,
+            ]
+        );
+
+        $repeater->add_control(
+            'custom_badge_color',
+            [
+                'label'     => esc_html__( 'Badge Text Color (Optional)', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+                'condition' => [
+                    'custom_badge_text!' => '',
+                ],
+            ]
+        );
+
+        $repeater->add_control(
+            'custom_badge_bg_color',
+            [
+                'label'     => esc_html__( 'Badge Background Color (Optional)', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+                'condition' => [
+                    'custom_badge_text!' => '',
+                ],
+            ]
+        );
+
         $this->add_control(
             'product_list',
             [
@@ -106,9 +138,63 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                         'product_id' => '',
                     ],
                 ],
-                'title_field' => '{{{ product_id }}}',
+                'title_field' => '{{{ product_id }}} <# if (custom_badge_text) { #> [{{{ custom_badge_text }}}] <# } #>',
                 'condition'   => [
                     'product_selection_source' => 'repeater',
+                ],
+            ]
+        );
+
+        $badge_repeater = new Repeater();
+
+        $badge_repeater->add_control(
+            'product_id',
+            [
+                'label'       => esc_html__( 'Select Product', 'on-page-checkout-for-elementor' ),
+                'type'        => Controls_Manager::SELECT2,
+                'options'     => $this->get_product_options(),
+                'default'     => '',
+                'label_block' => true,
+                'multiple'    => false,
+                'description' => esc_html__( 'Choose product to assign custom badge.', 'on-page-checkout-for-elementor' ),
+            ]
+        );
+
+        $badge_repeater->add_control(
+            'badge_text',
+            [
+                'label'       => esc_html__( 'Badge Text', 'on-page-checkout-for-elementor' ),
+                'type'        => Controls_Manager::TEXT,
+                'placeholder' => esc_html__( 'e.g. Best Value, Popular, 20% Off', 'on-page-checkout-for-elementor' ),
+                'label_block' => true,
+            ]
+        );
+
+        $badge_repeater->add_control(
+            'badge_color',
+            [
+                'label'     => esc_html__( 'Badge Text Color (Optional)', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+            ]
+        );
+
+        $badge_repeater->add_control(
+            'badge_bg_color',
+            [
+                'label'     => esc_html__( 'Badge Background Color (Optional)', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+            ]
+        );
+
+        $this->add_control(
+            'product_custom_badges',
+            [
+                'label'       => esc_html__( 'Product Custom Badges', 'on-page-checkout-for-elementor' ),
+                'type'        => Controls_Manager::REPEATER,
+                'fields'      => $badge_repeater->get_controls(),
+                'title_field' => '{{{ badge_text }}}',
+                'condition'   => [
+                    'product_selection_source' => 'multi_select',
                 ],
             ]
         );
@@ -617,6 +703,100 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 'selectors'  => [
                     '{{WRAPPER}} .opc-stock-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
+            ]
+        );
+
+        $this->add_control(
+            'heading_custom_badge_style',
+            [
+                'label'     => esc_html__( 'Custom Badge', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'custom_badge_position',
+            [
+                'label'   => esc_html__( 'Badge Position', 'on-page-checkout-for-elementor' ),
+                'type'    => Controls_Manager::SELECT,
+                'default' => 'top-right',
+                'options' => [
+                    'top-right' => esc_html__( 'Top Right', 'on-page-checkout-for-elementor' ),
+                    'top-left'  => esc_html__( 'Top Left', 'on-page-checkout-for-elementor' ),
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'custom_badge_color',
+            [
+                'label'     => esc_html__( 'Badge Text Color', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => '#ffffff',
+                'selectors' => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'custom_badge_bg_color',
+            [
+                'label'     => esc_html__( 'Badge Background Color', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+                'default'   => '#016520',
+                'selectors' => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'custom_badge_typography',
+                'selector' => '{{WRAPPER}} .opc-custom-badge',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'custom_badge_padding',
+            [
+                'label'      => esc_html__( 'Badge Padding', 'on-page-checkout-for-elementor' ),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', 'em', 'rem' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name'     => 'custom_badge_border',
+                'selector' => '{{WRAPPER}} .opc-custom-badge',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'custom_badge_border_radius',
+            [
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Box_Shadow::get_type(),
+            [
+                'name'     => 'custom_badge_box_shadow',
+                'selector' => '{{WRAPPER}} .opc-custom-badge',
             ]
         );
 
@@ -2182,6 +2362,31 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $input_type               = $is_multi_select ? 'checkbox' : 'radio';
         $input_name               = $is_multi_select ? 'w3opcfe_product_id[]' : 'w3opcfe_product_id';
 
+        // Build custom badges map (supports both multi-select custom badges repeater and product list repeater)
+        $custom_badges_map = [];
+        if ( ! empty( $settings['product_custom_badges'] ) && is_array( $settings['product_custom_badges'] ) ) {
+            foreach ( $settings['product_custom_badges'] as $cb ) {
+                if ( ! empty( $cb['product_id'] ) && ! empty( $cb['badge_text'] ) ) {
+                    $custom_badges_map[ (string) $cb['product_id'] ] = [
+                        'text'     => $cb['badge_text'],
+                        'color'    => $cb['badge_color'] ?? '',
+                        'bg_color' => $cb['badge_bg_color'] ?? '',
+                    ];
+                }
+            }
+        }
+        if ( ! empty( $settings['product_list'] ) && is_array( $settings['product_list'] ) ) {
+            foreach ( $settings['product_list'] as $p_item ) {
+                if ( ! empty( $p_item['product_id'] ) && ! empty( $p_item['custom_badge_text'] ) ) {
+                    $custom_badges_map[ (string) $p_item['product_id'] ] = [
+                        'text'     => $p_item['custom_badge_text'],
+                        'color'    => $p_item['custom_badge_color'] ?? '',
+                        'bg_color' => $p_item['custom_badge_bg_color'] ?? '',
+                    ];
+                }
+            }
+        }
+
         // Assemble render items (expand variable products into separate cards if enabled)
         $render_items = [];
         foreach ( $product_ids as $id_or_sku ) {
@@ -2220,17 +2425,22 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                         // In stock check
                         $is_in_stock = $var_obj ? $var_obj->is_in_stock() : ( ! empty( $var_data['is_in_stock'] ) );
 
+                        $badge_data = $custom_badges_map[ (string) $var_id ] ?? ( $custom_badges_map[ (string) $product_id ] ?? ( $custom_badges_map[ (string) $id_or_sku ] ?? null ) );
+
                         $render_items[] = [
-                            'product_id'           => $product_id,
-                            'variation_id'         => $var_id,
-                            'title'                => $card_title,
-                            'image'                => $card_image,
-                            'price'                => $card_price,
-                            'is_variation_card'    => true,
-                            'available_variations' => null,
-                            'product'              => $product,
-                            'variation_obj'        => $var_obj,
-                            'is_in_stock'          => $is_in_stock,
+                            'product_id'            => $product_id,
+                            'variation_id'          => $var_id,
+                            'title'                 => $card_title,
+                            'image'                 => $card_image,
+                            'price'                 => $card_price,
+                            'is_variation_card'     => true,
+                            'available_variations'  => null,
+                            'product'               => $product,
+                            'variation_obj'         => $var_obj,
+                            'is_in_stock'           => $is_in_stock,
+                            'custom_badge_text'     => $badge_data['text'] ?? '',
+                            'custom_badge_color'    => $badge_data['color'] ?? '',
+                            'custom_badge_bg_color' => $badge_data['bg_color'] ?? '',
                         ];
                     }
                     continue;
@@ -2248,17 +2458,25 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 $is_in_stock = ! empty( $available_variations[0]['is_in_stock'] );
             }
 
+            $badge_data = $custom_badges_map[ (string) $product_id ] ?? ( $custom_badges_map[ (string) $id_or_sku ] ?? null );
+            if ( ! $badge_data && ! empty( $default_variation_id ) ) {
+                $badge_data = $custom_badges_map[ (string) $default_variation_id ] ?? null;
+            }
+
             $render_items[] = [
-                'product_id'           => $product_id,
-                'variation_id'         => $default_variation_id,
-                'title'                => $product->get_name(),
-                'image'                => $product->get_image( 'woocommerce_thumbnail' ),
-                'price'                => $product->get_price_html(),
-                'is_variation_card'    => false,
-                'available_variations' => $available_variations,
-                'product'              => $product,
-                'variation_obj'        => null,
-                'is_in_stock'          => $is_in_stock,
+                'product_id'            => $product_id,
+                'variation_id'          => $default_variation_id,
+                'title'                 => $product->get_name(),
+                'image'                 => $product->get_image( 'woocommerce_thumbnail' ),
+                'price'                 => $product->get_price_html(),
+                'is_variation_card'     => false,
+                'available_variations'  => $available_variations,
+                'product'               => $product,
+                'variation_obj'         => null,
+                'is_in_stock'           => $is_in_stock,
+                'custom_badge_text'     => $badge_data['text'] ?? '',
+                'custom_badge_color'    => $badge_data['color'] ?? '',
+                'custom_badge_bg_color' => $badge_data['bg_color'] ?? '',
             ];
         }
 
@@ -2292,6 +2510,8 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $initial_variation_id = ! empty( $selected_indices ) ? ( $render_items[ $selected_indices[0] ]['variation_id'] ?? 0 ) : 0;
 
         $badge_text = ! empty( $settings['out_of_stock_badge_text'] ) ? $settings['out_of_stock_badge_text'] : esc_html__( 'Out of Stock', 'on-page-checkout-for-elementor' );
+        $custom_badge_pos = ! empty( $settings['custom_badge_position'] ) ? $settings['custom_badge_position'] : 'top-right';
+        $custom_badge_pos_class = ( 'top-left' === $custom_badge_pos ) ? 'opc-badge-pos-top-left' : 'opc-badge-pos-top-right';
 
         echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-multi-select="' . esc_attr( $is_multi_select ? 'yes' : 'no' ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ) . '" data-shipping-method-title="' . esc_attr( $settings['shipping_method_heading'] ?? esc_html__( 'Shipping Method', 'on-page-checkout-for-elementor' ) ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ) . '" data-mobile-summary-label="' . esc_attr( $mobile_summary_label ) . '" data-mobile-summary-collapsed="' . esc_attr( $mobile_summary_collapsed ) . '" data-out-of-stock-label="' . esc_attr( $badge_text ) . '">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
@@ -2318,6 +2538,17 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . wp_kses_post( $data_attr ) . '>';
                     echo '<label>';
                         echo '<span class="opc-stock-badge opc-out-of-stock-badge"' . ( $is_out_of_stock ? '' : ' style="display:none;"' ) . '>' . esc_html( $badge_text ) . '</span>';
+                        if ( ! empty( $item['custom_badge_text'] ) ) {
+                            $custom_badge_inline = '';
+                            if ( ! empty( $item['custom_badge_color'] ) ) {
+                                $custom_badge_inline .= 'color:' . esc_attr( $item['custom_badge_color'] ) . ';';
+                            }
+                            if ( ! empty( $item['custom_badge_bg_color'] ) ) {
+                                $custom_badge_inline .= 'background-color:' . esc_attr( $item['custom_badge_bg_color'] ) . ';';
+                            }
+                            $custom_badge_style_attr = ! empty( $custom_badge_inline ) ? ' style="' . esc_attr( $custom_badge_inline ) . '"' : '';
+                            echo '<span class="opc-custom-badge ' . esc_attr( $custom_badge_pos_class ) . '"' . $custom_badge_style_attr . '>' . esc_html( $item['custom_badge_text'] ) . '</span>';
+                        }
                         echo '<input type="' . esc_attr( $input_type ) . '" class="opc-product-input" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '" ' . checked( $checked, true, false ) . $disabled_attr . '>';
                         echo '<div class="product-card">';
                             echo wp_kses_post( $item['image'] );
@@ -2354,6 +2585,17 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . wp_kses_post( $data_attr ) . '>';
                     echo '<label>';
                         echo '<span class="opc-stock-badge opc-out-of-stock-badge"' . ( $is_out_of_stock ? '' : ' style="display:none;"' ) . '>' . esc_html( $badge_text ) . '</span>';
+                        if ( ! empty( $item['custom_badge_text'] ) ) {
+                            $custom_badge_inline = '';
+                            if ( ! empty( $item['custom_badge_color'] ) ) {
+                                $custom_badge_inline .= 'color:' . esc_attr( $item['custom_badge_color'] ) . ';';
+                            }
+                            if ( ! empty( $item['custom_badge_bg_color'] ) ) {
+                                $custom_badge_inline .= 'background-color:' . esc_attr( $item['custom_badge_bg_color'] ) . ';';
+                            }
+                            $custom_badge_style_attr = ! empty( $custom_badge_inline ) ? ' style="' . esc_attr( $custom_badge_inline ) . '"' : '';
+                            echo '<span class="opc-custom-badge ' . esc_attr( $custom_badge_pos_class ) . '"' . $custom_badge_style_attr . '>' . esc_html( $item['custom_badge_text'] ) . '</span>';
+                        }
                         echo '<input type="' . esc_attr( $input_type ) . '" class="opc-product-input" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '" ' . checked( $checked, true, false ) . $disabled_attr . '>';
                         echo '<div class="product-card">';
                             echo wp_kses_post( $item['image'] );
