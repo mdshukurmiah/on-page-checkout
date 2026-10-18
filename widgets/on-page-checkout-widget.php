@@ -629,7 +629,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 'label'     => esc_html__( 'Price Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .opc-products-wrapper .product-price, {{WRAPPER}} .opc-products-wrapper .product-price .amount' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .opc-products-wrapper .product-price, {{WRAPPER}} .opc-products-wrapper .product-price ins, {{WRAPPER}} .opc-products-wrapper .product-price .amount' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -638,7 +638,36 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             Group_Control_Typography::get_type(),
             [
                 'name'     => 'product_price_typography',
-                'selector' => '{{WRAPPER}} .opc-products-wrapper .product-price, {{WRAPPER}} .opc-products-wrapper .product-price .amount',
+                'selector' => '{{WRAPPER}} .opc-products-wrapper .product-price, {{WRAPPER}} .opc-products-wrapper .product-price ins, {{WRAPPER}} .opc-products-wrapper .product-price .amount',
+            ]
+        );
+
+        // Product Original Price Styles
+        $this->add_control(
+            'heading_product_original_price_style',
+            [
+                'label'     => esc_html__( 'Original Price', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'product_original_price_color',
+            [
+                'label'     => esc_html__( 'Original Price Color', 'on-page-checkout-for-elementor' ),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .opc-products-wrapper .product-price del, {{WRAPPER}} .opc-products-wrapper .product-price del .amount, {{WRAPPER}} .opc-products-wrapper .product-price del span' => 'color: {{VALUE}}; opacity: 1;',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'product_original_price_typography',
+                'selector' => '{{WRAPPER}} .opc-products-wrapper .product-price del, {{WRAPPER}} .opc-products-wrapper .product-price del .amount, {{WRAPPER}} .opc-products-wrapper .product-price del span, {{WRAPPER}} .opc-products-wrapper .product-price del bdi',
             ]
         );
 

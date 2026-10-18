@@ -40,6 +40,15 @@
     min-width: 0;
 }
 
+.opc-products-wrapper .product-price del {
+    margin-right: 6px;
+    opacity: 0.7;
+}
+
+.opc-products-wrapper .product-price ins {
+    text-decoration: none;
+}
+
 .opc-products-wrapper .opc-product-item>label {
     display: flex;
     align-items: center;
