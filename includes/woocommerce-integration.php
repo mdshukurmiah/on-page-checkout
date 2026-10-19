@@ -15,7 +15,11 @@ class W3OPCFE_WooCommerce_Integration {
     }
 
     public function get_checkout_form() {
-        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
+        if ( ! headers_sent() ) {
+            nocache_headers();
+        }
+
+        check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart ) {
             wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce cart is not initialized.', 'on-page-checkout-for-elementor' ) ] );
@@ -46,7 +50,39 @@ class W3OPCFE_WooCommerce_Integration {
     }
 
     public function process_checkout() {
-        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
+        if ( ! headers_sent() ) {
+            nocache_headers();
+        }
+
+        // Bootstrap WooCommerce session, cart, and customer in admin-ajax context if needed
+        if ( function_exists( 'WC' ) ) {
+            if ( null === WC()->session ) {
+                $session_class = apply_filters( 'woocommerce_session_handler', 'WC_Session_Handler' );
+                WC()->session  = new $session_class();
+                WC()->session->init();
+            }
+            if ( null === WC()->cart ) {
+                WC()->cart = new WC_Cart();
+            }
+            if ( null === WC()->customer ) {
+                WC()->customer = new WC_Customer( get_current_user_id(), true );
+            }
+        }
+
+        // Check either the custom w3opcfe_nonce or the WooCommerce core checkout process nonce
+        $w3_nonce = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
+        $wc_nonce = isset( $_REQUEST['woocommerce-process-checkout-nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['woocommerce-process-checkout-nonce'] ) ) : '';
+
+        $is_w3_valid = ! empty( $w3_nonce ) && wp_verify_nonce( $w3_nonce, 'w3opcfe_nonce' );
+        $is_wc_valid = ! empty( $wc_nonce ) && wp_verify_nonce( $wc_nonce, 'woocommerce-process_checkout' );
+
+        if ( ! $is_w3_valid && ! $is_wc_valid ) {
+            wp_send_json( [
+                'result'   => 'failure',
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Your session has expired. Please refresh the page and try again.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Your session has expired. Please refresh the page and try again.', 'on-page-checkout-for-elementor' ),
+            ] );
+        }
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->checkout() ) {
             wp_send_json( [

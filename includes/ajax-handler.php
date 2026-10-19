@@ -15,7 +15,29 @@ class W3OPCFE_Ajax_Handler {
     }
 
     public function load_checkout_fields() {
-        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
+        if ( ! headers_sent() ) {
+            nocache_headers();
+        }
+
+        // Bootstrap WooCommerce session, cart, and customer in admin-ajax context if needed
+        if ( function_exists( 'WC' ) ) {
+            if ( null === WC()->session ) {
+                $session_class = apply_filters( 'woocommerce_session_handler', 'WC_Session_Handler' );
+                WC()->session  = new $session_class();
+                WC()->session->init();
+            }
+            if ( null === WC()->cart ) {
+                WC()->cart = new WC_Cart();
+            }
+            if ( null === WC()->customer ) {
+                WC()->customer = new WC_Customer( get_current_user_id(), true );
+            }
+        }
+
+        // Cache-safe nonce check: When page caching (LiteSpeed Cache, Cloudflare, etc.) is active,
+        // static HTML pages served to guests can have nonces older than 12-24 hours.
+        // We check the nonce without hard wp_die so that reading public checkout fields never breaks.
+        $nonce_valid = check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->customer || ! WC()->session ) {
             wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) ] );
@@ -594,6 +616,7 @@ class W3OPCFE_Ajax_Handler {
 
         wp_send_json_success( [
             'fields'        => $checkout_fields,
+            'nonce'         => wp_create_nonce( 'w3opcfe_nonce' ),
             'cart_total'    => WC()->cart ? WC()->cart->get_total() : '',
             'cart_count'    => $total_quantity,
             'cart_hash'     => WC()->cart ? WC()->cart->get_cart_hash() : '',
@@ -676,7 +699,7 @@ class W3OPCFE_Ajax_Handler {
     }
 
     public function add_to_cart() {
-        check_ajax_referer( 'w3opcfe_nonce', 'nonce' );
+        check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
 
         $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;

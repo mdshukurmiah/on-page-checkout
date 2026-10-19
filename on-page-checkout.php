@@ -325,6 +325,7 @@ final class W3OPCFE_On_Page_Checkout {
             'nonce'                    => wp_create_nonce( 'w3opcfe_nonce' ),
             'loading_text'             => esc_html__( 'Loading...', 'on-page-checkout-for-elementor' ),
             'error_text'               => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout-for-elementor' ),
+            'retry_text'               => esc_html__( 'Retry', 'on-page-checkout-for-elementor' ),
             'processing_text'          => esc_html__( 'Processing...', 'on-page-checkout-for-elementor' ),
             'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout-for-elementor' ),
             'place_order_text'         => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),

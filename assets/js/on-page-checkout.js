@@ -127,6 +127,9 @@ jQuery(document).ready(function($) {
             data: formDataObj, // send all data
             success: function(response) {
                 if (response.success) {
+                    if (response.data && response.data.nonce) {
+                        w3opcfe_ajax_object.nonce = response.data.nonce;
+                    }
                     checkoutFieldsContainer.html(response.data.fields);
 
                     // Synchronize WooCommerce cart fragments with PixelBeacon (fires deduplicated AddToCart browser pixel)
@@ -224,8 +227,17 @@ jQuery(document).ready(function($) {
                 }
             },
 
-            error: function() {
-                checkoutFieldsContainer.html('<p class="opc-error">' + (w3opcfe_ajax_object.error_text || 'An error occurred. Please try again.') + '</p>');
+            error: function(xhr, status, error) {
+                console.error('[OPC] Failed to load checkout fields:', status, error, xhr.status, xhr.responseText);
+                var errorMsg = w3opcfe_ajax_object.error_text || 'An error occurred. Please try again.';
+                checkoutFieldsContainer.html(
+                    '<div class="opc-error">' +
+                        '<p>' + errorMsg + '</p>' +
+                        '<button type="button" class="opc-retry-load-btn button alt" style="margin-top:10px;cursor:pointer;">' +
+                            (w3opcfe_ajax_object.retry_text || 'Retry') +
+                        '</button>' +
+                    '</div>'
+                );
             },
             complete: function() {
                 w3opcfe_hideLoading(widget);
@@ -541,6 +553,13 @@ jQuery(document).ready(function($) {
             wrapper.addClass('opc-summary-open');
             reviewTable.hide().slideDown(200);
         }
+    });
+
+    // Event handler to retry loading checkout fields on network or cache recovery
+    $(document).on('click', '.opc-retry-load-btn', function(e) {
+        e.preventDefault();
+        var widget = $(this).closest('.on-page-checkout-widget');
+        w3opcfe_loadCheckoutFields(widget);
     });
 
     // Event handler for form submission
