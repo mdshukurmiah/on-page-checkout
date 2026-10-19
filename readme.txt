@@ -4,7 +4,7 @@ Tags: woocommerce, checkout, elementor, one-page-checkout, woocommerce-checkout
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,17 @@ Yes. Set the **Preselect Product by Query String Parameter** field in the widget
 
 == Changelog ==
 
+= 1.0.3 =
+* Feature: Added Greenweb SMS WooCommerce OTP verification integration with a dedicated modular bridge (`greenweb/`).
+* Feature: Converted the inline OTP container into an interactive, centered modal popup with a frosted backdrop overlay.
+* Feature: Added modal backdrop click-to-close, ESC key dismissal, scroll-locking, and real-time digit auto-focus.
+* Feature: Added custom icon color styling controls in the Scarcity widget.
+* Feature: Added custom badge options per product card with configurable text, text color, background color, and top-left / top-right positioning.
+* Feature: Added typography and color settings for original/regular price alongside active price styling in product cards.
+* Enhancement: Added activity checks to strictly initialize OTP features only when both Greenweb SMS base and Pro plugins are active with checkout OTP enabled.
+* Fix: Resolved payment method detection fallback when a single payment method (e.g. COD) is present as a hidden input.
+* Fix: Fixed global namespace class resolution for `\W3OPCFE_Greenweb` inside namespaced widget files.
+
 = 1.0.2 =
 * Feature: Added Countdown widget with target date/time, interval and daily auto-reset, Bangla number conversions, and full typography/box styling.
 * Feature: Added Scarcity widget with pulsing SVG indicator, customizable icons, count up/down modes, persistent localStorage counts, and style controls.
@@ -92,6 +103,9 @@ Yes. Set the **Preselect Product by Query String Parameter** field in the widget
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Adds Greenweb SMS OTP verification modal integration, custom product badges, original price styling, scarcity icon color options, and payment method fallback improvements.
 
 = 1.0.2 =
 Adds new Countdown and Scarcity widgets, multi-product selection, variation card display, out-of-stock badges, searchable products, and responsive styling controls.

@@ -574,7 +574,7 @@ jQuery(document).ready(function($) {
         form.find('input[name="variation_id"].opc-selected-variation-id').val(variationId);
 
         // Check if payment method is selected
-        var paymentMethod = form.find('input[name="payment_method"]:checked').val();
+        var paymentMethod = form.find('input[name="payment_method"]:checked').val() || form.find('input[name="payment_method"]').val();
         if (!paymentMethod) {
             var noPaymentMsg = 'Please select a payment method.';
             if (noticesContainer.length) {

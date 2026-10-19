@@ -2545,6 +2545,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-multi-select="' . esc_attr( $is_multi_select ? 'yes' : 'no' ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ) . '" data-shipping-method-title="' . esc_attr( $settings['shipping_method_heading'] ?? esc_html__( 'Shipping Method', 'on-page-checkout-for-elementor' ) ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ) . '" data-mobile-summary-label="' . esc_attr( $mobile_summary_label ) . '" data-mobile-summary-collapsed="' . esc_attr( $mobile_summary_collapsed ) . '" data-out-of-stock-label="' . esc_attr( $badge_text ) . '">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
         echo '<div class="opc-checkout-notices" style="display:none;"></div>';
+        if ( class_exists( '\W3OPCFE_Greenweb' ) && \W3OPCFE_Greenweb::is_otp_enabled() ) {
+            echo '<input type="hidden" name="wps_user_meta_field" value="billing_phone">';
+        }
 
         // Product selection cards
         if ( count( $render_items ) > 1 ) {

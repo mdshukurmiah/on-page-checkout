@@ -1,0 +1,260 @@
+/**
+ * Greenweb SMS WooCommerce OTP Modal Styles for On-Page Checkout
+ */
+
+/* Backdrop overlay */
+.gw-otp-modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(15, 23, 42, 0.65) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    z-index: 999998 !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease !important;
+    pointer-events: none;
+}
+
+.gw-otp-modal-backdrop.is-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Prevent body scrolling when modal is open */
+body.gw-otp-modal-open {
+    overflow: hidden !important;
+}
+
+/* Modal Window Container */
+.opc-checkout-form #gw-otp-inline.gw-otp-container,
+#gw-otp-inline.gw-otp-container {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(0.96) !important;
+    width: calc(100% - 32px) !important;
+    max-width: 440px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+    padding: 34px 28px 26px !important;
+    z-index: 999999 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    opacity: 0;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+    font-family: inherit !important;
+}
+
+/* When displayed/visible */
+.opc-checkout-form #gw-otp-inline.gw-otp-container.gw-modal-visible,
+#gw-otp-inline.gw-otp-container.gw-modal-visible {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+}
+
+/* Cancel / Close Button */
+.opc-checkout-form #gw-otp-inline #gw-otp-cancel-link.gw-otp-close-btn,
+#gw-otp-inline #gw-otp-cancel-link.gw-otp-close-btn {
+    position: absolute !important;
+    top: 14px !important;
+    right: 14px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.opc-checkout-form #gw-otp-inline #gw-otp-cancel-link.gw-otp-close-btn:hover,
+#gw-otp-inline #gw-otp-cancel-link.gw-otp-close-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    transform: scale(1.08) !important;
+}
+
+/* Title and Subtitle */
+.opc-checkout-form #gw-otp-inline .gw-otp-title,
+#gw-otp-inline .gw-otp-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-align: center !important;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.3 !important;
+}
+
+.opc-checkout-form #gw-otp-inline .gw-otp-subtitle,
+#gw-otp-inline .gw-otp-subtitle {
+    font-size: 14px !important;
+    color: #64748b !important;
+    text-align: center !important;
+    margin: 0 0 20px 0 !important;
+    line-height: 1.5 !important;
+}
+
+/* Alert Box */
+.opc-checkout-form #gw-otp-inline .gw-otp-alert,
+#gw-otp-inline .gw-otp-alert {
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    margin-bottom: 15px !important;
+    text-align: center !important;
+}
+
+/* Loading Box */
+.opc-checkout-form #gw-otp-inline .gw-otp-loading,
+#gw-otp-inline .gw-otp-loading {
+    margin-bottom: 12px !important;
+    text-align: center !important;
+    color: #016520 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+}
+
+/* Phone Input */
+.opc-checkout-form #gw-otp-inline .gw-otp-phone-input,
+#gw-otp-inline .gw-otp-phone-input {
+    width: 100% !important;
+    padding: 12px 14px !important;
+    font-size: 16px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+    text-align: center !important;
+    margin-bottom: 14px !important;
+}
+
+.opc-checkout-form #gw-otp-inline .gw-otp-phone-input:focus,
+#gw-otp-inline .gw-otp-phone-input:focus {
+    border-color: #016520 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(1, 101, 32, 0.15) !important;
+}
+
+/* Digits Wrap */
+.opc-checkout-form #gw-otp-inline .gw-otp-digits-wrap,
+#gw-otp-inline .gw-otp-digits-wrap {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    margin: 18px 0 22px 0 !important;
+}
+
+.opc-checkout-form #gw-otp-inline .gw-otp-digit,
+#gw-otp-inline .gw-otp-digit {
+    width: 52px !important;
+    height: 58px !important;
+    text-align: center !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    border: 2px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s !important;
+    box-sizing: border-box !important;
+}
+
+.opc-checkout-form #gw-otp-inline .gw-otp-digit:focus,
+#gw-otp-inline .gw-otp-digit:focus {
+    border-color: #016520 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(1, 101, 32, 0.18) !important;
+    outline: none !important;
+}
+
+/* Action Buttons */
+.opc-checkout-form #gw-otp-inline #gw-otp-verify-btn,
+.opc-checkout-form #gw-otp-inline #gw-otp-send-btn,
+#gw-otp-inline #gw-otp-verify-btn,
+#gw-otp-inline #gw-otp-send-btn {
+    display: block !important;
+    width: 100% !important;
+    padding: 13px 18px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    border-radius: 8px !important;
+    background: #016520 !important;
+    color: #ffffff !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(1, 101, 32, 0.25) !important;
+    transition: all 0.2s ease !important;
+    margin-top: 10px !important;
+}
+
+.opc-checkout-form #gw-otp-inline #gw-otp-verify-btn:hover,
+.opc-checkout-form #gw-otp-inline #gw-otp-send-btn:hover,
+#gw-otp-inline #gw-otp-verify-btn:hover,
+#gw-otp-inline #gw-otp-send-btn:hover {
+    background: #014d18 !important;
+    box-shadow: 0 6px 16px rgba(1, 101, 32, 0.35) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Footer Links */
+.opc-checkout-form #gw-otp-inline .gw-otp-links,
+#gw-otp-inline .gw-otp-links {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 18px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid #f1f5f9 !important;
+    font-size: 13px !important;
+}
+
+.opc-checkout-form #gw-otp-inline .gw-otp-links a,
+#gw-otp-inline .gw-otp-links a {
+    color: #475569 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: color 0.2s ease !important;
+}
+
+.opc-checkout-form #gw-otp-inline .gw-otp-links a:hover,
+#gw-otp-inline .gw-otp-links a:hover {
+    color: #016520 !important;
+    text-decoration: underline !important;
+}
+
+@media (max-width: 480px) {
+    .opc-checkout-form #gw-otp-inline.gw-otp-container,
+    #gw-otp-inline.gw-otp-container {
+        padding: 26px 18px 20px !important;
+        width: calc(100% - 24px) !important;
+    }
+
+    .opc-checkout-form #gw-otp-inline .gw-otp-digit,
+    #gw-otp-inline .gw-otp-digit {
+        width: 44px !important;
+        height: 50px !important;
+        font-size: 20px !important;
+    }
+}

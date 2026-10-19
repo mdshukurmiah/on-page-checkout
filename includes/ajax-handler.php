@@ -372,10 +372,14 @@ class W3OPCFE_Ajax_Handler {
 
             <?php do_action( 'woocommerce_review_order_after_payment' ); ?>
 
+            <?php do_action( 'woocommerce_review_order_before_submit' ); ?>
+
             <?php
             $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout-for-elementor' );
-            echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" id="place_order">' . esc_html( $order_button_name ) . '</button>';
+            echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" name="woocommerce_checkout_place_order" id="place_order" value="' . esc_attr( $order_button_name ) . '">' . esc_html( $order_button_name ) . '</button>';
             ?>
+
+            <?php do_action( 'woocommerce_review_order_after_submit' ); ?>
         </div>
         <div id="order_review" class="order-details woocommerce-checkout-review-order">
             <div class="order-details-wrapper<?php echo esc_attr( $initial_wrapper_class ); ?>">
