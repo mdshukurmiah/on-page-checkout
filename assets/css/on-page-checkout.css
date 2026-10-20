@@ -105,11 +105,13 @@
 .opc-custom-badge.opc-badge-pos-top-right {
     top: 6px;
     right: 6px;
+    left: auto;
 }
 
 .opc-custom-badge.opc-badge-pos-top-left {
     top: 6px;
     left: 6px;
+    right: auto;
 }
 
 /* If out of stock badge is also at top-left, stack custom badge below it */

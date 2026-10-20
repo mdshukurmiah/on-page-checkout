@@ -757,6 +757,93 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             ]
         );
 
+        $this->add_responsive_control(
+            'custom_badge_top',
+            [
+                'label'      => esc_html__( 'Top Position', 'on-page-checkout-for-elementor' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'range'      => [
+                    'px'  => [
+                        'min'  => -100,
+                        'max'  => 200,
+                        'step' => 1,
+                    ],
+                    '%'   => [
+                        'min'  => -50,
+                        'max'  => 100,
+                        'step' => 1,
+                    ],
+                    'rem' => [
+                        'min'  => -10,
+                        'max'  => 20,
+                        'step' => 0.1,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'top: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'custom_badge_left',
+            [
+                'label'      => esc_html__( 'Left Position', 'on-page-checkout-for-elementor' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'range'      => [
+                    'px'  => [
+                        'min'  => -100,
+                        'max'  => 200,
+                        'step' => 1,
+                    ],
+                    '%'   => [
+                        'min'  => -50,
+                        'max'  => 100,
+                        'step' => 1,
+                    ],
+                    'rem' => [
+                        'min'  => -10,
+                        'max'  => 20,
+                        'step' => 0.1,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'left: {{SIZE}}{{UNIT}}; right: auto;',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'custom_badge_right',
+            [
+                'label'      => esc_html__( 'Right Position', 'on-page-checkout-for-elementor' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'range'      => [
+                    'px'  => [
+                        'min'  => -100,
+                        'max'  => 200,
+                        'step' => 1,
+                    ],
+                    '%'   => [
+                        'min'  => -50,
+                        'max'  => 100,
+                        'step' => 1,
+                    ],
+                    'rem' => [
+                        'min'  => -10,
+                        'max'  => 20,
+                        'step' => 0.1,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .opc-custom-badge' => 'right: {{SIZE}}{{UNIT}}; left: auto;',
+                ],
+            ]
+        );
+
         $this->add_control(
             'custom_badge_color',
             [
