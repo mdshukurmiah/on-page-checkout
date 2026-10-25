@@ -73,6 +73,34 @@
 		}
 
 		$wrapper.find('.w3opcfe-scarcity-number, .singlegrid-pdp-scarcity-number').text(outputCount);
+
+		// Handle Scarcity Progress Bar
+		const layout  = $wrapper.attr('data-layout') || ($wrapper.hasClass('w3opcfe-scarcity-has-bar') ? 'bar' : 'inline');
+		const barMax  = parseInt($wrapper.attr('data-bar-max'), 10) || maxVal || 100;
+		const barCalc = $wrapper.attr('data-bar-calc') || 'remaining';
+
+		if (layout === 'bar' || $wrapper.find('.w3opcfe-scarcity-progress-bar, .singlegrid-pdp-scarcity-progress-bar').length) {
+			let percent = 50;
+			if (barCalc === 'direct_percent') {
+				percent = Math.max(0, Math.min(100, count));
+			} else if (barCalc === 'depleted') {
+				percent = Math.max(0, Math.min(100, Math.round(((barMax - count) / barMax) * 100)));
+			} else {
+				percent = Math.max(0, Math.min(100, Math.round((count / barMax) * 100)));
+			}
+
+			const $bar  = $wrapper.find('.w3opcfe-scarcity-progress-bar, .singlegrid-pdp-scarcity-progress-bar');
+			const $fill = $wrapper.find('.w3opcfe-scarcity-progress-fill, .singlegrid-pdp-scarcity-progress-fill');
+
+			$bar.attr('aria-valuenow', percent);
+			if (window.requestAnimationFrame) {
+				window.requestAnimationFrame(function() {
+					$fill.css('width', percent + '%');
+				});
+			} else {
+				$fill.css('width', percent + '%');
+			}
+		}
 	};
 
 	$(window).on('elementor/frontend/init', function() {

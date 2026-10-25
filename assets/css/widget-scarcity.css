@@ -69,3 +69,75 @@
 	box-sizing: border-box;
 	margin: 0 4px;
 }
+
+/* Header & Text Structure */
+.w3opcfe-scarcity-header,
+.singlegrid-pdp-scarcity-header {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	box-sizing: border-box;
+}
+
+.w3opcfe-scarcity-text,
+.singlegrid-pdp-scarcity-text {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+/* Warning Triangle SVG */
+.w3opcfe-scarcity-warning-icon,
+.singlegrid-pdp-scarcity-warning-icon {
+	color: inherit;
+	line-height: 1;
+}
+
+.w3opcfe-warning-svg,
+.singlegrid-pdp-warning-svg {
+	width: 1.15em;
+	height: 1.15em;
+	display: inline-block;
+	vertical-align: middle;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	box-sizing: border-box;
+}
+
+/* Progress Bar Layout (Bar Mode) */
+.w3opcfe-scarcity-wrapper.w3opcfe-scarcity-has-bar,
+.singlegrid-pdp-scarcity-wrapper.singlegrid-pdp-scarcity-has-bar {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+}
+
+.w3opcfe-scarcity-wrapper.w3opcfe-scarcity-has-bar .w3opcfe-scarcity-header,
+.singlegrid-pdp-scarcity-wrapper.singlegrid-pdp-scarcity-has-bar .singlegrid-pdp-scarcity-header {
+	width: 100%;
+}
+
+.w3opcfe-scarcity-progress-bar,
+.singlegrid-pdp-scarcity-progress-bar {
+	width: 100%;
+	height: 8px;
+	background-color: rgba(255, 255, 255, 0.15);
+	border-radius: 999px;
+	overflow: hidden;
+	margin-top: 10px;
+	position: relative;
+	box-sizing: border-box;
+}
+
+.w3opcfe-scarcity-progress-fill,
+.singlegrid-pdp-scarcity-progress-fill {
+	height: 100%;
+	width: 0%;
+	background-color: #eeb029;
+	border-radius: 999px;
+	transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+	box-sizing: border-box;
+}
+

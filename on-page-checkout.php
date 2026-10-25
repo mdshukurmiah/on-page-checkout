@@ -2,7 +2,7 @@
 /**
  * Plugin Name: On-Page Checkout for Elementor
  * Description: A custom Elementor widget to display WooCommerce products and enable on-page checkout.
- * Version:     1.0.3
+ * Version:     1.0.4
  * Author:      W3 Relations, shukur5674
  * Author URI:  https://w3relations.com/
  * Requires Plugins: elementor, woocommerce
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'W3OPCFE_PLUGIN_FILE', __FILE__ );
 define( 'W3OPCFE_PLUGIN_DIR', plugin_dir_path( W3OPCFE_PLUGIN_FILE ) );
 define( 'W3OPCFE_PLUGIN_URL', plugin_dir_url( W3OPCFE_PLUGIN_FILE ) );
-define( 'W3OPCFE_VERSION', '1.0.3' );
+define( 'W3OPCFE_VERSION', '1.0.4' );
 
 /**
  * Main On Page Checkout Class.

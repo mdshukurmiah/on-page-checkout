@@ -4,7 +4,7 @@ Tags: woocommerce, checkout, elementor, one-page-checkout, woocommerce-checkout
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ On-Page Checkout for Elementor adds a drag-and-drop Elementor widget that combin
 * Out-of-stock badge with dynamic disabled state handling
 * Searchable product selection control in Elementor editor
 * Product Countdown widget with target date, auto-reset, and custom styles
-* Product Scarcity widget with animated pulsing indicator and live stock counters
+* Product Scarcity widget with animated pulsing indicator, warning triangle, and live stock progress bars
 * Configurable section headings (billing, shipping, order summary, payment, button text)
 * Pre-select a product via a URL query string parameter
 * Enable / disable and relabel individual checkout fields from the admin settings page
@@ -68,6 +68,12 @@ Yes. For variable products an in-card dropdown is shown that lets the customer p
 Yes. Set the **Preselect Product by Query String Parameter** field in the widget settings to a parameter name (e.g. `product_id`). Visiting `yoursite.com/checkout-page/?product_id=42` will pre-select product 42.
 
 == Changelog ==
+
+= 1.0.4 =
+* Feature: Added new "Progress Bar" layout for the Product Scarcity widget with customizable bar height, fill color, track background, border radius, and top spacing.
+* Feature: Added built-in outline Alert/Warning Triangle SVG icon option matching scarcity progress banners.
+* Feature: Added responsive icon sizing and spacing controls for scarcity indicators.
+* Feature: Added configurable bar reference scale and progress calculation modes (remaining, depleted/sold, direct percentage).
 
 = 1.0.3 =
 * Feature: Added Greenweb SMS WooCommerce OTP verification integration with a dedicated modular bridge (`greenweb/`).
