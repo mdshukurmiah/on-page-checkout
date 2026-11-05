@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
         widgetSettings['shippingMethodTitle'] = widgetparent.attr('data-shipping-method-title') || 'Shipping Method';
         widgetSettings['billingTitle'] = widgetparent.attr('data-billing-title');
         widgetSettings['additionalInfoTitle'] = widgetparent.attr('data-additional-info-title');
-        widgetSettings['orderSummaryTitle'] = widgetparent.attr('data-order-summery-title');
+        widgetSettings['orderSummaryTitle'] = widgetparent.attr('data-order-summary-title') || widgetparent.attr('data-order-summery-title') || '';
         widgetSettings['paymentMethodTitle'] = widgetparent.attr('data-payment-method-title');
         widgetSettings['orderButtonName'] = widgetparent.attr('data-order-button-name');
         widgetSettings['mobileSummaryLabel'] = widgetparent.attr('data-mobile-summary-label') || 'Order summary';
@@ -118,10 +118,15 @@ jQuery(document).ready(function($) {
         formDataObj.selected_products = JSON.stringify(selectedProducts);
         formDataObj.widgetSettings = widgetSettings;
 
-        w3opcfe_showLoading(widget);
-        // checkoutFieldsContainer.html('<p>' + (w3opcfe_ajax_object.loading_text || 'Loading...') + '</p>');
+        // Abort any previous pending AJAX request for this widget to prevent race conditions
+        var existingXhr = widget.data('w3opcfe-active-xhr');
+        if (existingXhr && existingXhr.readyState !== 4) {
+            existingXhr.abort();
+        }
 
-        $.ajax({
+        w3opcfe_showLoading(widget);
+
+        var activeXhr = $.ajax({
             type: 'POST',
             url: w3opcfe_ajax_object.ajax_url,
             data: formDataObj, // send all data
@@ -228,6 +233,9 @@ jQuery(document).ready(function($) {
             },
 
             error: function(xhr, status, error) {
+                if (status === 'abort') {
+                    return; // Request was deliberately aborted by a newer interaction
+                }
                 console.error('[OPC] Failed to load checkout fields:', status, error, xhr.status, xhr.responseText);
                 var errorMsg = w3opcfe_ajax_object.error_text || 'An error occurred. Please try again.';
                 checkoutFieldsContainer.html(
@@ -240,17 +248,25 @@ jQuery(document).ready(function($) {
                 );
             },
             complete: function() {
+                widget.removeData('w3opcfe-active-xhr');
                 w3opcfe_hideLoading(widget);
             }
         });
+
+        widget.data('w3opcfe-active-xhr', activeXhr);
     }
 
     // Helper function to initialize widget instance(s)
-    function w3opcfe_initWidget(container) {
+    function w3opcfe_initWidget(container, force) {
         var $target = $(container);
         var $widgets = $target.hasClass('on-page-checkout-widget') ? $target : $target.find('.on-page-checkout-widget');
         $widgets.each(function() {
-            w3opcfe_loadCheckoutFields($(this));
+            var $w = $(this);
+            if (!force && $w.data('w3opcfe-initialized')) {
+                return; // Prevent duplicate initialization on page load
+            }
+            $w.data('w3opcfe-initialized', true);
+            w3opcfe_loadCheckoutFields($w);
         });
     }
 
@@ -261,6 +277,7 @@ jQuery(document).ready(function($) {
     var w3opcfe_bindElementorHooks = function() {
         if (window.elementorFrontend && window.elementorFrontend.hooks) {
             elementorFrontend.hooks.addAction('frontend/element_ready/w3opcfe-on-page-checkout.default', function($scope) {
+                // In Elementor editor or preview, elements re-render dynamically
                 w3opcfe_initWidget($scope);
             });
         }

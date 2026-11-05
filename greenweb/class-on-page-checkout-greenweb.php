@@ -58,8 +58,7 @@ class W3OPCFE_Greenweb {
             || defined( 'WP_SMS_DIR' )
             || in_array( 'greenwebsms/wp-sms.php', $active_plugins, true );
 
-        $pro_active = class_exists( 'Otp' )
-            || class_exists( '\WP_SMS\Pro\WooCommerce\Otp' )
+        $pro_active = class_exists( '\WP_SMS\Pro\WooCommerce\Otp' )
             || defined( 'GREENWEB_SMS_PRO_DIR' )
             || in_array( 'greenwebsms-2/wp-sms-pro.php', $active_plugins, true );
 

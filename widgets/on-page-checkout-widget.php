@@ -2243,19 +2243,27 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
      * @return array
      */
     private function get_product_options() {
+        static $cached_options = null;
+        if ( null !== $cached_options ) {
+            return $cached_options;
+        }
+
         $options = [];
 
         if ( ! post_type_exists( 'product' ) && ! function_exists( 'wc_get_products' ) ) {
+            $cached_options = $options;
             return $options;
         }
 
         $posts = get_posts( [
-            'post_type'        => 'product',
-            'post_status'      => [ 'publish', 'private' ],
-            'posts_per_page'   => -1,
-            'orderby'          => 'title',
-            'order'            => 'ASC',
-            'suppress_filters' => true,
+            'post_type'              => 'product',
+            'post_status'            => [ 'publish', 'private' ],
+            'posts_per_page'         => -1,
+            'orderby'                => 'title',
+            'order'                  => 'ASC',
+            'suppress_filters'       => true,
+            'no_found_rows'          => true,
+            'update_post_term_cache' => false,
         ] );
 
         if ( ! empty( $posts ) ) {
@@ -2285,6 +2293,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             }
         }
 
+        $cached_options = $options;
         return $options;
     }
 
@@ -2629,7 +2638,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $custom_badge_pos = ! empty( $settings['custom_badge_position'] ) ? $settings['custom_badge_position'] : 'top-right';
         $custom_badge_pos_class = ( 'top-left' === $custom_badge_pos ) ? 'opc-badge-pos-top-left' : 'opc-badge-pos-top-right';
 
-        echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-multi-select="' . esc_attr( $is_multi_select ? 'yes' : 'no' ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ) . '" data-shipping-method-title="' . esc_attr( $settings['shipping_method_heading'] ?? esc_html__( 'Shipping Method', 'on-page-checkout-for-elementor' ) ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ) . '" data-mobile-summary-label="' . esc_attr( $mobile_summary_label ) . '" data-mobile-summary-collapsed="' . esc_attr( $mobile_summary_collapsed ) . '" data-out-of-stock-label="' . esc_attr( $badge_text ) . '">';
+        echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-multi-select="' . esc_attr( $is_multi_select ? 'yes' : 'no' ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ?? '' ) . '" data-shipping-method-title="' . esc_attr( $settings['shipping_method_heading'] ?? esc_html__( 'Shipping Method', 'on-page-checkout-for-elementor' ) ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ?? '' ) . '" data-order-summary-title="' . esc_attr( $settings['order_summary_heading'] ?? '' ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ?? '' ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ?? '' ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ?? '' ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ?? '' ) . '" data-mobile-summary-label="' . esc_attr( $mobile_summary_label ) . '" data-mobile-summary-collapsed="' . esc_attr( $mobile_summary_collapsed ) . '" data-out-of-stock-label="' . esc_attr( $badge_text ) . '">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
         echo '<div class="opc-checkout-notices" style="display:none;"></div>';
         if ( class_exists( '\W3OPCFE_Greenweb' ) && \W3OPCFE_Greenweb::is_otp_enabled() ) {
@@ -2654,7 +2663,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                     $data_attr = ' data-available-variations=\'' . esc_attr( wp_json_encode( $item['available_variations'] ) ) . '\'';
                 }
 
-                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . wp_kses_post( $data_attr ) . '>';
+                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . $data_attr . '>';
                     echo '<label>';
                         echo '<span class="opc-stock-badge opc-out-of-stock-badge"' . ( $is_out_of_stock ? '' : ' style="display:none;"' ) . '>' . esc_html( $badge_text ) . '</span>';
                         if ( ! empty( $item['custom_badge_text'] ) ) {
@@ -2701,7 +2710,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             }
 
             echo '<div class="opc-products-wrapper">';
-                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . wp_kses_post( $data_attr ) . '>';
+                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . $data_attr . '>';
                     echo '<label>';
                         echo '<span class="opc-stock-badge opc-out-of-stock-badge"' . ( $is_out_of_stock ? '' : ' style="display:none;"' ) . '>' . esc_html( $badge_text ) . '</span>';
                         if ( ! empty( $item['custom_badge_text'] ) ) {

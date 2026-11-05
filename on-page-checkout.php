@@ -116,9 +116,6 @@ final class W3OPCFE_On_Page_Checkout {
             return;
         }
 
-        // Autoload classes
-        spl_autoload_register( [ $this, 'autoload' ] );
-
         // Initialize the plugin
         $this->includes();
         $this->init_hooks();
@@ -183,30 +180,6 @@ final class W3OPCFE_On_Page_Checkout {
     }
 
     /**
-     * Autoload
-     *
-     * Autoloads plugin classes.
-     *
-     * @since 1.0.0
-     * @access private
-     * @param string $class The name of the class to load.
-     */
-    private function autoload( $class ) {
-        if ( 0 !== strpos( $class, 'W3OPCFE_' ) ) {
-            return;
-        }
-
-        $filename = str_replace( '_', '-', strtolower( $class ) );
-        $filename = str_replace( 'w3opcfe-', '', $filename );
-
-        $file = W3OPCFE_PLUGIN_DIR . 'includes/' . $filename . '.php';
-
-        if ( file_exists( $file ) ) {
-            require $file;
-        }
-    }
-
-    /**
      * Includes
      *
      * Include necessary files.
@@ -215,7 +188,6 @@ final class W3OPCFE_On_Page_Checkout {
      * @access private
      */
     private function includes() {
-        require_once W3OPCFE_PLUGIN_DIR . 'includes/elementor-widget.php';
         require_once W3OPCFE_PLUGIN_DIR . 'includes/woocommerce-integration.php';
         require_once W3OPCFE_PLUGIN_DIR . 'includes/ajax-handler.php';
         require_once W3OPCFE_PLUGIN_DIR . 'includes/option-pages.php';
@@ -236,7 +208,6 @@ final class W3OPCFE_On_Page_Checkout {
         add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
-        add_action( 'elementor/frontend/after_enqueue_scripts', [ $this, 'enqueue_elementor_scripts' ] );
     }
 
     /**
@@ -288,11 +259,6 @@ final class W3OPCFE_On_Page_Checkout {
      * @access public
      */
     public function enqueue_frontend_scripts() {
-        if ( class_exists( 'WooCommerce' ) ) {
-            wp_enqueue_script( 'wc-country-select' );
-            wp_enqueue_script( 'wc-address-i18n' );
-        }
-
         $script_deps = [ 'jquery' ];
         if ( wp_script_is( 'pixelbeacon-public', 'registered' ) ) {
             $script_deps[] = 'pixelbeacon-public';
@@ -300,18 +266,17 @@ final class W3OPCFE_On_Page_Checkout {
             $script_deps[] = 'w3-pixel-public';
         }
 
+        // Register main checkout assets — Elementor will auto-enqueue via get_style_depends()/get_script_depends()
         wp_register_style( 'w3opcfe-frontend-style', W3OPCFE_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], W3OPCFE_VERSION );
-        wp_register_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', $script_deps, W3OPCFE_VERSION, true );
-        wp_enqueue_style( 'w3opcfe-frontend-style' );
-        wp_enqueue_script( 'w3opcfe-frontend-script' );
+        wp_register_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', array_merge( $script_deps, [ 'wc-country-select', 'wc-address-i18n' ] ), W3OPCFE_VERSION, true );
 
-        // Register Countdown Widget Assets
+        // Register Countdown Widget Assets (deduplicated: aliases point to the same files)
         wp_register_style( 'w3opcfe-countdown-style', W3OPCFE_PLUGIN_URL . 'assets/css/widget-countdown.css', [], W3OPCFE_VERSION );
         wp_register_script( 'w3opcfe-countdown-script', W3OPCFE_PLUGIN_URL . 'assets/js/widget-countdown.js', [ 'jquery' ], W3OPCFE_VERSION, true );
         wp_register_style( 'singlegrid-pdp-widget-product-countdown', W3OPCFE_PLUGIN_URL . 'assets/css/widget-countdown.css', [], W3OPCFE_VERSION );
         wp_register_script( 'singlegrid-pdp-widget-product-countdown', W3OPCFE_PLUGIN_URL . 'assets/js/widget-countdown.js', [ 'jquery' ], W3OPCFE_VERSION, true );
 
-        // Register Scarcity Widget Assets
+        // Register Scarcity Widget Assets (deduplicated: aliases point to the same files)
         wp_register_style( 'w3opcfe-scarcity-style', W3OPCFE_PLUGIN_URL . 'assets/css/widget-scarcity.css', [], W3OPCFE_VERSION );
         wp_register_script( 'w3opcfe-scarcity-script', W3OPCFE_PLUGIN_URL . 'assets/js/widget-scarcity.js', [ 'jquery' ], W3OPCFE_VERSION, true );
         wp_register_style( 'singlegrid-pdp-widget-product-scarcity', W3OPCFE_PLUGIN_URL . 'assets/css/widget-scarcity.css', [], W3OPCFE_VERSION );
@@ -369,18 +334,6 @@ final class W3OPCFE_On_Page_Checkout {
             W3OPCFE_VERSION,
             true
         );
-    }
-
-    /**
-     * Enqueue Elementor Scripts
-     *
-     * Enqueue Elementor specific scripts.
-     *
-     * @since 1.0.0
-     * @access public
-     */
-    public function enqueue_elementor_scripts() {
-        $this->enqueue_frontend_scripts();
     }
 }
 

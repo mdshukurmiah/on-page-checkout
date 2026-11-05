@@ -8,8 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class W3OPCFE_WooCommerce_Integration {
 
     public function __construct() {
-        add_action( 'wp_ajax_w3opcfe_get_checkout_form', [ $this, 'get_checkout_form' ] );
-        add_action( 'wp_ajax_nopriv_w3opcfe_get_checkout_form', [ $this, 'get_checkout_form' ] );
         add_action( 'wp_ajax_w3opcfe_process_checkout', [ $this, 'process_checkout' ] );
         add_action( 'wp_ajax_nopriv_w3opcfe_process_checkout', [ $this, 'process_checkout' ] );
     }
@@ -19,7 +17,9 @@ class W3OPCFE_WooCommerce_Integration {
             nocache_headers();
         }
 
-        check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
+        if ( ! check_ajax_referer( 'w3opcfe_nonce', 'nonce', false ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid security token.', 'on-page-checkout-for-elementor' ) ], 403 );
+        }
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart ) {
             wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce cart is not initialized.', 'on-page-checkout-for-elementor' ) ] );
@@ -247,18 +247,19 @@ class W3OPCFE_WooCommerce_Integration {
 
             if ( $product->is_type( 'variable' ) ) {
                 $variation = [];
-                if ( 1 === count( $items ) ) {
+
+                if ( $v_id ) {
+                    $var_product = wc_get_product( $v_id );
+                    if ( $var_product instanceof WC_Product_Variation ) {
+                        $variation = $var_product->get_variation_attributes();
+                    }
+                }
+
+                if ( empty( $variation ) && 1 === count( $items ) ) {
                     foreach ( $_POST as $k => $v ) {
                         if ( strpos( $k, 'attribute_' ) === 0 ) {
                             $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
                         }
-                    }
-                }
-
-                if ( $v_id && empty( $variation ) ) {
-                    $var_product = wc_get_product( $v_id );
-                    if ( $var_product instanceof WC_Product_Variation ) {
-                        $variation = $var_product->get_variation_attributes();
                     }
                 }
 

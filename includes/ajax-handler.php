@@ -10,8 +10,6 @@ class W3OPCFE_Ajax_Handler {
     public function __construct() {
         add_action( 'wp_ajax_w3opcfe_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
         add_action( 'wp_ajax_nopriv_w3opcfe_load_checkout_fields', [ $this, 'load_checkout_fields' ] );
-        add_action( 'wp_ajax_w3opcfe_add_to_cart', [ $this, 'add_to_cart' ] );
-        add_action( 'wp_ajax_nopriv_w3opcfe_add_to_cart', [ $this, 'add_to_cart' ] );
     }
 
     public function load_checkout_fields() {
@@ -38,6 +36,9 @@ class W3OPCFE_Ajax_Handler {
         // static HTML pages served to guests can have nonces older than 12-24 hours.
         // We check the nonce without hard wp_die so that reading public checkout fields never breaks.
         $nonce_valid = check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
+        if ( is_user_logged_in() && ! $nonce_valid ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page.', 'on-page-checkout-for-elementor' ) ], 403 );
+        }
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->customer || ! WC()->session ) {
             wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) ] );
@@ -103,18 +104,19 @@ class W3OPCFE_Ajax_Handler {
 
             if ( $item_product->is_type( 'variable' ) ) {
                 $variation = [];
-                if ( 1 === count( $selected_products ) ) {
+
+                if ( $v_id ) {
+                    $var_product = wc_get_product( $v_id );
+                    if ( $var_product instanceof WC_Product_Variation ) {
+                        $variation = $var_product->get_variation_attributes();
+                    }
+                }
+
+                if ( empty( $variation ) && 1 === count( $selected_products ) ) {
                     foreach ( $_POST as $k => $v ) {
                         if ( strpos( $k, 'attribute_' ) === 0 ) {
                             $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
                         }
-                    }
-                }
-
-                if ( $v_id && empty( $variation ) ) {
-                    $var_product = wc_get_product( $v_id );
-                    if ( $var_product instanceof WC_Product_Variation ) {
-                        $variation = $var_product->get_variation_attributes();
                     }
                 }
 
@@ -157,18 +159,18 @@ class W3OPCFE_Ajax_Handler {
             $persisted = \FBPixel_CAPI_Helpers::get_persistence_user_data();
         }
 
-        // Keep existing/default customer values when the field is absent from AJAX payload.
-        $billing_first_name = isset( $_POST['billing_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ) ) : ( $customer->get_billing_first_name() ?: ( $persisted['fn'] ?? '' ) );
-        $billing_last_name  = isset( $_POST['billing_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ) ) : ( $customer->get_billing_last_name() ?: ( $persisted['ln'] ?? '' ) );
-        $billing_company    = isset( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : $customer->get_billing_company();
-        $billing_email      = isset( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : ( $customer->get_billing_email() ?: ( $persisted['em'] ?? '' ) );
-        $billing_phone      = isset( $_POST['billing_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_phone'] ) ) : ( $customer->get_billing_phone() ?: ( $persisted['ph'] ?? '' ) );
-        $billing_address_1  = isset( $_POST['billing_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ) ) : $customer->get_billing_address_1();
-        $billing_address_2  = isset( $_POST['billing_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ) ) : $customer->get_billing_address_2();
-        $billing_city       = isset( $_POST['billing_city'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_city'] ) ) : $customer->get_billing_city();
-        $billing_state      = isset( $_POST['billing_state'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_state'] ) ) : $customer->get_billing_state();
-        $billing_postcode   = isset( $_POST['billing_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_postcode'] ) ) : $customer->get_billing_postcode();
-        $billing_country    = isset( $_POST['billing_country'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_country'] ) ) : $customer->get_billing_country();
+        // Keep existing/default customer values when the field is absent or empty in AJAX payload.
+        $billing_first_name = ! empty( $_POST['billing_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_first_name'] ) ) : ( $customer->get_billing_first_name() ?: ( $persisted['fn'] ?? '' ) );
+        $billing_last_name  = ! empty( $_POST['billing_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_last_name'] ) ) : ( $customer->get_billing_last_name() ?: ( $persisted['ln'] ?? '' ) );
+        $billing_company    = ! empty( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : $customer->get_billing_company();
+        $billing_email      = ! empty( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : ( $customer->get_billing_email() ?: ( $persisted['em'] ?? '' ) );
+        $billing_phone      = ! empty( $_POST['billing_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_phone'] ) ) : ( $customer->get_billing_phone() ?: ( $persisted['ph'] ?? '' ) );
+        $billing_address_1  = ! empty( $_POST['billing_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ) ) : $customer->get_billing_address_1();
+        $billing_address_2  = ! empty( $_POST['billing_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ) ) : $customer->get_billing_address_2();
+        $billing_city       = ! empty( $_POST['billing_city'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_city'] ) ) : $customer->get_billing_city();
+        $billing_state      = ! empty( $_POST['billing_state'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_state'] ) ) : $customer->get_billing_state();
+        $billing_postcode   = ! empty( $_POST['billing_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_postcode'] ) ) : $customer->get_billing_postcode();
+        $billing_country    = ! empty( $_POST['billing_country'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_country'] ) ) : $customer->get_billing_country();
         if ( '' === $billing_country ) {
             $billing_country = $base_country;
         }
@@ -188,15 +190,15 @@ class W3OPCFE_Ajax_Handler {
 
         // Set shipping address
         if ( isset( $_POST['ship_to_different_address'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['ship_to_different_address'] ) ) ) {
-            $shipping_first_name = isset( $_POST['shipping_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_first_name'] ) ) : $customer->get_shipping_first_name();
-            $shipping_last_name  = isset( $_POST['shipping_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_last_name'] ) ) : $customer->get_shipping_last_name();
-            $shipping_company    = isset( $_POST['shipping_company'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_company'] ) ) : $customer->get_shipping_company();
-            $shipping_address_1  = isset( $_POST['shipping_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_address_1'] ) ) : $customer->get_shipping_address_1();
-            $shipping_address_2  = isset( $_POST['shipping_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_address_2'] ) ) : $customer->get_shipping_address_2();
-            $shipping_city       = isset( $_POST['shipping_city'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_city'] ) ) : $customer->get_shipping_city();
-            $shipping_state      = isset( $_POST['shipping_state'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_state'] ) ) : $customer->get_shipping_state();
-            $shipping_postcode   = isset( $_POST['shipping_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_postcode'] ) ) : $customer->get_shipping_postcode();
-            $shipping_country    = isset( $_POST['shipping_country'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_country'] ) ) : $customer->get_shipping_country();
+            $shipping_first_name = ! empty( $_POST['shipping_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_first_name'] ) ) : $customer->get_shipping_first_name();
+            $shipping_last_name  = ! empty( $_POST['shipping_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_last_name'] ) ) : $customer->get_shipping_last_name();
+            $shipping_company    = ! empty( $_POST['shipping_company'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_company'] ) ) : $customer->get_shipping_company();
+            $shipping_address_1  = ! empty( $_POST['shipping_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_address_1'] ) ) : $customer->get_shipping_address_1();
+            $shipping_address_2  = ! empty( $_POST['shipping_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_address_2'] ) ) : $customer->get_shipping_address_2();
+            $shipping_city       = ! empty( $_POST['shipping_city'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_city'] ) ) : $customer->get_shipping_city();
+            $shipping_state      = ! empty( $_POST['shipping_state'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_state'] ) ) : $customer->get_shipping_state();
+            $shipping_postcode   = ! empty( $_POST['shipping_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_postcode'] ) ) : $customer->get_shipping_postcode();
+            $shipping_country    = ! empty( $_POST['shipping_country'] ) ? sanitize_text_field( wp_unslash( $_POST['shipping_country'] ) ) : $customer->get_shipping_country();
             if ( '' === $shipping_country ) {
                 $shipping_country = $base_country;
             }
@@ -372,7 +374,7 @@ class W3OPCFE_Ajax_Handler {
                         <?php
                     endforeach;
                 else :
-                    echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'woocommerce' ) . '</li>';
+                    echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'on-page-checkout-for-elementor' ) . '</li>';
                 endif;
                 ?>
                 </ul>
@@ -384,7 +386,7 @@ class W3OPCFE_Ajax_Handler {
                     <p class="form-row validate-required">
                         <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
                             <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
-                            <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout-for-elementor' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'woocommerce' ); ?>">*</abbr>
+                            <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout-for-elementor' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'on-page-checkout-for-elementor' ); ?>">*</abbr>
                         </label>
                         <input type="hidden" name="terms-field" value="1" />
                     </p>
@@ -397,7 +399,7 @@ class W3OPCFE_Ajax_Handler {
             <?php do_action( 'woocommerce_review_order_before_submit' ); ?>
 
             <?php
-            $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : __( 'Place Order', 'on-page-checkout-for-elementor' );
+            $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : esc_html__( 'Place Order', 'on-page-checkout-for-elementor' );
             echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" name="woocommerce_checkout_place_order" id="place_order" value="' . esc_attr( $order_button_name ) . '">' . esc_html( $order_button_name ) . '</button>';
             ?>
 
@@ -699,7 +701,9 @@ class W3OPCFE_Ajax_Handler {
     }
 
     public function add_to_cart() {
-        check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
+        if ( ! check_ajax_referer( 'w3opcfe_nonce', 'nonce', false ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid security token.', 'on-page-checkout-for-elementor' ) ], 403 );
+        }
 
         $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;

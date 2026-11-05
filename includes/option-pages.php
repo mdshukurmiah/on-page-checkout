@@ -7,6 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * One-time migration from legacy `w3_opc_*` option keys to `w3opcfe_*`.
  */
 function w3opcfe_migrate_options() {
+    if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
     $migrations = [
         'w3_opc_general_options'        => 'w3opcfe_general_options',
         'w3_opc_checkout_fields'        => 'w3opcfe_checkout_fields',
@@ -14,13 +18,24 @@ function w3opcfe_migrate_options() {
     ];
 
     foreach ( $migrations as $old_key => $new_key ) {
-        if ( false !== get_option( $old_key, false ) && false === get_option( $new_key, false ) ) {
-            update_option( $new_key, get_option( $old_key ) );
+        $old_val = get_option( $old_key, false );
+        if ( false !== $old_val && false === get_option( $new_key, false ) ) {
+            update_option( $new_key, $old_val );
         }
+    }
+
+    // Initialize the two new switch options if they do not exist
+    if ( false === get_option( 'w3opcfe_checkout_fields_on_page', false ) ) {
+        $master_val = get_option( 'w3opcfe_checkout_fields_master', 1 );
+        update_option( 'w3opcfe_checkout_fields_on_page', ! empty( $master_val ) ? 1 : 0 );
+    }
+
+    if ( false === get_option( 'w3opcfe_checkout_fields_store', false ) ) {
+        update_option( 'w3opcfe_checkout_fields_store', 0 );
     }
 }
 
-w3opcfe_migrate_options();
+add_action( 'admin_init', 'w3opcfe_migrate_options' );
 
 add_action( 'admin_menu', 'w3opcfe_register_settings_pages' );
 
@@ -35,21 +50,6 @@ function w3opcfe_register_settings_pages() {
         'dashicons-admin-generic',
         60
     );
-}
-
-function w3opcfe_general_settings_page() {
-    ?>
-    <div class="wrap">
-        <h1><?php esc_html_e( 'W3 OPC General Settings', 'on-page-checkout-for-elementor' ); ?></h1>
-        <form method="post" action="options.php">
-            <?php
-            settings_fields( 'w3opcfe_general_settings_group' );
-            do_settings_sections( 'w3opcfe_general_settings' );
-            submit_button();
-            ?>
-        </form>
-    </div>
-    <?php
 }
 
 function w3opcfe_checkout_fields_edit_page() {
@@ -86,9 +86,8 @@ function w3opcfe_maybe_show_saved_notice() {
     }
 
     $settings_updated = isset( $_GET['settings-updated'] ) ? sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) : '';
-    $nonce            = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 
-    if ( '1' === $settings_updated && ! empty( $nonce ) && wp_verify_nonce( $nonce, 'w3opcfe_checkout_fields_group-options' ) ) {
+    if ( '1' === $settings_updated || 'true' === $settings_updated ) {
         add_settings_error(
             'w3opcfe_checkout_fields_group',
             'w3opcfe_settings_saved',
@@ -150,6 +149,14 @@ class W3OPCFE_Checkout_Fields_Settings {
     public function __construct() {
         add_action( 'admin_init', [ $this, 'register_settings' ] );
         add_filter( 'woocommerce_checkout_fields', [ $this, 'modify_checkout_fields' ] );
+        add_action( 'update_option_w3opcfe_checkout_fields_on_page', [ $this, 'sync_master_option' ] );
+        add_action( 'update_option_w3opcfe_checkout_fields_store', [ $this, 'sync_master_option' ] );
+    }
+
+    public function sync_master_option() {
+        $on_page = get_option( 'w3opcfe_checkout_fields_on_page', 1 );
+        $store   = get_option( 'w3opcfe_checkout_fields_store', 0 );
+        update_option( 'w3opcfe_checkout_fields_master', ( $on_page || $store ) ? 1 : 0 );
     }
 
     public function register_settings() {
@@ -165,14 +172,57 @@ class W3OPCFE_Checkout_Fields_Settings {
 
         register_setting(
             'w3opcfe_checkout_fields_group',
+            'w3opcfe_checkout_fields_on_page',
+            [
+                'type'              => 'boolean',
+                'sanitize_callback' => [ $this, 'sanitize_checkbox' ],
+                'default'           => 1,
+            ]
+        );
+
+        register_setting(
+            'w3opcfe_checkout_fields_group',
+            'w3opcfe_checkout_fields_store',
+            [
+                'type'              => 'boolean',
+                'sanitize_callback' => [ $this, 'sanitize_checkbox' ],
+                'default'           => 0,
+            ]
+        );
+
+        register_setting(
+            'w3opcfe_checkout_fields_group',
             'w3opcfe_checkout_fields_master',
             [
                 'type'              => 'boolean',
-                'sanitize_callback' => function ( $val ) {
-                    return ! empty( $val ) ? 1 : 0;
-                },
+                'sanitize_callback' => [ $this, 'sanitize_checkbox' ],
                 'default'           => 1,
             ]
+        );
+
+        add_settings_section(
+            'w3opcfe_checkout_fields_master_section',
+            __( 'General Field Options', 'on-page-checkout-for-elementor' ),
+            function() {
+                echo '<p>' . esc_html__( 'Configure where your custom checkout field settings should be applied.', 'on-page-checkout-for-elementor' ) . '</p>';
+            },
+            'w3opcfe-checkout-fields'
+        );
+
+        add_settings_field(
+            'w3opcfe_checkout_fields_on_page_field',
+            __( 'Enable custom field for on-page checkout', 'on-page-checkout-for-elementor' ),
+            [ $this, 'render_on_page_switch' ],
+            'w3opcfe-checkout-fields',
+            'w3opcfe_checkout_fields_master_section'
+        );
+
+        add_settings_field(
+            'w3opcfe_checkout_fields_store_field',
+            __( 'Enable custom field for store checkout page', 'on-page-checkout-for-elementor' ),
+            [ $this, 'render_store_switch' ],
+            'w3opcfe-checkout-fields',
+            'w3opcfe_checkout_fields_master_section'
         );
 
         add_settings_section(
@@ -236,6 +286,34 @@ class W3OPCFE_Checkout_Fields_Settings {
                 [ 'field_key' => $field_key, 'field' => $field ]
             );
         }
+    }
+
+    public function render_on_page_switch() {
+        $val = get_option( 'w3opcfe_checkout_fields_on_page', 1 );
+        ?>
+        <div class="w3opcfe-switch-wrapper">
+            <label class="w3opcfe-switch">
+                <input type="hidden" name="w3opcfe_checkout_fields_on_page" value="0">
+                <input type="checkbox" name="w3opcfe_checkout_fields_on_page" value="1" <?php checked( 1, $val ); ?>>
+                <span class="w3opcfe-slider"></span>
+            </label>
+            <span class="w3opcfe-switch-desc"><?php esc_html_e( 'Apply custom field labels, requirements, and visibility to On-Page Checkout widget.', 'on-page-checkout-for-elementor' ); ?></span>
+        </div>
+        <?php
+    }
+
+    public function render_store_switch() {
+        $val = get_option( 'w3opcfe_checkout_fields_store', 0 );
+        ?>
+        <div class="w3opcfe-switch-wrapper">
+            <label class="w3opcfe-switch">
+                <input type="hidden" name="w3opcfe_checkout_fields_store" value="0">
+                <input type="checkbox" name="w3opcfe_checkout_fields_store" value="1" <?php checked( 1, $val ); ?>>
+                <span class="w3opcfe-slider"></span>
+            </label>
+            <span class="w3opcfe-switch-desc"><?php esc_html_e( 'Apply custom field labels, requirements, and visibility to WooCommerce store classic checkout page.', 'on-page-checkout-for-elementor' ); ?></span>
+        </div>
+        <?php
     }
 
     public function render_field( $args ) {
@@ -329,13 +407,47 @@ class W3OPCFE_Checkout_Fields_Settings {
         return $output;
     }
 
+    public function sanitize_checkbox( $val ) {
+        return ! empty( $val ) ? 1 : 0;
+    }
+
+    /**
+     * Determine if current request is for the On-Page Checkout widget.
+     *
+     * @return bool
+     */
+    public function is_on_page_checkout() {
+        if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+            $action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
+            if ( in_array( $action, [ 'w3opcfe_load_checkout_fields', 'w3opcfe_process_checkout' ], true ) ) {
+                return true;
+            }
+        }
+        return (bool) apply_filters( 'w3opcfe_is_on_page_checkout', false );
+    }
+
     public function modify_checkout_fields( $fields ) {
-        // Do not modify fields in admin area — return original so settings page sees all fields
-        if ( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+        // Do not modify fields in admin area unless it is our On-Page Checkout AJAX request
+        if ( is_admin() && ! $this->is_on_page_checkout() ) {
+            return $fields;
+        }
+
+        $is_on_page = $this->is_on_page_checkout();
+
+        if ( $is_on_page ) {
+            $enabled = get_option( 'w3opcfe_checkout_fields_on_page', get_option( 'w3opcfe_checkout_fields_master', 1 ) );
+        } else {
+            $enabled = get_option( 'w3opcfe_checkout_fields_store', 0 );
+        }
+
+        if ( empty( $enabled ) ) {
             return $fields;
         }
 
         $options = get_option( $this->option_name, [] );
+        if ( empty( $options ) || ! is_array( $options ) ) {
+            return $fields;
+        }
 
         foreach ( $options as $field_key => $settings ) {
             if ( strpos( $field_key, 'billing_' ) === 0 ) {

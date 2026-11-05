@@ -20,6 +20,12 @@
 			return;
 		}
 
+		const isEditMode = (typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode && elementorFrontend.isEditMode());
+		if (!isEditMode && $wrapper.data('w3opcfe-scarcity-initialized')) {
+			return; // Prevent duplicate execution on page load
+		}
+		$wrapper.data('w3opcfe-scarcity-initialized', true);
+
 		const minVal        = parseInt($wrapper.attr('data-min'), 10) || 0;
 		const maxVal        = parseInt($wrapper.attr('data-max'), 10) || 10;
 		const decrementMode = $wrapper.attr('data-decrement-mode') || 'random';
@@ -30,7 +36,6 @@
 		const widgetId      = $wrapper.attr('data-widget-id') || 'preview';
 
 		const storageKey = 'w3opcfe_scarcity_' + widgetId;
-		const isEditMode = (typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode());
 
 		let count;
 

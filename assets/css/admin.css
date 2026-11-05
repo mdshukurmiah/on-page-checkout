@@ -8,3 +8,68 @@
     display: block;
     margin-bottom: 4px;
 }
+
+/* Modern Toggle Switch */
+.w3opcfe-switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.w3opcfe-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.w3opcfe-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+    margin: 0;
+}
+
+.w3opcfe-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: background-color 0.25s ease;
+    border-radius: 24px;
+}
+
+.w3opcfe-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: transform 0.25s ease;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.w3opcfe-switch input:checked + .w3opcfe-slider {
+    background-color: #2271b1;
+}
+
+.w3opcfe-switch input:focus + .w3opcfe-slider {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #2271b1;
+}
+
+.w3opcfe-switch input:checked + .w3opcfe-slider:before {
+    transform: translateX(22px);
+}
+
+.w3opcfe-switch-desc {
+    color: #64748b;
+    font-size: 13px;
+}

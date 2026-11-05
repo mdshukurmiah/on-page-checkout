@@ -14,8 +14,26 @@
 	}
 
 	function parseDate(dateString) {
+		if (!dateString) {
+			return new Date();
+		}
+		const parts = dateString.trim().split(/[\sT]+/);
+		if (parts.length >= 2) {
+			const dateParts = parts[0].split(/[-/]/);
+			const timeParts = parts[1].split(':');
+			if (dateParts.length === 3 && timeParts.length >= 2) {
+				const year = parseInt(dateParts[0], 10);
+				const month = parseInt(dateParts[1], 10) - 1;
+				const day = parseInt(dateParts[2], 10);
+				const hours = parseInt(timeParts[0], 10);
+				const minutes = parseInt(timeParts[1], 10);
+				const seconds = timeParts[2] ? parseInt(timeParts[2], 10) : 0;
+				return new Date(year, month, day, hours, minutes, seconds);
+			}
+		}
 		const formatted = dateString.replace(/-/g, '/');
-		return new Date(formatted);
+		const parsed = new Date(formatted);
+		return isNaN(parsed.getTime()) ? new Date() : parsed;
 	}
 
 	function convertToBangla(str) {
