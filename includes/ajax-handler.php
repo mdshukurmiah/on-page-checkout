@@ -165,6 +165,10 @@ class W3OPCFE_Ajax_Handler {
         $billing_company    = ! empty( $_POST['billing_company'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_company'] ) ) : $customer->get_billing_company();
         $billing_email      = ! empty( $_POST['billing_email'] ) ? sanitize_email( wp_unslash( $_POST['billing_email'] ) ) : ( $customer->get_billing_email() ?: ( $persisted['em'] ?? '' ) );
         $billing_phone      = ! empty( $_POST['billing_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_phone'] ) ) : ( $customer->get_billing_phone() ?: ( $persisted['ph'] ?? '' ) );
+        if ( class_exists( 'W3OPCFE_FOP_Input_Validator' ) && ! empty( $billing_phone ) ) {
+            $billing_phone = W3OPCFE_FOP_Input_Validator::normalize_phone( $billing_phone );
+            $_POST['billing_phone'] = $billing_phone;
+        }
         $billing_address_1  = ! empty( $_POST['billing_address_1'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_1'] ) ) : $customer->get_billing_address_1();
         $billing_address_2  = ! empty( $_POST['billing_address_2'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_address_2'] ) ) : $customer->get_billing_address_2();
         $billing_city       = ! empty( $_POST['billing_city'] ) ? sanitize_text_field( wp_unslash( $_POST['billing_city'] ) ) : $customer->get_billing_city();

@@ -191,6 +191,8 @@ final class W3OPCFE_On_Page_Checkout {
         require_once W3OPCFE_PLUGIN_DIR . 'includes/woocommerce-integration.php';
         require_once W3OPCFE_PLUGIN_DIR . 'includes/ajax-handler.php';
         require_once W3OPCFE_PLUGIN_DIR . 'includes/option-pages.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/fake-order-protection/class-fake-order-protection.php';
+        W3OPCFE_Fake_Order_Protection::instance();
         require_once W3OPCFE_PLUGIN_DIR . 'greenweb/class-on-page-checkout-greenweb.php';
         W3OPCFE_Greenweb::get_instance();
     }
@@ -312,11 +314,7 @@ final class W3OPCFE_On_Page_Checkout {
      * @access public
      */
     public function enqueue_admin_scripts( $hook ) {
-        $allowed_pages = [
-            'toplevel_page_w3opcfe_checkout_fields_edit',
-        ];
-
-        if ( ! in_array( $hook, $allowed_pages, true ) ) {
+        if ( strpos( $hook, 'w3opcfe' ) === false ) {
             return; // Don't load on other admin pages
         }
 

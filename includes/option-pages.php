@@ -40,32 +40,76 @@ add_action( 'admin_init', 'w3opcfe_migrate_options' );
 add_action( 'admin_menu', 'w3opcfe_register_settings_pages' );
 
 function w3opcfe_register_settings_pages() {
-    // Top-level/default page: Checkout Fields Edit
+    // Top-level menu: W3 OPC
     add_menu_page(
-        __( 'Checkout Fields Edit', 'on-page-checkout-for-elementor' ),
+        __( 'W3 OPC', 'on-page-checkout-for-elementor' ),
         __( 'W3 OPC', 'on-page-checkout-for-elementor' ),
         'manage_options',
         'w3opcfe_checkout_fields_edit',
         'w3opcfe_checkout_fields_edit_page',
-        'dashicons-admin-generic',
+        'dashicons-shield-alt',
         60
+    );
+
+    // 1. Checkout Fields
+    add_submenu_page(
+        'w3opcfe_checkout_fields_edit',
+        __( 'Checkout Fields', 'on-page-checkout-for-elementor' ),
+        __( 'Checkout Fields', 'on-page-checkout-for-elementor' ),
+        'manage_options',
+        'w3opcfe_checkout_fields_edit',
+        'w3opcfe_checkout_fields_edit_page'
+    );
+
+    // 2. Fake Order Protection
+    add_submenu_page(
+        'w3opcfe_checkout_fields_edit',
+        __( 'Fake Order Protection', 'on-page-checkout-for-elementor' ),
+        __( 'Fake Order Protection', 'on-page-checkout-for-elementor' ),
+        'manage_options',
+        'w3opcfe_fake_order_protection',
+        'w3opcfe_fake_order_protection_page'
+    );
+
+    // 3. Licence
+    add_submenu_page(
+        'w3opcfe_checkout_fields_edit',
+        __( 'Licence', 'on-page-checkout-for-elementor' ),
+        __( 'Licence', 'on-page-checkout-for-elementor' ),
+        'manage_options',
+        'w3opcfe_licence',
+        'w3opcfe_licence_page'
     );
 }
 
-function w3opcfe_checkout_fields_edit_page() {
+function w3opcfe_fake_order_protection_page() {
+    if ( class_exists( 'W3OPCFE_FOP_Settings' ) ) {
+        W3OPCFE_FOP_Settings::render_page();
+    }
+}
+
+function w3opcfe_licence_page() {
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( 'W3 OPC Checkout Fields Edit', 'on-page-checkout-for-elementor' ); ?></h1>
-        <?php settings_errors( 'w3opcfe_checkout_fields_group' ); ?>
-        <form method="post" action="options.php">
-            <?php
-            settings_fields( 'w3opcfe_checkout_fields_group' );
-            do_settings_sections( 'w3opcfe-checkout-fields' );
-            submit_button();
-            ?>
-        </form>
+        <h1>
+            <span class="dashicons dashicons-admin-network" style="font-size:32px; width:32px; height:32px; vertical-align:middle; margin-right:8px; color:#2271b1;"></span>
+            <?php esc_html_e( 'Licence Activation', 'on-page-checkout-for-elementor' ); ?>
+        </h1>
+        <div class="card" style="max-width: 600px; padding: 24px; margin-top:20px;">
+            <h2><?php esc_html_e( 'Plugin Licence', 'on-page-checkout-for-elementor' ); ?></h2>
+            <p><?php esc_html_e( 'Licence activation system is coming soon. All core features and local fake order protection rules are active.', 'on-page-checkout-for-elementor' ); ?></p>
+            <div style="background:#f0f6fc; border-left:4px solid #72aee6; padding:12px 16px; margin-top:16px;">
+                <p style="margin:0;"><strong><?php esc_html_e( 'Status: Active (Development / Lifetime Mode)', 'on-page-checkout-for-elementor' ); ?></strong></p>
+            </div>
+        </div>
     </div>
     <?php
+}
+
+function w3opcfe_checkout_fields_edit_page() {
+    if ( class_exists( 'W3OPCFE_Checkout_Fields_Settings' ) ) {
+        W3OPCFE_Checkout_Fields_Settings::render_page();
+    }
 }
 
 add_action( 'admin_init', 'w3opcfe_register_settings' );
@@ -286,6 +330,237 @@ class W3OPCFE_Checkout_Fields_Settings {
                 [ 'field_key' => $field_key, 'field' => $field ]
             );
         }
+    }
+
+    /**
+     * Render modern Checkout Fields Editor page.
+     */
+    public static function render_page() {
+        $option_name = 'w3opcfe_checkout_fields';
+        $options     = get_option( $option_name, [] );
+        $on_page_val = get_option( 'w3opcfe_checkout_fields_on_page', 1 );
+        $store_val   = get_option( 'w3opcfe_checkout_fields_store', 0 );
+
+        $checkout        = WC()->checkout();
+        $billing_fields  = $checkout ? $checkout->get_checkout_fields( 'billing' ) : [];
+        $shipping_fields = $checkout ? $checkout->get_checkout_fields( 'shipping' ) : [];
+        ?>
+        <div class="wrap w3opcfe-admin-wrap">
+            <h1>
+                <span class="dashicons dashicons-forms" style="font-size:32px; width:32px; height:32px; vertical-align:middle; margin-right:8px; color:#2271b1;"></span>
+                <?php esc_html_e( 'Checkout Fields Editor', 'on-page-checkout-for-elementor' ); ?>
+            </h1>
+            <p class="description">
+                <?php esc_html_e( 'Customize field labels, set mandatory requirements, or hide unwanted checkout fields for both On-Page Checkout and Store Classic Checkout.', 'on-page-checkout-for-elementor' ); ?>
+            </p>
+
+            <?php settings_errors( 'w3opcfe_checkout_fields_group' ); ?>
+
+            <form method="post" action="options.php">
+                <?php settings_fields( 'w3opcfe_checkout_fields_group' ); ?>
+
+                <!-- Master Scope Control Card -->
+                <div class="card" style="max-width: 960px; margin-bottom: 24px; padding: 18px 24px; background:#fff; border-left:4px solid #2271b1; box-shadow:0 1px 3px rgba(0,0,0,0.05); border-radius:6px;">
+                    <div style="display:flex; flex-wrap:wrap; gap:36px; align-items:center;">
+                        <div class="w3opcfe-switch-wrapper">
+                            <label class="w3opcfe-switch">
+                                <input type="hidden" name="w3opcfe_checkout_fields_on_page" value="0">
+                                <input type="checkbox" name="w3opcfe_checkout_fields_on_page" value="1" <?php checked( 1, $on_page_val ); ?>>
+                                <span class="w3opcfe-slider"></span>
+                            </label>
+                            <div>
+                                <strong style="display:block; font-size:14px; margin-bottom:2px;"><?php esc_html_e( 'Enable custom field for on-page checkout', 'on-page-checkout-for-elementor' ); ?></strong>
+                                <span class="w3opcfe-switch-desc"><?php esc_html_e( 'Apply custom field labels, requirements, and visibility to On-Page Checkout widget.', 'on-page-checkout-for-elementor' ); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="w3opcfe-switch-wrapper">
+                            <label class="w3opcfe-switch">
+                                <input type="hidden" name="w3opcfe_checkout_fields_store" value="0">
+                                <input type="checkbox" name="w3opcfe_checkout_fields_store" value="1" <?php checked( 1, $store_val ); ?>>
+                                <span class="w3opcfe-slider"></span>
+                            </label>
+                            <div>
+                                <strong style="display:block; font-size:14px; margin-bottom:2px;"><?php esc_html_e( 'Enable custom field for store checkout page', 'on-page-checkout-for-elementor' ); ?></strong>
+                                <span class="w3opcfe-switch-desc"><?php esc_html_e( 'Apply custom field labels, requirements, and visibility to WooCommerce classic store checkout.', 'on-page-checkout-for-elementor' ); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <nav class="nav-tab-wrapper w3opcfe-tabs" style="margin-bottom: 20px; max-width:960px;">
+                    <a href="#billing" class="nav-tab nav-tab-active" data-tab="billing">
+                        <span class="dashicons dashicons-id-alt" style="vertical-align:text-top; margin-right:4px;"></span>
+                        <?php esc_html_e( 'Billing Fields', 'on-page-checkout-for-elementor' ); ?>
+                        <span class="update-plugins count-<?php echo count( $billing_fields ); ?>" style="margin-left:6px; background:#e2e8f0; color:#475569; font-size:11px; padding:2px 6px; border-radius:10px;"><?php echo count( $billing_fields ); ?></span>
+                    </a>
+                    <a href="#shipping" class="nav-tab" data-tab="shipping">
+                        <span class="dashicons dashicons-car" style="vertical-align:text-top; margin-right:4px;"></span>
+                        <?php esc_html_e( 'Shipping Fields', 'on-page-checkout-for-elementor' ); ?>
+                        <span class="update-plugins count-<?php echo count( $shipping_fields ); ?>" style="margin-left:6px; background:#e2e8f0; color:#475569; font-size:11px; padding:2px 6px; border-radius:10px;"><?php echo count( $shipping_fields ); ?></span>
+                    </a>
+                    <a href="#other" class="nav-tab" data-tab="other">
+                        <span class="dashicons dashicons-clipboard" style="vertical-align:text-top; margin-right:4px;"></span>
+                        <?php esc_html_e( 'Other Settings', 'on-page-checkout-for-elementor' ); ?>
+                    </a>
+                </nav>
+
+                <!-- TAB 1: Billing Fields -->
+                <div class="w3opcfe-tab-pane" id="w3opcfe-tab-billing">
+                    <div class="card" style="max-width: 960px; padding: 20px 24px;">
+                        <h2 style="margin-top:0; margin-bottom:4px;"><?php esc_html_e( 'Billing Fields', 'on-page-checkout-for-elementor' ); ?></h2>
+                        <p class="description" style="margin-bottom:20px;"><?php esc_html_e( 'Manage visibility, custom labels, and required flags for customer billing fields.', 'on-page-checkout-for-elementor' ); ?></p>
+
+                        <?php foreach ( $billing_fields as $wc_key => $field ) :
+                            $field_key = "billing_{$wc_key}";
+                            $saved     = $options[ $field_key ] ?? [];
+                            $enabled   = isset( $saved['enabled'] ) ? $saved['enabled'] : 1;
+                            $label     = isset( $saved['label'] ) ? $saved['label'] : ( $field['label'] ?? '' );
+                            $required  = isset( $saved['required'] ) ? $saved['required'] : ( ! empty( $field['required'] ) ? 1 : 0 );
+                            $title     = ! empty( $field['label'] ) ? $field['label'] : $wc_key;
+                            ?>
+                            <div class="w3opcfe-field-card <?php echo empty( $enabled ) ? 'is-disabled' : ''; ?>">
+                                <div class="w3opcfe-field-main">
+                                    <label class="w3opcfe-switch">
+                                        <input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]" value="0">
+                                        <input class="w3opcfe-enable-toggle" type="checkbox"
+                                            name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]"
+                                            value="1" <?php checked( 1, $enabled ); ?>>
+                                        <span class="w3opcfe-slider"></span>
+                                    </label>
+                                    <div class="w3opcfe-field-title-wrap">
+                                        <span class="w3opcfe-field-title"><?php echo esc_html( $title ); ?></span>
+                                        <span class="w3opcfe-field-key"><?php echo esc_html( $field_key ); ?></span>
+                                    </div>
+                                </div>
+
+                                <div class="w3opcfe-dependent-options" style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?>">
+                                    <div class="w3opcfe-opt-group">
+                                        <label class="w3opcfe-input-label"><?php esc_html_e( 'Display Label', 'on-page-checkout-for-elementor' ); ?></label>
+                                        <input type="text"
+                                            name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][label]"
+                                            value="<?php echo esc_attr( $label ); ?>"
+                                            placeholder="<?php echo esc_attr( $field['label'] ?? '' ); ?>"
+                                            class="regular-text w3opcfe-label-input">
+                                    </div>
+
+                                    <div class="w3opcfe-opt-group w3opcfe-required-group">
+                                        <label class="w3opcfe-required-pill">
+                                            <input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][required]" value="0">
+                                            <input type="checkbox"
+                                                name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][required]"
+                                                value="1" <?php checked( 1, $required ); ?>>
+                                            <span class="w3opcfe-pill-label"><?php esc_html_e( 'Required', 'on-page-checkout-for-elementor' ); ?></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Shipping Fields -->
+                <div class="w3opcfe-tab-pane" id="w3opcfe-tab-shipping" style="display:none;">
+                    <div class="card" style="max-width: 960px; padding: 20px 24px;">
+                        <h2 style="margin-top:0; margin-bottom:4px;"><?php esc_html_e( 'Shipping Fields', 'on-page-checkout-for-elementor' ); ?></h2>
+                        <p class="description" style="margin-bottom:20px;"><?php esc_html_e( 'Manage visibility, custom labels, and required flags for customer shipping fields.', 'on-page-checkout-for-elementor' ); ?></p>
+
+                        <?php foreach ( $shipping_fields as $wc_key => $field ) :
+                            $field_key = "shipping_{$wc_key}";
+                            $saved     = $options[ $field_key ] ?? [];
+                            $enabled   = isset( $saved['enabled'] ) ? $saved['enabled'] : 1;
+                            $label     = isset( $saved['label'] ) ? $saved['label'] : ( $field['label'] ?? '' );
+                            $required  = isset( $saved['required'] ) ? $saved['required'] : ( ! empty( $field['required'] ) ? 1 : 0 );
+                            $title     = ! empty( $field['label'] ) ? $field['label'] : $wc_key;
+                            ?>
+                            <div class="w3opcfe-field-card <?php echo empty( $enabled ) ? 'is-disabled' : ''; ?>">
+                                <div class="w3opcfe-field-main">
+                                    <label class="w3opcfe-switch">
+                                        <input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]" value="0">
+                                        <input class="w3opcfe-enable-toggle" type="checkbox"
+                                            name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]"
+                                            value="1" <?php checked( 1, $enabled ); ?>>
+                                        <span class="w3opcfe-slider"></span>
+                                    </label>
+                                    <div class="w3opcfe-field-title-wrap">
+                                        <span class="w3opcfe-field-title"><?php echo esc_html( $title ); ?></span>
+                                        <span class="w3opcfe-field-key"><?php echo esc_html( $field_key ); ?></span>
+                                    </div>
+                                </div>
+
+                                <div class="w3opcfe-dependent-options" style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?>">
+                                    <div class="w3opcfe-opt-group">
+                                        <label class="w3opcfe-input-label"><?php esc_html_e( 'Display Label', 'on-page-checkout-for-elementor' ); ?></label>
+                                        <input type="text"
+                                            name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][label]"
+                                            value="<?php echo esc_attr( $label ); ?>"
+                                            placeholder="<?php echo esc_attr( $field['label'] ?? '' ); ?>"
+                                            class="regular-text w3opcfe-label-input">
+                                    </div>
+
+                                    <div class="w3opcfe-opt-group w3opcfe-required-group">
+                                        <label class="w3opcfe-required-pill">
+                                            <input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][required]" value="0">
+                                            <input type="checkbox"
+                                                name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][required]"
+                                                value="1" <?php checked( 1, $required ); ?>>
+                                            <span class="w3opcfe-pill-label"><?php esc_html_e( 'Required', 'on-page-checkout-for-elementor' ); ?></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- TAB 3: Other Fields (Order Notes) -->
+                <div class="w3opcfe-tab-pane" id="w3opcfe-tab-other" style="display:none;">
+                    <div class="card" style="max-width: 960px; padding: 20px 24px;">
+                        <h2 style="margin-top:0; margin-bottom:4px;"><?php esc_html_e( 'Other Settings', 'on-page-checkout-for-elementor' ); ?></h2>
+                        <p class="description" style="margin-bottom:20px;"><?php esc_html_e( 'Customize additional checkout options such as the order comments note field.', 'on-page-checkout-for-elementor' ); ?></p>
+
+                        <?php
+                        $field_key = 'other_order_notes';
+                        $saved     = $options[ $field_key ] ?? [];
+                        $enabled   = isset( $saved['enabled'] ) ? $saved['enabled'] : 1;
+                        $label     = isset( $saved['label'] ) ? $saved['label'] : __( 'Order note', 'on-page-checkout-for-elementor' );
+                        ?>
+                        <div class="w3opcfe-field-card <?php echo empty( $enabled ) ? 'is-disabled' : ''; ?>">
+                            <div class="w3opcfe-field-main">
+                                <label class="w3opcfe-switch">
+                                    <input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]" value="0">
+                                    <input class="w3opcfe-enable-toggle" type="checkbox"
+                                        name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][enabled]"
+                                        value="1" <?php checked( 1, $enabled ); ?>>
+                                    <span class="w3opcfe-slider"></span>
+                                </label>
+                                <div class="w3opcfe-field-title-wrap">
+                                    <span class="w3opcfe-field-title"><?php esc_html_e( 'Order Notes / Comments', 'on-page-checkout-for-elementor' ); ?></span>
+                                    <span class="w3opcfe-field-key"><?php echo esc_html( $field_key ); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="w3opcfe-dependent-options" style="<?php echo empty( $enabled ) ? 'display:none;' : ''; ?>">
+                                <div class="w3opcfe-opt-group">
+                                    <label class="w3opcfe-input-label"><?php esc_html_e( 'Display Label', 'on-page-checkout-for-elementor' ); ?></label>
+                                    <input type="text"
+                                        name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $field_key ); ?>][label]"
+                                        value="<?php echo esc_attr( $label ); ?>"
+                                        placeholder="<?php esc_attr_e( 'Notes about your order...', 'on-page-checkout-for-elementor' ); ?>"
+                                        class="regular-text w3opcfe-label-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px;">
+                    <?php submit_button(); ?>
+                </div>
+            </form>
+        </div>
+        <?php
     }
 
     public function render_on_page_switch() {

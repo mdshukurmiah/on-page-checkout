@@ -134,6 +134,31 @@ class W3OPCFE_WooCommerce_Integration {
             ] );
         }
 
+        // Run Fake Order Protection Pipeline (Input Validation + Duplicate & Velocity Control)
+        if ( class_exists( 'W3OPCFE_Fake_Order_Protection' ) ) {
+            $fop  = W3OPCFE_Fake_Order_Protection::instance();
+            $eval = $fop->evaluate_checkout( $_POST, $selected_products, 'on_page_checkout' );
+
+            if ( 'block' === $eval['decision'] ) {
+                $err_msg = ! empty( $eval['block_message'] ) ? $eval['block_message'] : $fop->get_generic_block_message();
+                wp_send_json( [
+                    'result'   => 'failure',
+                    'messages' => '<ul class="woocommerce-error"><li>' . esc_html( $err_msg ) . '</li></ul>',
+                    'message'  => $err_msg,
+                ] );
+            }
+
+            if ( 'merge' === $eval['decision'] && $eval['merged_order'] instanceof \WC_Order ) {
+                $redirect_url = $eval['merged_order']->get_checkout_order_received_url();
+                wp_send_json( [
+                    'result'   => 'success',
+                    'redirect' => $redirect_url,
+                    'order_id' => $eval['merged_order']->get_id(),
+                    'merged'   => true,
+                ] );
+            }
+        }
+
         try {
             $created_order_id = 0;
             add_action( 'woocommerce_checkout_order_processed', function( $order_id ) use ( &$created_order_id ) {
