@@ -129,8 +129,8 @@ class W3OPCFE_Greenweb {
                     'countries_whitelist' => class_exists( '\WP_SMS\Option' ) ? \WP_SMS\Option::getOption( 'wc_otp_countries_whitelist', true ) : '',
                     'checkoutotp_filter'  => $filter,
                     'lang'                => [
-                        'error'      => __( 'Error', 'on-page-checkout-for-elementor' ),
-                        'ajax_error' => __( 'Error occurred. please try again', 'on-page-checkout-for-elementor' ),
+                        'error'      => __( 'Error', 'on-page-checkout' ),
+                        'ajax_error' => __( 'Error occurred. please try again', 'on-page-checkout' ),
                     ],
                 ]
             );

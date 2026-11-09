@@ -1,0 +1,322 @@
+<?php
+/**
+ * Main plugin class.
+ *
+ * Loaded from the plugin's main file on plugins_loaded, so it is never declared while the
+ * other edition (Free/Pro) is also loaded in the same request.
+ *
+ * @package On_Page_Checkout
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
+/**
+ * Main On Page Checkout Class.
+ *
+ * The init class that runs the On Page Checkout plugin.
+ * Intended To make sure that the plugin's minimum requirements are met.
+ *
+ * @since 1.0.0
+ */
+final class W3OPCFE_On_Page_Checkout {
+
+    /**
+     * Plugin Version
+     *
+     * @since 1.0.0
+     * @var string The plugin version.
+     */
+    const VERSION = W3OPCFE_VERSION;
+
+    /**
+     * Minimum Elementor Version
+     *
+     * @since 1.0.0
+     * @var string Minimum Elementor version required to run the plugin.
+     */
+    const MINIMUM_ELEMENTOR_VERSION = '3.0.0';
+
+    /**
+     * Minimum WooCommerce Version
+     *
+     * @since 1.0.0
+     * @var string Minimum WooCommerce version required to run the plugin.
+     */
+    const MINIMUM_WOOCOMMERCE_VERSION = '6.0.0';
+
+    /**
+     * Minimum PHP Version
+     *
+     * @since 1.0.0
+     * @var string Minimum PHP version required to run the plugin.
+     */
+    const MINIMUM_PHP_VERSION = '7.4';
+
+    /**
+     * Instance
+     *
+     * @since 1.0.0
+     * @access private
+     * @static
+     * @var W3OPCFE_On_Page_Checkout The single instance of the class.
+     */
+    private static $_instance = null;
+
+    /**
+     * Instance
+     *
+     * Ensures only one instance of the class is loaded or can be loaded.
+     *
+     * @since 1.0.0
+     * @access public
+     * @static
+     * @return W3OPCFE_On_Page_Checkout An instance of the class.
+     */
+    public static function instance() {
+        if ( is_null( self::$_instance ) ) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    /**
+     * Constructor
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function __construct() {}
+
+    /**
+     * On Plugins Loaded
+     *
+     * Checks whether Elementor and WooCommerce are installed and activated.
+     * If not, it disables the plugin and displays a notice.
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function on_plugins_loaded() {
+        if ( ! $this->check_dependencies() ) {
+            add_action( 'admin_notices', [ $this, 'admin_notice_missing_dependencies' ] );
+            return;
+        }
+
+        // Initialize the plugin
+        $this->includes();
+        $this->init_hooks();
+    }
+
+    /**
+     * Check Dependencies
+     *
+     * Checks if Elementor, WooCommerce and PHP versions meet the minimum requirements.
+     *
+     * @since 1.0.0
+     * @access private
+     * @return bool True if all dependencies are met, false otherwise.
+     */
+    private function check_dependencies() {
+        // Check for Elementor
+        if ( ! did_action( 'elementor/loaded' ) ) {
+            return false;
+        }
+
+        // Check for WooCommerce
+        if ( ! class_exists( 'WooCommerce' ) ) {
+            return false;
+        }
+
+        // Check for PHP Version
+        if ( version_compare( PHP_VERSION, self::MINIMUM_PHP_VERSION, '<' ) ) {
+            return false;
+        }
+
+        // Check for Elementor Version
+        if ( version_compare( ELEMENTOR_VERSION, self::MINIMUM_ELEMENTOR_VERSION, '<' ) ) {
+            return false;
+        }
+
+        // Check for WooCommerce Version
+        if ( version_compare( WC_VERSION, self::MINIMUM_WOOCOMMERCE_VERSION, '<' ) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Admin Notice Missing Dependencies
+     *
+     * Displays an admin notice when Elementor or WooCommerce are not installed or activated.
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function admin_notice_missing_dependencies() {
+        $message = sprintf(
+            /* translators: 1: Plugin name, 2: Elementor, 3: WooCommerce */
+            esc_html__( '%1$s requires %2$s and %3$s to be installed and activated.', 'on-page-checkout' ),
+            '<strong>' . esc_html__( 'On Page Checkout', 'on-page-checkout' ) . '</strong>',
+            '<strong>' . esc_html__( 'Elementor', 'on-page-checkout' ) . '</strong>',
+            '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout' ) . '</strong>'
+        );
+
+        printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
+    }
+
+    /**
+     * Includes
+     *
+     * Include necessary files.
+     *
+     * @since 1.0.0
+     * @access private
+     */
+    private function includes() {
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/woocommerce-integration.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/ajax-handler.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'includes/option-pages.php';
+        require_once W3OPCFE_PLUGIN_DIR . 'greenweb/class-on-page-checkout-greenweb.php';
+        W3OPCFE_Greenweb::get_instance();
+    }
+
+    /**
+     * Init Hooks
+     *
+     * Initializes plugin hooks.
+     *
+     * @since 1.0.0
+     * @access private
+     */
+    private function init_hooks() {
+        add_action( 'elementor/elements/categories_registered', [ $this, 'register_categories' ] );
+        add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_scripts' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
+    }
+
+    /**
+     * Register Categories
+     *
+     * Register Elementor widget category.
+     *
+     * @since 1.0.2
+     * @access public
+     * @param \Elementor\Elements_Manager $elements_manager Elementor elements manager.
+     */
+    public function register_categories( $elements_manager ) {
+        $elements_manager->add_category(
+            'on-page-checkout',
+            [
+                'title' => esc_html__( 'On Page Checkout', 'on-page-checkout' ),
+                'icon'  => 'eicon-checkout',
+            ]
+        );
+    }
+
+    /**
+     * Register Widgets
+     *
+     * Register Elementor widgets.
+     *
+     * @since 1.0.0
+     * @access public
+     * @param \Elementor\Widgets_Manager $widgets_manager Elementor widgets manager.
+     */
+    public function register_widgets( $widgets_manager ) {
+        require_once( W3OPCFE_PLUGIN_DIR . 'widgets/on-page-checkout-widget.php' );
+        require_once( W3OPCFE_PLUGIN_DIR . 'widgets/countdown-widget.php' );
+        require_once( W3OPCFE_PLUGIN_DIR . 'widgets/scarcity-widget.php' );
+
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_On_Page_Checkout_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Countdown_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Singlegrid_Countdown_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Scarcity_Widget() );
+        $widgets_manager->register( new \W3OPCFE\Widgets\W3OPCFE_Singlegrid_Scarcity_Widget() );
+    }
+
+    /**
+     * Enqueue Frontend Scripts
+     *
+     * Enqueue plugin scripts and styles.
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function enqueue_frontend_scripts() {
+        $script_deps = [ 'jquery' ];
+        if ( wp_script_is( 'pixelbeacon-public', 'registered' ) ) {
+            $script_deps[] = 'pixelbeacon-public';
+        } elseif ( wp_script_is( 'w3-pixel-public', 'registered' ) ) {
+            $script_deps[] = 'w3-pixel-public';
+        }
+
+        // Register main checkout assets — Elementor will auto-enqueue via get_style_depends()/get_script_depends()
+        wp_register_style( 'w3opcfe-frontend-style', W3OPCFE_PLUGIN_URL . 'assets/css/on-page-checkout.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'w3opcfe-frontend-script', W3OPCFE_PLUGIN_URL . 'assets/js/on-page-checkout.js', array_merge( $script_deps, [ 'wc-country-select', 'wc-address-i18n' ] ), W3OPCFE_VERSION, true );
+
+        // Register Countdown Widget Assets (deduplicated: aliases point to the same files)
+        wp_register_style( 'w3opcfe-countdown-style', W3OPCFE_PLUGIN_URL . 'assets/css/widget-countdown.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'w3opcfe-countdown-script', W3OPCFE_PLUGIN_URL . 'assets/js/widget-countdown.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+        wp_register_style( 'singlegrid-pdp-widget-product-countdown', W3OPCFE_PLUGIN_URL . 'assets/css/widget-countdown.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'singlegrid-pdp-widget-product-countdown', W3OPCFE_PLUGIN_URL . 'assets/js/widget-countdown.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+
+        // Register Scarcity Widget Assets (deduplicated: aliases point to the same files)
+        wp_register_style( 'w3opcfe-scarcity-style', W3OPCFE_PLUGIN_URL . 'assets/css/widget-scarcity.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'w3opcfe-scarcity-script', W3OPCFE_PLUGIN_URL . 'assets/js/widget-scarcity.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+        wp_register_style( 'singlegrid-pdp-widget-product-scarcity', W3OPCFE_PLUGIN_URL . 'assets/css/widget-scarcity.css', [], W3OPCFE_VERSION );
+        wp_register_script( 'singlegrid-pdp-widget-product-scarcity', W3OPCFE_PLUGIN_URL . 'assets/js/widget-scarcity.js', [ 'jquery' ], W3OPCFE_VERSION, true );
+
+        $pixelbeacon_active = class_exists( 'PixelBeacon' ) || class_exists( 'FacebookPixelCAPI' );
+        $pb_settings        = class_exists( 'PixelBeacon_Helpers' ) ? \PixelBeacon_Helpers::get_settings() : [];
+
+        wp_localize_script( 'w3opcfe-frontend-script', 'w3opcfe_ajax_object', [
+            'ajax_url'                 => admin_url( 'admin-ajax.php' ),
+            'nonce'                    => wp_create_nonce( 'w3opcfe_nonce' ),
+            'loading_text'             => esc_html__( 'Loading...', 'on-page-checkout' ),
+            'error_text'               => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout' ),
+            'retry_text'               => esc_html__( 'Retry', 'on-page-checkout' ),
+            'processing_text'          => esc_html__( 'Processing...', 'on-page-checkout' ),
+            'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout' ),
+            'place_order_text'         => esc_html__( 'Place Order', 'on-page-checkout' ),
+            'pixelbeacon_active'       => $pixelbeacon_active,
+            'pixel_id'                 => ! empty( $pb_settings['pixel_id'] ) ? esc_js( $pb_settings['pixel_id'] ) : '',
+            'test_event_code'          => ! empty( $pb_settings['test_event_code'] ) ? esc_js( $pb_settings['test_event_code'] ) : '',
+            'currency'                 => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
+            'rest_url'                 => esc_url_raw( rest_url( 'pixelbeacon/v1/event' ) ),
+            'out_of_stock_text'        => esc_html__( 'Out of Stock', 'on-page-checkout' ),
+        ] );
+    }
+
+    /**
+     * Enqueue Admin Scripts
+     *
+     * Enqueue plugin admin scripts and styles.
+     *
+     * @since 1.0.0
+     * @access public
+     */
+    public function enqueue_admin_scripts( $hook ) {
+        if ( strpos( $hook, 'w3opcfe' ) === false ) {
+            return; // Don't load on other admin pages
+        }
+
+        wp_enqueue_style(
+            'w3opcfe-admin-style',
+            W3OPCFE_PLUGIN_URL . 'assets/css/admin.css',
+            [],
+            W3OPCFE_VERSION
+        );
+
+        wp_enqueue_script(
+            'w3opcfe-admin-script',
+            W3OPCFE_PLUGIN_URL . 'assets/js/admin.js',
+            [ 'jquery' ],
+            W3OPCFE_VERSION,
+            true
+        );
+    }
+}

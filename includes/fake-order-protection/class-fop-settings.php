@@ -79,7 +79,7 @@ class W3OPCFE_FOP_Settings {
      *
      * @return array
      */
-    public static function get_settings() {
+    public static function get_settings() {//
         $saved = get_option( self::OPTION_NAME, [] );
         if ( ! is_array( $saved ) ) {
             $saved = [];
@@ -157,17 +157,20 @@ class W3OPCFE_FOP_Settings {
         $output['enable_velocity_control']        = ! empty( $input['enable_velocity_control'] ) ? 1 : 0;
         $output['same_phone_hours']               = max( 1, absint( $input['same_phone_hours'] ?? 24 ) );
         $valid_phone_actions                      = [ 'merge', 'block', 'flag' ];
-        $output['same_phone_action']              = in_array( $input['same_phone_action'] ?? 'merge', $valid_phone_actions, true ) ? $input['same_phone_action'] : 'merge';
+        $phone_action                             = $input['same_phone_action'] ?? 'merge';
+        $output['same_phone_action']              = in_array( $phone_action, $valid_phone_actions, true ) ? $phone_action : 'merge';
         $output['enable_duplicate_product_check'] = ! empty( $input['enable_duplicate_product_check'] ) ? 1 : 0;
         $output['duplicate_product_window']       = max( 1, absint( $input['duplicate_product_window'] ?? 60 ) );
         $output['enable_device_limit']            = ! empty( $input['enable_device_limit'] ) ? 1 : 0;
         $output['max_device_orders_per_hour']     = max( 1, absint( $input['max_device_orders_per_hour'] ?? 2 ) );
         $valid_device_actions                     = [ 'block', 'flag' ];
-        $output['device_limit_action']            = in_array( $input['device_limit_action'] ?? 'block', $valid_device_actions, true ) ? $input['device_limit_action'] : 'block';
+        $device_action                            = $input['device_limit_action'] ?? 'block';
+        $output['device_limit_action']            = in_array( $device_action, $valid_device_actions, true ) ? $device_action : 'block';
         $output['enable_ip_limit']                = ! empty( $input['enable_ip_limit'] ) ? 1 : 0;
         $output['max_ip_orders_per_hour']         = max( 1, absint( $input['max_ip_orders_per_hour'] ?? 10 ) );
         $valid_ip_actions                         = [ 'flag', 'block' ];
-        $output['ip_limit_action']                = in_array( $input['ip_limit_action'] ?? 'flag', $valid_ip_actions, true ) ? $input['ip_limit_action'] : 'flag';
+        $ip_action                                = $input['ip_limit_action'] ?? 'flag';
+        $output['ip_limit_action']                = in_array( $ip_action, $valid_ip_actions, true ) ? $ip_action : 'flag';
         $output['store_contact_phone']            = sanitize_text_field( $input['store_contact_phone'] ?? '' );
 
         // Feature 3: Blocklists and Allowlists
@@ -184,7 +187,8 @@ class W3OPCFE_FOP_Settings {
         $output['network_license_secret']     = sanitize_text_field( $input['network_license_secret'] ?? '' );
         $output['network_min_reports']        = max( 1, absint( $input['network_min_reports'] ?? 3 ) );
         $valid_net_actions                    = [ 'flag', 'block' ];
-        $output['network_action']             = in_array( $input['network_action'] ?? 'flag', $valid_net_actions, true ) ? $input['network_action'] : 'flag';
+        $net_action                           = $input['network_action'] ?? 'flag';
+        $output['network_action']             = in_array( $net_action, $valid_net_actions, true ) ? $net_action : 'flag';
 
         // Messages
         $output['msg_invalid_phone']       = sanitize_text_field( $input['msg_invalid_phone'] ?? '' );

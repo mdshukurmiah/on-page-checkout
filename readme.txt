@@ -1,4 +1,4 @@
-=== On-Page Checkout for Elementor ===
+=== On-Page Checkout for WooCommerce ===
 Contributors: w3relations
 Tags: woocommerce, checkout, elementor, one-page-checkout, woocommerce-checkout
 Requires at least: 6.0
@@ -12,11 +12,11 @@ A custom Elementor widget that lets customers browse WooCommerce products and co
 
 == Description ==
 
-On-Page Checkout for Elementor adds a drag-and-drop Elementor widget that combines product selection and the full WooCommerce checkout form into a single page. No redirects, no separate cart page needed.
+On-Page Checkout for WooCommerce adds a drag-and-drop Elementor widget that combines product selection and the full WooCommerce checkout form into a single page. No redirects, no separate cart page needed.
 
 **Key Features**
 
-* Add the On Page Checkout widget anywhere in Elementor
+* Add the On-Page Checkout widget anywhere in Elementor
 * Support for simple and variable products
 * Display variations as separate product cards with variation-specific images
 * Single and multi-product selection modes
@@ -45,7 +45,7 @@ On-Page Checkout for Elementor adds a drag-and-drop Elementor widget that combin
 1. Upload the `on-page-checkout` folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress Plugins screen.
 2. Activate the plugin through the **Plugins** screen in WordPress.
 3. Make sure both **Elementor** and **WooCommerce** are installed and activated.
-4. Edit any page with Elementor, search for the **On Page Checkout** widget in the Elementor panel, and drag it onto the canvas.
+4. Edit any page with Elementor, search for the **On-Page Checkout** widget in the Elementor panel, and drag it onto the canvas.
 5. In the widget settings panel, add one or more Product IDs or SKUs and configure the section headings as needed.
 6. Optionally visit **W3 OPC → Checkout Fields** in the WordPress admin to enable, disable, or relabel individual billing and shipping fields.
 

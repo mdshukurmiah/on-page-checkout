@@ -621,26 +621,6 @@ jQuery(document).ready(function($) {
             return;
         }
 
-        // Client-side Fake Order Protection Instant Input Validation
-        if (window.w3opcfe_fop_object && window.w3opcfe_fop_object.enabled) {
-            var fop = window.w3opcfe_fop_object;
-            var phoneInput = form.find('input[name="billing_phone"]');
-            if (fop.validate_phone && phoneInput.length) {
-                var normPhone = w3opcfe_normalize_phone(phoneInput.val());
-                phoneInput.val(normPhone);
-                if (!normPhone || !/^01[3-9]\d{8}$/.test(normPhone)) {
-                    var pMsg = fop.msg_invalid_phone || 'Please enter a valid 11-digit mobile number (e.g. 017XXXXXXXX)';
-                    if (noticesContainer.length) {
-                        noticesContainer.html('<div class="woocommerce-error">' + pMsg + '</div>').slideDown();
-                    } else {
-                        alert(pMsg);
-                    }
-                    phoneInput.focus();
-                    return;
-                }
-            }
-        }
-
         // Allow payment gateways to perform custom client-side validation / tokenization (e.g. Stripe Elements, bKash, PayPal)
         if (form.triggerHandler('checkout_place_order') === false || (paymentMethod && form.triggerHandler('checkout_place_order_' + paymentMethod) === false)) {
             return;
@@ -654,7 +634,7 @@ jQuery(document).ready(function($) {
         $.ajax({
             type: 'POST',
             url: w3opcfe_ajax_object.ajax_url,
-            data: formData + '&action=w3opcfe_process_checkout&nonce=' + encodeURIComponent(w3opcfe_ajax_object.nonce) + '&product_id=' + encodeURIComponent(productId) + '&variation_id=' + encodeURIComponent(variationId) + '&quantity=' + encodeURIComponent(quantity) + '&selected_products=' + encodeURIComponent(JSON.stringify(selectedProducts)) + '&w3opcfe_device_id=' + encodeURIComponent(w3opcfe_get_device_id()) + '&w3opcfe_device_hash=' + encodeURIComponent(w3opcfe_get_device_hash()),
+            data: formData + '&action=w3opcfe_process_checkout&nonce=' + encodeURIComponent(w3opcfe_ajax_object.nonce) + '&product_id=' + encodeURIComponent(productId) + '&variation_id=' + encodeURIComponent(variationId) + '&quantity=' + encodeURIComponent(quantity) + '&selected_products=' + encodeURIComponent(JSON.stringify(selectedProducts)),
             dataType: 'json',
             success: function(response) {
                 var isSuccess = false;
@@ -751,138 +731,6 @@ jQuery(document).ready(function($) {
         if (value > min) {
             input.val(value - 1).trigger('change');
         }
-    });
-
-    // Fake Order Protection — Live Phone Normalizer & Instant Validation
-    function w3opcfe_normalize_phone(val) {
-        if (!val) return '';
-        var bn = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-        val = String(val);
-        for (var i = 0; i < 10; i++) {
-            val = val.split(bn[i]).join(String(i));
-        }
-        var digits = val.replace(/\D/g, '');
-        if (!digits) return '';
-
-        if (digits.indexOf('00880') === 0) {
-            digits = '0' + digits.substring(5);
-        } else if (digits.indexOf('880') === 0) {
-            digits = '0' + digits.substring(3);
-        } else if (digits.length === 10 && digits.charAt(0) === '1') {
-            digits = '0' + digits;
-        }
-        return digits;
-    }
-
-    $(document).on('input paste', 'input[name="billing_phone"], input[name="shipping_phone"], #billing_phone, #shipping_phone', function() {
-        var $el = $(this);
-        var raw = $el.val();
-        var norm = w3opcfe_normalize_phone(raw);
-        if (norm && norm.length > 11) {
-            norm = norm.substring(0, 11);
-        }
-        // Normalize Bengali numerals immediately if detected
-        if (norm && raw !== norm && !/[^\d০-৯\s\-+]/.test(raw)) {
-            $el.val(norm);
-        }
-    });
-
-    $(document).on('blur', 'input[name="billing_phone"], input[name="shipping_phone"], #billing_phone, #shipping_phone', function() {
-        var $el = $(this);
-        var val = w3opcfe_normalize_phone($el.val());
-        if (val) {
-            $el.val(val);
-        }
-        var fop = window.w3opcfe_fop_object;
-        if (fop && fop.validate_phone && val) {
-            var isValid = /^01[3-9]\d{8}$/.test(val);
-            var $err = $el.siblings('.w3opcfe-phone-error');
-            if (!isValid) {
-                if (!$err.length) {
-                    $el.after('<span class="w3opcfe-phone-error" style="color:#d63638; font-size:12px; display:block; margin-top:4px;">' + (fop.msg_invalid_phone || 'Please enter a valid 11-digit mobile number') + '</span>');
-                }
-                $el.css('border-color', '#d63638');
-            } else {
-                if ($err.length) {
-                    $err.remove();
-                }
-                $el.css('border-color', '');
-            }
-        }
-    });
-
-    // Fake Order Protection — First-party UUID Device Identifier (Cookie + LocalStorage)
-    function w3opcfe_get_device_id() {
-        var key = 'w3opcfe_device_id';
-        var id = '';
-        try {
-            id = localStorage.getItem(key);
-        } catch(e){}
-
-        if (!id) {
-            var match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'));
-            if (match) id = match[2];
-        }
-
-        if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-            if (window.crypto && window.crypto.randomUUID) {
-                id = window.crypto.randomUUID();
-            } else {
-                id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                    return v.toString(16);
-                });
-            }
-            try {
-                localStorage.setItem(key, id);
-            } catch(e){}
-            document.cookie = key + '=' + id + '; max-age=31536000; path=/; SameSite=Lax';
-        }
-        return id;
-    }
-
-    // Lightweight browser environment fingerprint hash (UA, screen, timezone, language, platform)
-    function w3opcfe_get_device_hash() {
-        var screenInfo = (window.screen ? [screen.width, screen.height, screen.colorDepth].join('x') : '');
-        var tz = '';
-        try {
-            tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        } catch(e) {
-            tz = String(new Date().getTimezoneOffset());
-        }
-        var raw = [
-            navigator.userAgent || '',
-            screenInfo,
-            tz,
-            navigator.language || '',
-            navigator.platform || ''
-        ].join('|||');
-
-        // FNV-1a 32-bit hash
-        var hash = 2166136261;
-        for (var i = 0; i < raw.length; i++) {
-            hash ^= raw.charCodeAt(i);
-            hash = Math.imul(hash, 16777619);
-        }
-        return (hash >>> 0).toString(16);
-    }
-
-    function w3opcfe_attach_device_fields(form) {
-        if (!form || !form.length) return;
-        var devId = w3opcfe_get_device_id();
-        var devHash = w3opcfe_get_device_hash();
-        if (devId && !form.find('input[name="w3opcfe_device_id"]').length) {
-            form.append('<input type="hidden" name="w3opcfe_device_id" value="' + devId + '">');
-        }
-        if (devHash && !form.find('input[name="w3opcfe_device_hash"]').length) {
-            form.append('<input type="hidden" name="w3opcfe_device_hash" value="' + devHash + '">');
-        }
-    }
-
-    // Attach device ID & fingerprint hash to all checkout forms
-    w3opcfe_attach_device_fields($('form.checkout, .on-page-checkout-form'));
-    $(document).ajaxComplete(function() {
-        w3opcfe_attach_device_fields($('form.checkout, .on-page-checkout-form'));
     });
 
 });
