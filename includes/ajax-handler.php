@@ -50,12 +50,13 @@ class W3OPCFE_Ajax_Handler {
 
         $selected_products = [];
         if ( ! empty( $_POST['selected_products'] ) ) {
-            $raw = $_POST['selected_products'];
-            if ( is_string( $raw ) ) {
-                $raw = json_decode( wp_unslash( $raw ), true );
-            }
+            $raw_selected = sanitize_text_field( wp_unslash( $_POST['selected_products'] ) );
+            $raw          = json_decode( $raw_selected, true );
             if ( is_array( $raw ) ) {
                 foreach ( $raw as $sp ) {
+                    if ( ! is_array( $sp ) ) {
+                        continue;
+                    }
                     $sp_pid = isset( $sp['product_id'] ) ? absint( $sp['product_id'] ) : 0;
                     $sp_vid = isset( $sp['variation_id'] ) ? absint( $sp['variation_id'] ) : 0;
                     $sp_qty = isset( $sp['quantity'] ) ? max( 1, absint( $sp['quantity'] ) ) : 1;

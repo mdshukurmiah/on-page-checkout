@@ -89,6 +89,7 @@ function w3opcfe_maybe_show_saved_notice() {
         return;
     }
 
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Read-only query arg set by WordPress Settings API after redirect.
     $settings_updated = isset( $_GET['settings-updated'] ) ? sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) ) : '';
 
     if ( '1' === $settings_updated || 'true' === $settings_updated ) {
@@ -653,6 +654,7 @@ class W3OPCFE_Checkout_Fields_Settings {
      */
     public function is_on_page_checkout() {
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Read-only check for current AJAX action name; actual actions verify nonces.
             $action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
             if ( in_array( $action, [ 'w3opcfe_load_checkout_fields', 'w3opcfe_process_checkout' ], true ) ) {
                 return true;

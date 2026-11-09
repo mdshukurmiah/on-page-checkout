@@ -206,7 +206,17 @@ class W3OPCFE_FOP_Settings {
      */
     public static function render_page() {
         $settings = self::get_settings();
-        $active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'validation';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin tab parameter.
+        $active_tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'validation';
+
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only admin notice query args.
+        $entry_added    = isset( $_GET['entry_added'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $entry_deleted  = isset( $_GET['entry_deleted'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $entry_error    = isset( $_GET['entry_error'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $import_status  = isset( $_GET['import_status'] ) ? sanitize_key( wp_unslash( $_GET['import_status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $imported_count = isset( $_GET['imported'] ) ? absint( wp_unslash( $_GET['imported'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $skipped_count  = isset( $_GET['skipped'] ) ? absint( wp_unslash( $_GET['skipped'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
         ?>
         <div class="wrap w3opcfe-fop-admin-wrap">
             <h1>
@@ -219,25 +229,25 @@ class W3OPCFE_FOP_Settings {
 
             <?php settings_errors( 'w3opcfe_fop_group' ); ?>
 
-            <?php if ( isset( $_GET['entry_added'] ) ) : ?>
+            <?php if ( $entry_added ) : ?>
                 <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Entry successfully added to the list.', 'on-page-checkout-for-elementor' ); ?></p></div>
-            <?php elseif ( isset( $_GET['entry_deleted'] ) ) : ?>
+            <?php elseif ( $entry_deleted ) : ?>
                 <div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Entry successfully removed.', 'on-page-checkout-for-elementor' ); ?></p></div>
-            <?php elseif ( isset( $_GET['entry_error'] ) ) : ?>
+            <?php elseif ( $entry_error ) : ?>
                 <div class="notice notice-error is-dismissible"><p><?php esc_html_e( 'Failed to add entry. Please check the value and try again.', 'on-page-checkout-for-elementor' ); ?></p></div>
-            <?php elseif ( isset( $_GET['import_status'] ) && 'success' === $_GET['import_status'] ) : ?>
+            <?php elseif ( 'success' === $import_status ) : ?>
                 <div class="notice notice-success is-dismissible">
                     <p>
                         <?php
                         printf(
                             esc_html__( 'CSV Import finished: %1$d imported, %2$d duplicates skipped.', 'on-page-checkout-for-elementor' ),
-                            absint( $_GET['imported'] ?? 0 ),
-                            absint( $_GET['skipped'] ?? 0 )
+                            $imported_count,
+                            $skipped_count
                         );
                         ?>
                     </p>
                 </div>
-            <?php elseif ( isset( $_GET['import_status'] ) && 'no_file' === $_GET['import_status'] ) : ?>
+            <?php elseif ( 'no_file' === $import_status ) : ?>
                 <div class="notice notice-error is-dismissible"><p><?php esc_html_e( 'No file selected for CSV import.', 'on-page-checkout-for-elementor' ); ?></p></div>
             <?php endif; ?>
 
@@ -690,10 +700,12 @@ class W3OPCFE_FOP_Settings {
 
             <?php if ( 'blocklists' === $active_tab ) : ?>
                 <?php
-                $current_list = ( isset( $_GET['list'] ) && 'allowlist' === $_GET['list'] ) ? 'allowlist' : 'blocklist';
-                $search       = sanitize_text_field( $_GET['s'] ?? '' );
-                $type_filter  = sanitize_key( $_GET['entry_type'] ?? '' );
-                $paged        = max( 1, absint( $_GET['paged'] ?? 1 ) );
+                // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only search, filter and pagination parameters.
+                $current_list = ( isset( $_GET['list'] ) && 'allowlist' === sanitize_key( wp_unslash( $_GET['list'] ) ) ) ? 'allowlist' : 'blocklist'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $search       = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $type_filter  = isset( $_GET['entry_type'] ) ? sanitize_key( wp_unslash( $_GET['entry_type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $paged        = isset( $_GET['paged'] ) ? max( 1, absint( wp_unslash( $_GET['paged'] ) ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                // phpcs:enable WordPress.Security.NonceVerification.Recommended
                 $per_page     = 20;
                 $offset       = ( $paged - 1 ) * $per_page;
 
