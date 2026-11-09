@@ -40,6 +40,10 @@ add_action( 'admin_init', 'w3opcfe_migrate_options' );
 add_action( 'admin_menu', 'w3opcfe_register_settings_pages' );
 
 function w3opcfe_register_settings_pages() {
+    // W3 logo as SVG data URI: a filled circle with "W3" cut out through a mask. WordPress recolors every
+    // fill to the admin color scheme, so the mask white uses a CSS rule without a trailing ";" (left untouched).
+    $menu_icon_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><style>.w3opcfe-mask-bg{fill:#fff}</style><mask id="w3opcfe-w3"><rect class="w3opcfe-mask-bg" width="20" height="20"/><text x="10" y="10.6" text-anchor="middle" dominant-baseline="central" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="700">W3</text></mask><circle cx="10" cy="10" r="10" fill="currentColor" mask="url(#w3opcfe-w3)"/></svg>';
+
     // Top-level menu: W3 OPC
     add_menu_page(
         __( 'W3 OPC', 'on-page-checkout' ),
@@ -47,7 +51,7 @@ function w3opcfe_register_settings_pages() {
         'manage_options',
         'w3opcfe_checkout_fields_edit',
         'w3opcfe_checkout_fields_edit_page',
-        'dashicons-shield-alt',
+        'data:image/svg+xml;base64,' . base64_encode( $menu_icon_svg ),
         60
     );
 
