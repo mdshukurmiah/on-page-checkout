@@ -311,6 +311,15 @@ final class W3OPCFE_On_Page_Checkout {
             W3OPCFE_VERSION
         );
 
+        if ( false !== strpos( $hook, 'w3opcfe_upgrade_pro' ) ) {
+            wp_enqueue_style(
+                'w3opcfe-admin-upgrade',
+                W3OPCFE_PLUGIN_URL . 'assets/css/admin-upgrade.css',
+                [ 'w3opcfe-admin-style' ],
+                W3OPCFE_VERSION
+            );
+        }
+
         wp_enqueue_script(
             'w3opcfe-admin-script',
             W3OPCFE_PLUGIN_URL . 'assets/js/admin.js',

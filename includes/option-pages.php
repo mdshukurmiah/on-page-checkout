@@ -64,12 +64,263 @@ function w3opcfe_register_settings_pages() {
         'w3opcfe_checkout_fields_edit',
         'w3opcfe_checkout_fields_edit_page'
     );
+
+    // 2. Upgrade to Pro
+    add_submenu_page(
+        'w3opcfe_checkout_fields_edit',
+        __( 'Upgrade to Pro', 'on-page-checkout-for-elementor' ),
+        '<span class="w3opcfe-upgrade-menu-item" style="color:#f0b849; font-weight:600;">' . esc_html__( 'Upgrade to Pro', 'on-page-checkout-for-elementor' ) . '</span>',
+        'manage_options',
+        'w3opcfe_upgrade_pro',
+        'w3opcfe_upgrade_pro_page'
+    );
 }
 
 function w3opcfe_checkout_fields_edit_page() {
     if ( class_exists( 'W3OPCFE_Checkout_Fields_Settings' ) ) {
         W3OPCFE_Checkout_Fields_Settings::render_page();
     }
+}
+
+/**
+ * Upgrade to Pro page: lists the Pro-only features and links to the store.
+ */
+function w3opcfe_upgrade_pro_page() {
+    $pro_url  = 'https://store.w3relations.com/products/on-page-checkout-pro-for-woocommerce';
+    $currency = function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' ) : '$';
+
+    $sections = [
+        [
+            'title' => __( 'Order Bump', 'on-page-checkout-for-elementor' ),
+            'desc'  => __( 'A one-click add-on offer right above the Place Order button. Customers tick a box, the item joins the order, and your average order value goes up.', 'on-page-checkout-for-elementor' ),
+            'items' => [
+                __( 'Simple and variable offer products', 'on-page-checkout-for-elementor' ),
+                __( 'Percentage or fixed-amount discount', 'on-page-checkout-for-elementor' ),
+                __( 'Custom title, description and checkbox label', 'on-page-checkout-for-elementor' ),
+                __( 'Style controls in the Elementor editor', 'on-page-checkout-for-elementor' ),
+            ],
+        ],
+        [
+            'title'  => __( 'Fake Order Protection', 'on-page-checkout-for-elementor' ),
+            'desc'   => __( 'Three layers of checks that run before an order is created, so fake and undeliverable orders never reach your courier.', 'on-page-checkout-for-elementor' ),
+            'groups' => [
+                [
+                    'title' => __( 'Input validation', 'on-page-checkout-for-elementor' ),
+                    'items' => [
+                        __( 'Bangladesh phone validation and normalization', 'on-page-checkout-for-elementor' ),
+                        __( 'Name and address quality checks', 'on-page-checkout-for-elementor' ),
+                        __( 'Banned keywords and repeated characters', 'on-page-checkout-for-elementor' ),
+                    ],
+                ],
+                [
+                    'title' => __( 'Duplicate & velocity control', 'on-page-checkout-for-elementor' ),
+                    'items' => [
+                        __( 'Same phone, same product detection', 'on-page-checkout-for-elementor' ),
+                        __( 'Merge repeats into the pending order', 'on-page-checkout-for-elementor' ),
+                        __( 'Device and IP order limits', 'on-page-checkout-for-elementor' ),
+                    ],
+                ],
+                [
+                    'title' => __( 'Blocklists & allowlists', 'on-page-checkout-for-elementor' ),
+                    'items' => [
+                        __( 'Phone, device, fingerprint, IP and address keyword', 'on-page-checkout-for-elementor' ),
+                        __( 'Auto-block after failed or returned orders', 'on-page-checkout-for-elementor' ),
+                        __( 'CSV import and export', 'on-page-checkout-for-elementor' ),
+                    ],
+                ],
+            ],
+        ],
+        [
+            'title' => __( 'Order risk tools', 'on-page-checkout-for-elementor' ),
+            'desc'  => __( 'Every order gets a risk badge in the WooCommerce orders list, so suspicious ones stand out before you ship.', 'on-page-checkout-for-elementor' ),
+            'items' => [
+                __( 'See other recent orders from the same phone', 'on-page-checkout-for-elementor' ),
+                __( 'Block or allow a customer from the order page', 'on-page-checkout-for-elementor' ),
+                __( 'Log-only mode to test rules before enforcing them', 'on-page-checkout-for-elementor' ),
+                __( 'Neutral block message that never reveals the rule', 'on-page-checkout-for-elementor' ),
+            ],
+        ],
+        [
+            'title' => __( 'Fake order network', 'on-page-checkout-for-elementor' ),
+            'desc'  => __( 'Optionally check phone numbers against fraud reports shared by other participating stores.', 'on-page-checkout-for-elementor' ),
+            'items' => [
+                __( 'Numbers are hashed (HMAC-SHA256), never sent in plain text', 'on-page-checkout-for-elementor' ),
+                __( 'Cached for 12 hours with a 2-second timeout', 'on-page-checkout-for-elementor' ),
+            ],
+        ],
+        [
+            'title' => __( 'Automatic updates', 'on-page-checkout-for-elementor' ),
+            'desc'  => __( 'New features and fixes arrive in your WordPress dashboard like any other plugin update, as long as your license is active.', 'on-page-checkout-for-elementor' ),
+            'items' => [],
+        ],
+    ];
+
+    // [ feature, in free ]
+    $compare = [
+        [ __( 'On-Page Checkout widget for Elementor', 'on-page-checkout-for-elementor' ), true ],
+        [ __( 'Simple and variable products, variation cards', 'on-page-checkout-for-elementor' ), true ],
+        [ __( 'Countdown and Scarcity widgets', 'on-page-checkout-for-elementor' ), true ],
+        [ __( 'Checkout fields editor', 'on-page-checkout-for-elementor' ), true ],
+        [ __( 'Preselect a product from the URL', 'on-page-checkout-for-elementor' ), true ],
+        [ __( 'Order bump', 'on-page-checkout-for-elementor' ), false ],
+        [ __( 'Input validation', 'on-page-checkout-for-elementor' ), false ],
+        [ __( 'Duplicate and velocity control', 'on-page-checkout-for-elementor' ), false ],
+        [ __( 'Blocklists and allowlists', 'on-page-checkout-for-elementor' ), false ],
+        [ __( 'Order risk badges and quick actions', 'on-page-checkout-for-elementor' ), false ],
+        [ __( 'Fake order network', 'on-page-checkout-for-elementor' ), false ],
+        [ __( 'Automatic updates', 'on-page-checkout-for-elementor' ), false ],
+    ];
+
+    $check = '<svg class="w3up-mark w3up-mark-yes" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    $dash  = '<svg class="w3up-mark w3up-mark-no" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    $mark_tags = [
+        'svg'  => [ 'class' => true, 'viewbox' => true, 'aria-hidden' => true ],
+        'path' => [ 'd' => true, 'fill' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true, 'stroke-linejoin' => true ],
+    ];
+    ?>
+    <div class="wrap w3up">
+        <h1 class="screen-reader-text"><?php esc_html_e( 'Upgrade to Pro', 'on-page-checkout-for-elementor' ); ?></h1>
+
+        <section class="w3up-hero">
+            <div class="w3up-hero-copy">
+                <p class="w3up-eyebrow"><?php esc_html_e( 'On-Page Checkout Pro', 'on-page-checkout-for-elementor' ); ?></p>
+                <h2 class="w3up-title"><?php esc_html_e( 'Fewer fake orders. Bigger baskets.', 'on-page-checkout-for-elementor' ); ?></h2>
+                <p class="w3up-lead">
+                    <?php esc_html_e( 'Pro keeps everything you already use and adds an order bump at checkout, plus a full set of checks that stop fake and undeliverable orders before they are placed.', 'on-page-checkout-for-elementor' ); ?>
+                </p>
+                <div class="w3up-actions">
+                    <a href="<?php echo esc_url( $pro_url ); ?>" class="w3up-btn" target="_blank" rel="noopener noreferrer">
+                        <?php esc_html_e( 'Get Pro', 'on-page-checkout-for-elementor' ); ?>
+                        <span class="w3up-btn-arrow" aria-hidden="true">&rarr;</span>
+                    </a>
+                    <a href="#w3up-compare" class="w3up-link"><?php esc_html_e( 'Compare Free and Pro', 'on-page-checkout-for-elementor' ); ?></a>
+                </div>
+                <p class="w3up-note"><?php esc_html_e( 'Your widgets and settings carry over when you switch.', 'on-page-checkout-for-elementor' ); ?></p>
+            </div>
+
+            <div class="w3up-stage" aria-hidden="true">
+                <p class="w3up-stage-label"><?php esc_html_e( 'At checkout', 'on-page-checkout-for-elementor' ); ?></p>
+                <div class="w3up-bump">
+                    <div class="w3up-bump-head">
+                        <span class="w3up-bump-box"><?php echo wp_kses( $check, $mark_tags ); ?></span>
+                        <?php esc_html_e( 'Yes! Add this to my order', 'on-page-checkout-for-elementor' ); ?>
+                    </div>
+                    <div class="w3up-bump-body">
+                        <span class="w3up-bump-thumb"></span>
+                        <span class="w3up-bump-text">
+                            <span class="w3up-bump-title"><?php esc_html_e( 'Special one-time offer!', 'on-page-checkout-for-elementor' ); ?></span>
+                            <span class="w3up-bump-product">
+                                <?php esc_html_e( 'Leather card holder', 'on-page-checkout-for-elementor' ); ?>
+                                <del><?php echo esc_html( $currency . '1,200' ); ?></del>
+                                <ins><?php echo esc_html( $currency . '900' ); ?></ins>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <p class="w3up-stage-label"><?php esc_html_e( 'In your orders list', 'on-page-checkout-for-elementor' ); ?></p>
+                <div class="w3up-orders">
+                    <div class="w3up-order">
+                        <span class="w3up-order-id">#2041</span>
+                        <span class="w3up-order-meta"><?php esc_html_e( 'New customer, valid phone', 'on-page-checkout-for-elementor' ); ?></span>
+                        <span class="w3up-badge w3up-badge-clean"><?php esc_html_e( 'Clean', 'on-page-checkout-for-elementor' ); ?></span>
+                    </div>
+                    <div class="w3up-order">
+                        <span class="w3up-order-id">#2042</span>
+                        <span class="w3up-order-meta"><?php esc_html_e( 'Same phone and product as #2039', 'on-page-checkout-for-elementor' ); ?></span>
+                        <span class="w3up-badge w3up-badge-duplicate"><?php esc_html_e( 'Duplicate', 'on-page-checkout-for-elementor' ); ?></span>
+                    </div>
+                    <div class="w3up-order">
+                        <span class="w3up-order-id">#2043</span>
+                        <span class="w3up-order-meta"><?php esc_html_e( '4 orders from one device in an hour', 'on-page-checkout-for-elementor' ); ?></span>
+                        <span class="w3up-badge w3up-badge-flagged"><?php esc_html_e( 'Flagged', 'on-page-checkout-for-elementor' ); ?></span>
+                    </div>
+                    <div class="w3up-order">
+                        <span class="w3up-order-id">#2044</span>
+                        <span class="w3up-order-meta"><?php esc_html_e( 'Phone on your blocklist', 'on-page-checkout-for-elementor' ); ?></span>
+                        <span class="w3up-badge w3up-badge-blocked"><?php esc_html_e( 'Blocked', 'on-page-checkout-for-elementor' ); ?></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="w3up-features">
+            <h2 class="w3up-section-title"><?php esc_html_e( "What's included in Pro", 'on-page-checkout-for-elementor' ); ?></h2>
+
+            <?php foreach ( $sections as $index => $section ) : ?>
+                <div class="w3up-row">
+                    <div class="w3up-row-head">
+                        <span class="w3up-num"><?php echo esc_html( sprintf( '%02d', $index + 1 ) ); ?></span>
+                        <h3><?php echo esc_html( $section['title'] ); ?></h3>
+                    </div>
+                    <div class="w3up-row-body">
+                        <p><?php echo esc_html( $section['desc'] ); ?></p>
+
+                        <?php if ( ! empty( $section['groups'] ) ) : ?>
+                            <div class="w3up-groups">
+                                <?php foreach ( $section['groups'] as $group ) : ?>
+                                    <div class="w3up-group">
+                                        <h4><?php echo esc_html( $group['title'] ); ?></h4>
+                                        <ul class="w3up-list">
+                                            <?php foreach ( $group['items'] as $item ) : ?>
+                                                <li><?php echo wp_kses( $check, $mark_tags ); ?><?php echo esc_html( $item ); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php elseif ( ! empty( $section['items'] ) ) : ?>
+                            <ul class="w3up-list w3up-list-cols">
+                                <?php foreach ( $section['items'] as $item ) : ?>
+                                    <li><?php echo wp_kses( $check, $mark_tags ); ?><?php echo esc_html( $item ); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </section>
+
+        <section class="w3up-compare" id="w3up-compare">
+            <h2 class="w3up-section-title"><?php esc_html_e( 'Free and Pro, side by side', 'on-page-checkout-for-elementor' ); ?></h2>
+            <table class="w3up-table">
+                <thead>
+                    <tr>
+                        <th scope="col"><?php esc_html_e( 'Feature', 'on-page-checkout-for-elementor' ); ?></th>
+                        <th scope="col"><?php esc_html_e( 'Free', 'on-page-checkout-for-elementor' ); ?></th>
+                        <th scope="col" class="w3up-col-pro"><?php esc_html_e( 'Pro', 'on-page-checkout-for-elementor' ); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ( $compare as $row ) : ?>
+                        <tr>
+                            <th scope="row"><?php echo esc_html( $row[0] ); ?></th>
+                            <td>
+                                <?php echo wp_kses( $row[1] ? $check : $dash, $mark_tags ); ?>
+                                <span class="screen-reader-text"><?php echo $row[1] ? esc_html__( 'Included', 'on-page-checkout-for-elementor' ) : esc_html__( 'Not included', 'on-page-checkout-for-elementor' ); ?></span>
+                            </td>
+                            <td class="w3up-col-pro">
+                                <?php echo wp_kses( $check, $mark_tags ); ?>
+                                <span class="screen-reader-text"><?php esc_html_e( 'Included', 'on-page-checkout-for-elementor' ); ?></span>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="w3up-closing">
+            <div>
+                <h2><?php esc_html_e( 'Ready to protect your checkout?', 'on-page-checkout-for-elementor' ); ?></h2>
+                <p><?php esc_html_e( 'Install Pro, activate your license, and your existing setup keeps working.', 'on-page-checkout-for-elementor' ); ?></p>
+            </div>
+            <a href="<?php echo esc_url( $pro_url ); ?>" class="w3up-btn w3up-btn-light" target="_blank" rel="noopener noreferrer">
+                <?php esc_html_e( 'Get Pro', 'on-page-checkout-for-elementor' ); ?>
+                <span class="w3up-btn-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+        </section>
+    </div>
+    <?php
 }
 
 add_action( 'admin_init', 'w3opcfe_register_settings' );
