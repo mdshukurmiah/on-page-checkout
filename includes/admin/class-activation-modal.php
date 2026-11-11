@@ -92,7 +92,7 @@ class W3OPCFE_Activation_Modal {
                 'ajaxAction'   => 'w3opcfe_switch_to_pro',
                 'targetPlugin' => self::PRO_PLUGIN,
                 'i18n'         => [
-                    'failed' => __( 'Switching failed. Please reload the page.', 'on-page-checkout' ),
+                    'failed' => __( 'Switching failed. Please reload the page.', 'on-page-checkout-for-elementor' ),
                 ],
             ]
         );
@@ -109,7 +109,7 @@ class W3OPCFE_Activation_Modal {
         ?>
         <div id="w3opcfe-activation-modal" class="w3opcfe-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="w3opcfe-modal-title">
             <div class="w3opcfe-modal-dialog">
-                <button type="button" class="w3opcfe-modal-close" aria-label="<?php esc_attr_e( 'Close', 'on-page-checkout' ); ?>">✕</button>
+                <button type="button" class="w3opcfe-modal-close" aria-label="<?php esc_attr_e( 'Close', 'on-page-checkout-for-elementor' ); ?>">✕</button>
                 <div class="w3opcfe-modal-header">
                     <div class="w3opcfe-modal-icon">
                         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -117,17 +117,17 @@ class W3OPCFE_Activation_Modal {
                         </svg>
                     </div>
                     <div class="w3opcfe-modal-title-wrap">
-                        <h3 id="w3opcfe-modal-title" class="w3opcfe-modal-title"><?php esc_html_e( 'Deactivate Free Version?', 'on-page-checkout' ); ?></h3>
-                        <p class="w3opcfe-modal-desc"><?php esc_html_e( "It's required to deactivate free version of this plugin. Do you want to continue?", 'on-page-checkout' ); ?></p>
+                        <h3 id="w3opcfe-modal-title" class="w3opcfe-modal-title"><?php esc_html_e( 'Deactivate Free Version?', 'on-page-checkout-for-elementor' ); ?></h3>
+                        <p class="w3opcfe-modal-desc"><?php esc_html_e( "It's required to deactivate free version of this plugin. Do you want to continue?", 'on-page-checkout-for-elementor' ); ?></p>
                     </div>
                 </div>
                 <div class="w3opcfe-modal-footer">
                     <button type="button" class="button w3opcfe-modal-btn w3opcfe-modal-btn-cancel">
-                        <span class="w3opcfe-btn-text"><?php esc_html_e( 'No, continue using free version', 'on-page-checkout' ); ?></span>
+                        <span class="w3opcfe-btn-text"><?php esc_html_e( 'No, continue using free version', 'on-page-checkout-for-elementor' ); ?></span>
                     </button>
                     <button type="button" class="button button-primary w3opcfe-modal-btn w3opcfe-modal-btn-continue">
                         <span class="w3opcfe-spinner"></span>
-                        <span class="w3opcfe-btn-text"><?php esc_html_e( 'Continue', 'on-page-checkout' ); ?></span>
+                        <span class="w3opcfe-btn-text"><?php esc_html_e( 'Continue', 'on-page-checkout-for-elementor' ); ?></span>
                     </button>
                 </div>
             </div>
@@ -142,7 +142,7 @@ class W3OPCFE_Activation_Modal {
         if ( get_transient( 'w3opcfe_free_switched_notice' ) ) {
             delete_transient( 'w3opcfe_free_switched_notice' );
             echo '<div class="notice notice-success is-dismissible"><p>' .
-                esc_html__( 'On-Page Checkout for WooCommerce (Free) is now active. The Pro version was deactivated.', 'on-page-checkout' ) .
+                esc_html__( 'On-Page Checkout for WooCommerce (Free) is now active. The Pro version was deactivated.', 'on-page-checkout-for-elementor' ) .
                 '</p></div>';
         }
     }
@@ -154,7 +154,7 @@ class W3OPCFE_Activation_Modal {
         check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
         if ( ! current_user_can( 'activate_plugins' ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Permission denied. You cannot activate plugins.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Permission denied. You cannot activate plugins.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         if ( ! function_exists( 'deactivate_plugins' ) ) {

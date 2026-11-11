@@ -37,11 +37,11 @@ class W3OPCFE_Ajax_Handler {
         // We check the nonce without hard wp_die so that reading public checkout fields never breaks.
         $nonce_valid = check_ajax_referer( 'w3opcfe_nonce', 'nonce', false );
         if ( is_user_logged_in() && ! $nonce_valid ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page.', 'on-page-checkout' ) ], 403 );
+            wp_send_json_error( [ 'message' => esc_html__( 'Security check failed. Please refresh the page.', 'on-page-checkout-for-elementor' ) ], 403 );
         }
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->customer || ! WC()->session ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
@@ -80,7 +80,7 @@ class W3OPCFE_Ajax_Handler {
         }
 
         if ( empty( $selected_products ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Please select at least one product.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Please select at least one product.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         WC()->cart->empty_cart();
@@ -146,7 +146,7 @@ class W3OPCFE_Ajax_Handler {
         }
 
         if ( ! $added_to_cart ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart. Please verify product options.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart. Please verify product options.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $customer     = WC()->customer;
@@ -261,7 +261,7 @@ class W3OPCFE_Ajax_Handler {
         $mobile_collapsed = ( 'no' !== $widgetSettings['mobileSummaryCollapsed'] );
         $initial_expanded_attr = $mobile_collapsed ? 'false' : 'true';
         $initial_wrapper_class = ( ! $mobile_collapsed ) ? ' opc-summary-open' : '';
-        $mobile_btn_label = ! empty( $widgetSettings['mobileSummaryLabel'] ) ? $widgetSettings['mobileSummaryLabel'] : esc_html__( 'Order summary', 'on-page-checkout' );
+        $mobile_btn_label = ! empty( $widgetSettings['mobileSummaryLabel'] ) ? $widgetSettings['mobileSummaryLabel'] : esc_html__( 'Order summary', 'on-page-checkout-for-elementor' );
         ?>
 
         <div class="opc-checkout-fields">
@@ -287,7 +287,7 @@ class W3OPCFE_Ajax_Handler {
                     <p class="form-row form-row-wide">
                         <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
                             <input id="ship-to-different-address-checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" type="checkbox" name="ship_to_different_address" value="1" />
-                            <span class="woocommerce-form__label-text"><?php esc_html_e( 'Ship to a different address?', 'on-page-checkout' ); ?></span>
+                            <span class="woocommerce-form__label-text"><?php esc_html_e( 'Ship to a different address?', 'on-page-checkout-for-elementor' ); ?></span>
                         </label>
                     </p>
                     <div class="shipping_address" style="display: none;">
@@ -333,7 +333,7 @@ class W3OPCFE_Ajax_Handler {
                                         </li>
                                     <?php endforeach; ?>
                                 <?php else : ?>
-                                    <li><?php esc_html_e( 'No shipping methods available for your address.', 'on-page-checkout' ); ?></li>
+                                    <li><?php esc_html_e( 'No shipping methods available for your address.', 'on-page-checkout-for-elementor' ); ?></li>
                                 <?php endif; ?>
                             </ul>
                             <?php
@@ -375,7 +375,7 @@ class W3OPCFE_Ajax_Handler {
                         <?php
                     endforeach;
                 else :
-                    echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'on-page-checkout' ) . '</li>';
+                    echo '<li class="woocommerce-notice woocommerce-notice--info woocommerce-info">' . esc_html__( 'No payment methods are available.', 'on-page-checkout-for-elementor' ) . '</li>';
                 endif;
                 ?>
                 </ul>
@@ -387,7 +387,7 @@ class W3OPCFE_Ajax_Handler {
                     <p class="form-row validate-required">
                         <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
                             <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="terms" <?php checked( apply_filters( 'woocommerce_terms_is_checked_default', isset( $_POST['terms'] ) ), true ); ?> id="terms" />
-                            <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'on-page-checkout' ); ?>">*</abbr>
+                            <span class="woocommerce-terms-and-conditions-checkbox-text"><?php function_exists( 'wc_terms_and_conditions_checkbox_text' ) ? wc_terms_and_conditions_checkbox_text() : esc_html_e( 'I have read and agree to the website terms and conditions', 'on-page-checkout-for-elementor' ); ?></span>&nbsp;<abbr class="required" title="<?php esc_attr_e( 'required', 'on-page-checkout-for-elementor' ); ?>">*</abbr>
                         </label>
                         <input type="hidden" name="terms-field" value="1" />
                     </p>
@@ -400,7 +400,7 @@ class W3OPCFE_Ajax_Handler {
             <?php do_action( 'woocommerce_review_order_before_submit' ); ?>
 
             <?php
-            $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : esc_html__( 'Place Order', 'on-page-checkout' );
+            $order_button_name = ! empty( $widgetSettings['orderButtonName'] ) ? $widgetSettings['orderButtonName'] : esc_html__( 'Place Order', 'on-page-checkout-for-elementor' );
             echo '<button type="submit" class="opc-place-order-button woocommerce_checkout_place_order" name="woocommerce_checkout_place_order" id="place_order" value="' . esc_attr( $order_button_name ) . '">' . esc_html( $order_button_name ) . '</button>';
             ?>
 
@@ -428,8 +428,8 @@ class W3OPCFE_Ajax_Handler {
                     <table class="shop_table woocommerce-checkout-review-order-table">
                         <thead>
                             <tr>
-                                <th class="product-name"><?php esc_html_e( 'Product', 'on-page-checkout' ); ?></th>
-                                <th class="product-total"><?php esc_html_e( 'Subtotal', 'on-page-checkout' ); ?></th>
+                                <th class="product-name"><?php esc_html_e( 'Product', 'on-page-checkout-for-elementor' ); ?></th>
+                                <th class="product-total"><?php esc_html_e( 'Subtotal', 'on-page-checkout-for-elementor' ); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -455,7 +455,7 @@ class W3OPCFE_Ajax_Handler {
                         </tbody>
                         <tfoot>
                             <tr class="cart-subtotal">
-                                <th><?php esc_html_e( 'Subtotal', 'on-page-checkout' ); ?></th>
+                                <th><?php esc_html_e( 'Subtotal', 'on-page-checkout-for-elementor' ); ?></th>
                                 <td><?php wc_cart_totals_subtotal_html(); ?></td>
                             </tr>
                             <?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
@@ -466,8 +466,8 @@ class W3OPCFE_Ajax_Handler {
                             <?php endforeach; ?>
                             <?php if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) : ?>
                                 <tr class="woocommerce-shipping-totals shipping">
-                                    <th><?php esc_html_e( 'Shipment', 'on-page-checkout' ); ?></th>
-                                    <td data-title="<?php esc_attr_e( 'Shipment', 'on-page-checkout' ); ?>">
+                                    <th><?php esc_html_e( 'Shipment', 'on-page-checkout-for-elementor' ); ?></th>
+                                    <td data-title="<?php esc_attr_e( 'Shipment', 'on-page-checkout-for-elementor' ); ?>">
                                         <?php
                                         $packages = WC()->shipping()->get_packages();
                                         $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
@@ -479,13 +479,13 @@ class W3OPCFE_Ajax_Handler {
                                                 $cost = (float) $rate->cost;
                                                 $tax  = (float) array_sum( $rate->taxes );
                                                 $total_rate_cost = $cost + ( WC()->cart->display_prices_including_tax() ? $tax : 0 );
-                                                $summary_output[] = esc_html( $rate->get_label() ) . ': ' . ( $total_rate_cost > 0 ? wc_price( $total_rate_cost ) : esc_html__( 'Free shipping', 'on-page-checkout' ) );
+                                                $summary_output[] = esc_html( $rate->get_label() ) . ': ' . ( $total_rate_cost > 0 ? wc_price( $total_rate_cost ) : esc_html__( 'Free shipping', 'on-page-checkout-for-elementor' ) );
                                             }
                                         }
                                         if ( ! empty( $summary_output ) ) {
                                             echo wp_kses_post( implode( '<br>', $summary_output ) );
                                         } else {
-                                            echo esc_html__( 'Calculated at checkout', 'on-page-checkout' );
+                                            echo esc_html__( 'Calculated at checkout', 'on-page-checkout-for-elementor' );
                                         }
                                         ?>
                                     </td>
@@ -513,7 +513,7 @@ class W3OPCFE_Ajax_Handler {
                                 <?php endif; ?>
                             <?php endif; ?>
                             <tr class="order-total">
-                                <th><?php esc_html_e( 'Total', 'on-page-checkout' ); ?></th>
+                                <th><?php esc_html_e( 'Total', 'on-page-checkout-for-elementor' ); ?></th>
                                 <td><?php wc_cart_totals_order_total_html(); ?></td>
                             </tr>
                         </tfoot>
@@ -703,22 +703,22 @@ class W3OPCFE_Ajax_Handler {
 
     public function add_to_cart() {
         if ( ! check_ajax_referer( 'w3opcfe_nonce', 'nonce', false ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid security token.', 'on-page-checkout' ) ], 403 );
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid security token.', 'on-page-checkout-for-elementor' ) ], 403 );
         }
 
         $product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $quantity   = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 1;
 
         if ( ! $product_id ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Product ID is missing.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $result = WC()->cart->add_to_cart( $product_id, $quantity );
 
         if ( $result ) {
-            wp_send_json_success( [ 'message' => esc_html__( 'Product added to cart.', 'on-page-checkout' ) ] );
+            wp_send_json_success( [ 'message' => esc_html__( 'Product added to cart.', 'on-page-checkout-for-elementor' ) ] );
         } else {
-            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Failed to add product to cart.', 'on-page-checkout-for-elementor' ) ] );
         }
     }
 }

@@ -24,7 +24,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Product Countdown', 'on-page-checkout' );
+		return esc_html__( 'Product Countdown', 'on-page-checkout-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -52,42 +52,42 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_timer',
 			[
-				'label' => esc_html__( 'Countdown Timer', 'on-page-checkout' ),
+				'label' => esc_html__( 'Countdown Timer', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'due_date',
 			[
-				'label'       => esc_html__( 'Target Date & Time', 'on-page-checkout' ),
+				'label'       => esc_html__( 'Target Date & Time', 'on-page-checkout-for-elementor' ),
 				'type'        => Controls_Manager::DATE_TIME,
 				'default'     => gmdate( 'Y-m-d H:i', strtotime( '+7 days' ) ),
-				'description' => esc_html__( 'Choose date and time to count down to.', 'on-page-checkout' ),
+				'description' => esc_html__( 'Choose date and time to count down to.', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'auto_reset',
 			[
-				'label'        => esc_html__( 'Auto Reset Timer', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Auto Reset Timer', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'On', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'Off', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'On', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'Off', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'no',
 				'separator'    => 'before',
-				'description'  => esc_html__( 'Automatically recalculate a target date when the timer ends.', 'on-page-checkout' ),
+				'description'  => esc_html__( 'Automatically recalculate a target date when the timer ends.', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'reset_type',
 			[
-				'label'     => esc_html__( 'Reset Mode', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Reset Mode', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					'interval' => esc_html__( 'Add Interval Days', 'on-page-checkout' ),
-					'daily'    => esc_html__( 'Daily at Specific Time', 'on-page-checkout' ),
+					'interval' => esc_html__( 'Add Interval Days', 'on-page-checkout-for-elementor' ),
+					'daily'    => esc_html__( 'Daily at Specific Time', 'on-page-checkout-for-elementor' ),
 				],
 				'default'   => 'interval',
 				'condition' => [
@@ -99,7 +99,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'reset_interval_days',
 			[
-				'label'     => esc_html__( 'Days to Add', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Days to Add', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 1,
 				'max'       => 365,
@@ -115,11 +115,11 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'reset_daily_time',
 			[
-				'label'       => esc_html__( 'Daily Reset Time', 'on-page-checkout' ),
+				'label'       => esc_html__( 'Daily Reset Time', 'on-page-checkout-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
 				'default'     => '00:00',
 				'placeholder' => 'HH:MM (e.g. 18:30)',
-				'description' => esc_html__( 'Enter the 24-hour format time for the timer to reset to daily.', 'on-page-checkout' ),
+				'description' => esc_html__( 'Enter the 24-hour format time for the timer to reset to daily.', 'on-page-checkout-for-elementor' ),
 				'condition'   => [
 					'auto_reset' => 'yes',
 					'reset_type' => 'daily',
@@ -133,17 +133,17 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_display',
 			[
-				'label' => esc_html__( 'Display Settings', 'on-page-checkout' ),
+				'label' => esc_html__( 'Display Settings', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'bangla_numbers',
 			[
-				'label'        => esc_html__( 'Bangla Numbers', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Bangla Numbers', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'no',
 			]
@@ -152,10 +152,10 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'show_days',
 			[
-				'label'        => esc_html__( 'Days', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Days', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Show', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'Hide', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Show', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -164,10 +164,10 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'show_hours',
 			[
-				'label'        => esc_html__( 'Hours', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Hours', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Show', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'Hide', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Show', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -176,10 +176,10 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'show_minutes',
 			[
-				'label'        => esc_html__( 'Minutes', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Minutes', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Show', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'Hide', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Show', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -188,10 +188,10 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'show_seconds',
 			[
-				'label'        => esc_html__( 'Seconds', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Seconds', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Show', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'Hide', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Show', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'Hide', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -200,7 +200,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'label_heading',
 			[
-				'label'     => esc_html__( 'Renaming Custom Labels', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Renaming Custom Labels', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -209,9 +209,9 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'label_days',
 			[
-				'label'     => esc_html__( 'Days Label', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Days Label', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'Days', 'on-page-checkout' ),
+				'default'   => esc_html__( 'Days', 'on-page-checkout-for-elementor' ),
 				'condition' => [
 					'show_days' => 'yes',
 				],
@@ -221,9 +221,9 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'label_hours',
 			[
-				'label'     => esc_html__( 'Hours Label', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Hours Label', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'Hours', 'on-page-checkout' ),
+				'default'   => esc_html__( 'Hours', 'on-page-checkout-for-elementor' ),
 				'condition' => [
 					'show_hours' => 'yes',
 				],
@@ -233,9 +233,9 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'label_minutes',
 			[
-				'label'     => esc_html__( 'Minutes Label', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Minutes Label', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'Minutes', 'on-page-checkout' ),
+				'default'   => esc_html__( 'Minutes', 'on-page-checkout-for-elementor' ),
 				'condition' => [
 					'show_minutes' => 'yes',
 				],
@@ -245,9 +245,9 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'label_seconds',
 			[
-				'label'     => esc_html__( 'Seconds Label', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Seconds Label', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'Seconds', 'on-page-checkout' ),
+				'default'   => esc_html__( 'Seconds', 'on-page-checkout-for-elementor' ),
 				'condition' => [
 					'show_seconds' => 'yes',
 				],
@@ -257,7 +257,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'separator_heading',
 			[
-				'label'     => esc_html__( 'Separators', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Separators', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -266,10 +266,10 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'show_separator',
 			[
-				'label'        => esc_html__( 'Show Separator', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Show Separator', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'no',
 			]
@@ -278,7 +278,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'separator_text',
 			[
-				'label'     => esc_html__( 'Custom Separator', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Custom Separator', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::TEXT,
 				'default'   => ':',
 				'condition' => [
@@ -293,7 +293,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_layout_style',
 			[
-				'label' => esc_html__( 'Layout & Container', 'on-page-checkout' ),
+				'label' => esc_html__( 'Layout & Container', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -301,12 +301,12 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'align',
 			[
-				'label'     => esc_html__( 'Alignment', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Alignment', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
-					'flex-start' => [ 'title' => esc_html__( 'Left', 'on-page-checkout' ), 'icon' => 'eicon-text-align-left' ],
-					'center'     => [ 'title' => esc_html__( 'Center', 'on-page-checkout' ), 'icon' => 'eicon-text-align-center' ],
-					'flex-end'   => [ 'title' => esc_html__( 'Right', 'on-page-checkout' ), 'icon' => 'eicon-text-align-right' ],
+					'flex-start' => [ 'title' => esc_html__( 'Left', 'on-page-checkout-for-elementor' ), 'icon' => 'eicon-text-align-left' ],
+					'center'     => [ 'title' => esc_html__( 'Center', 'on-page-checkout-for-elementor' ), 'icon' => 'eicon-text-align-center' ],
+					'flex-end'   => [ 'title' => esc_html__( 'Right', 'on-page-checkout-for-elementor' ), 'icon' => 'eicon-text-align-right' ],
 				],
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-countdown-wrapper, {{WRAPPER}} .singlegrid-pdp-countdown-wrapper' => 'justify-content: {{VALUE}};',
@@ -318,7 +318,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'gap',
 			[
-				'label'      => esc_html__( 'Gap Between Items (px)', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Gap Between Items (px)', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -340,7 +340,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_box_style',
 			[
-				'label' => esc_html__( 'Countdown Box', 'on-page-checkout' ),
+				'label' => esc_html__( 'Countdown Box', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -348,7 +348,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'box_bg_color',
 			[
-				'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-countdown-box, {{WRAPPER}} .singlegrid-pdp-countdown-box' => 'background-color: {{VALUE}};',
@@ -360,7 +360,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'box_padding',
 			[
-				'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -388,7 +388,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'box_border_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
@@ -419,7 +419,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_digits_style',
 			[
-				'label' => esc_html__( 'Digits', 'on-page-checkout' ),
+				'label' => esc_html__( 'Digits', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -427,7 +427,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'digits_color',
 			[
-				'label'     => esc_html__( 'Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-countdown-digit, {{WRAPPER}} .singlegrid-pdp-countdown-digit' => 'color: {{VALUE}};',
@@ -450,7 +450,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_labels_style',
 			[
-				'label' => esc_html__( 'Labels', 'on-page-checkout' ),
+				'label' => esc_html__( 'Labels', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -458,7 +458,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'labels_color',
 			[
-				'label'     => esc_html__( 'Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-countdown-label, {{WRAPPER}} .singlegrid-pdp-countdown-label' => 'color: {{VALUE}};',
@@ -481,7 +481,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_separator_style',
 			[
-				'label'     => esc_html__( 'Separator', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Separator', 'on-page-checkout-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'show_separator' => 'yes',
@@ -492,7 +492,7 @@ class W3OPCFE_Countdown_Widget extends Widget_Base {
 		$this->add_control(
 			'separator_color',
 			[
-				'label'     => esc_html__( 'Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-countdown-separator, {{WRAPPER}} .singlegrid-pdp-countdown-separator' => 'color: {{VALUE}};',
@@ -655,7 +655,7 @@ class W3OPCFE_Singlegrid_Countdown_Widget extends W3OPCFE_Countdown_Widget {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Product Countdown (Legacy)', 'on-page-checkout' );
+		return esc_html__( 'Product Countdown (Legacy)', 'on-page-checkout-for-elementor' );
 	}
 
 	public function show_in_panel() {

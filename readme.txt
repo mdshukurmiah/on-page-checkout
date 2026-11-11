@@ -1,8 +1,8 @@
 === On-Page Checkout for WooCommerce ===
 Contributors: w3relations
 Tags: woocommerce, checkout, elementor, one-page-checkout, woocommerce-checkout
-Requires at least: 6.0
-Tested up to: 6.9
+Requires at least: 6.2
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.4
 License: GPLv2 or later
@@ -42,7 +42,7 @@ On-Page Checkout for WooCommerce adds a drag-and-drop Elementor widget that comb
 
 == Installation ==
 
-1. Upload the `on-page-checkout` folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress Plugins screen.
+1. Upload the `on-page-checkout-for-elementor` folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress Plugins screen.
 2. Activate the plugin through the **Plugins** screen in WordPress.
 3. Make sure both **Elementor** and **WooCommerce** are installed and activated.
 4. Edit any page with Elementor, search for the **On-Page Checkout** widget in the Elementor panel, and drag it onto the canvas.

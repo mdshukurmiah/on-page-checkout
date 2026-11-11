@@ -25,7 +25,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Product Scarcity', 'on-page-checkout' );
+		return esc_html__( 'Product Scarcity', 'on-page-checkout-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -53,18 +53,18 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_scarcity',
 			[
-				'label' => esc_html__( 'Scarcity Settings', 'on-page-checkout' ),
+				'label' => esc_html__( 'Scarcity Settings', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'layout',
 			[
-				'label'   => esc_html__( 'Layout', 'on-page-checkout' ),
+				'label'   => esc_html__( 'Layout', 'on-page-checkout-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'inline' => esc_html__( 'Inline (Classic)', 'on-page-checkout' ),
-					'bar'    => esc_html__( 'Progress Bar (Text with Scarcity Bar)', 'on-page-checkout' ),
+					'inline' => esc_html__( 'Inline (Classic)', 'on-page-checkout-for-elementor' ),
+					'bar'    => esc_html__( 'Progress Bar (Text with Scarcity Bar)', 'on-page-checkout-for-elementor' ),
 				],
 				'default' => 'inline',
 			]
@@ -73,12 +73,12 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'bar_max',
 			[
-				'label'       => esc_html__( 'Total Stock Reference (Bar Scale)', 'on-page-checkout' ),
+				'label'       => esc_html__( 'Total Stock Reference (Bar Scale)', 'on-page-checkout-for-elementor' ),
 				'type'        => Controls_Manager::NUMBER,
 				'min'         => 1,
 				'default'     => '',
-				'placeholder' => esc_html__( 'e.g. 50 (Defaults to Max Count)', 'on-page-checkout' ),
-				'description' => esc_html__( 'The total capacity used to calculate the progress bar percentage. If left empty, Maximum Count is used.', 'on-page-checkout' ),
+				'placeholder' => esc_html__( 'e.g. 50 (Defaults to Max Count)', 'on-page-checkout-for-elementor' ),
+				'description' => esc_html__( 'The total capacity used to calculate the progress bar percentage. If left empty, Maximum Count is used.', 'on-page-checkout-for-elementor' ),
 				'condition'   => [
 					'layout' => 'bar',
 				],
@@ -88,12 +88,12 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'bar_calculation',
 			[
-				'label'     => esc_html__( 'Bar Progress Mode', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Bar Progress Mode', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					'remaining'      => esc_html__( 'Remaining Stock (Count / Total)', 'on-page-checkout' ),
-					'depleted'       => esc_html__( 'Sold / Depleted Stock ((Total - Count) / Total)', 'on-page-checkout' ),
-					'direct_percent' => esc_html__( 'Direct Percentage (Count is %)', 'on-page-checkout' ),
+					'remaining'      => esc_html__( 'Remaining Stock (Count / Total)', 'on-page-checkout-for-elementor' ),
+					'depleted'       => esc_html__( 'Sold / Depleted Stock ((Total - Count) / Total)', 'on-page-checkout-for-elementor' ),
+					'direct_percent' => esc_html__( 'Direct Percentage (Count is %)', 'on-page-checkout-for-elementor' ),
 				],
 				'default'   => 'remaining',
 				'condition' => [
@@ -105,10 +105,10 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'bangla_numbers',
 			[
-				'label'        => esc_html__( 'Bangla Numbers', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Bangla Numbers', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'no',
 			]
@@ -117,26 +117,26 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'counting_up',
 			[
-				'label'        => esc_html__( 'Count Up (Inverse)', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Count Up (Inverse)', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'no',
-				'description'  => esc_html__( 'If enabled, the number will increase on each refresh instead of decreasing.', 'on-page-checkout' ),
+				'description'  => esc_html__( 'If enabled, the number will increase on each refresh instead of decreasing.', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'icon_type',
 			[
-				'label'   => esc_html__( 'Indicator Icon', 'on-page-checkout' ),
+				'label'   => esc_html__( 'Indicator Icon', 'on-page-checkout-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'warning' => esc_html__( 'Warning Triangle (Alert)', 'on-page-checkout' ),
-					'blinker' => esc_html__( 'Pulsing Blinker SVG', 'on-page-checkout' ),
-					'custom'  => esc_html__( 'Custom Icon', 'on-page-checkout' ),
-					'none'    => esc_html__( 'None', 'on-page-checkout' ),
+					'warning' => esc_html__( 'Warning Triangle (Alert)', 'on-page-checkout-for-elementor' ),
+					'blinker' => esc_html__( 'Pulsing Blinker SVG', 'on-page-checkout-for-elementor' ),
+					'custom'  => esc_html__( 'Custom Icon', 'on-page-checkout-for-elementor' ),
+					'none'    => esc_html__( 'None', 'on-page-checkout-for-elementor' ),
 				],
 				'default' => 'blinker',
 			]
@@ -145,7 +145,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'blinker_color',
 			[
-				'label'     => esc_html__( 'Blinker Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Blinker Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#ff0d00',
 				'condition' => [
@@ -157,7 +157,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'custom_icon',
 			[
-				'label'     => esc_html__( 'Choose Icon', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Choose Icon', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::ICONS,
 				'default'   => [
 					'value'   => 'fas fa-fire',
@@ -172,7 +172,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'custom_icon_color',
 			[
-				'label'     => esc_html__( 'Icon Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Icon Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '',
 				'selectors' => [
@@ -190,7 +190,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'icon_size',
 			[
-				'label'      => esc_html__( 'Icon Size', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Icon Size', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em' ],
 				'range'      => [
@@ -211,7 +211,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'icon_spacing',
 			[
-				'label'      => esc_html__( 'Icon Spacing', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Icon Spacing', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em' ],
 				'range'      => [
@@ -233,27 +233,27 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'prefix_text',
 			[
-				'label'       => esc_html__( 'Prefix Text', 'on-page-checkout' ),
+				'label'       => esc_html__( 'Prefix Text', 'on-page-checkout-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'Only ', 'on-page-checkout' ),
-				'placeholder' => esc_html__( 'Only ', 'on-page-checkout' ),
+				'default'     => esc_html__( 'Only ', 'on-page-checkout-for-elementor' ),
+				'placeholder' => esc_html__( 'Only ', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'suffix_text',
 			[
-				'label'       => esc_html__( 'Suffix Text', 'on-page-checkout' ),
+				'label'       => esc_html__( 'Suffix Text', 'on-page-checkout-for-elementor' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( ' items left in stock!', 'on-page-checkout' ),
-				'placeholder' => esc_html__( ' items left in stock!', 'on-page-checkout' ),
+				'default'     => esc_html__( ' items left in stock!', 'on-page-checkout-for-elementor' ),
+				'placeholder' => esc_html__( ' items left in stock!', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
 		$this->add_control(
 			'min_val',
 			[
-				'label'   => esc_html__( 'Minimum Count', 'on-page-checkout' ),
+				'label'   => esc_html__( 'Minimum Count', 'on-page-checkout-for-elementor' ),
 				'type'    => Controls_Manager::NUMBER,
 				'min'     => 0,
 				'default' => 5,
@@ -263,7 +263,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'max_val',
 			[
-				'label'   => esc_html__( 'Maximum Count', 'on-page-checkout' ),
+				'label'   => esc_html__( 'Maximum Count', 'on-page-checkout-for-elementor' ),
 				'type'    => Controls_Manager::NUMBER,
 				'min'     => 1,
 				'default' => 35,
@@ -273,11 +273,11 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'decrement_mode',
 			[
-				'label'   => esc_html__( 'Decrease Mode', 'on-page-checkout' ),
+				'label'   => esc_html__( 'Decrease Mode', 'on-page-checkout-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'random' => esc_html__( 'Random (1 - 3)', 'on-page-checkout' ),
-					'fixed'  => esc_html__( 'Fixed Amount', 'on-page-checkout' ),
+					'random' => esc_html__( 'Random (1 - 3)', 'on-page-checkout-for-elementor' ),
+					'fixed'  => esc_html__( 'Fixed Amount', 'on-page-checkout-for-elementor' ),
 				],
 				'default' => 'random',
 			]
@@ -286,7 +286,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'decrement_step',
 			[
-				'label'     => esc_html__( 'Fixed Amount', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Fixed Amount', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 1,
 				'default'   => 1,
@@ -299,13 +299,13 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'reset_at_min',
 			[
-				'label'        => esc_html__( 'Loop Count When Reaching Limit', 'on-page-checkout' ),
+				'label'        => esc_html__( 'Loop Count When Reaching Limit', 'on-page-checkout-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-				'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+				'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+				'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
 				'return_value' => 'yes',
 				'default'      => 'yes',
-				'description'  => esc_html__( 'If enabled, count resets to maximum/minimum when it reaches the end threshold.', 'on-page-checkout' ),
+				'description'  => esc_html__( 'If enabled, count resets to maximum/minimum when it reaches the end threshold.', 'on-page-checkout-for-elementor' ),
 			]
 		);
 
@@ -315,7 +315,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_layout_style',
 			[
-				'label' => esc_html__( 'Container Style', 'on-page-checkout' ),
+				'label' => esc_html__( 'Container Style', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -323,12 +323,12 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'align',
 			[
-				'label'     => esc_html__( 'Alignment', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Alignment', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::CHOOSE,
 				'options'   => [
-					'flex-start' => [ 'title' => esc_html__( 'Left', 'on-page-checkout' ), 'icon' => 'eicon-text-align-left' ],
-					'center'     => [ 'title' => esc_html__( 'Center', 'on-page-checkout' ), 'icon' => 'eicon-text-align-center' ],
-					'flex-end'   => [ 'title' => esc_html__( 'Right', 'on-page-checkout' ), 'icon' => 'eicon-text-align-right' ],
+					'flex-start' => [ 'title' => esc_html__( 'Left', 'on-page-checkout-for-elementor' ), 'icon' => 'eicon-text-align-left' ],
+					'center'     => [ 'title' => esc_html__( 'Center', 'on-page-checkout-for-elementor' ), 'icon' => 'eicon-text-align-center' ],
+					'flex-end'   => [ 'title' => esc_html__( 'Right', 'on-page-checkout-for-elementor' ), 'icon' => 'eicon-text-align-right' ],
 				],
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-scarcity-wrapper, {{WRAPPER}} .singlegrid-pdp-scarcity-wrapper' => 'justify-content: {{VALUE}};',
@@ -342,7 +342,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'bg_color',
 			[
-				'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-scarcity-wrapper, {{WRAPPER}} .singlegrid-pdp-scarcity-wrapper' => 'background-color: {{VALUE}};',
@@ -353,7 +353,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'padding',
 			[
-				'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -373,7 +373,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'border_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
@@ -396,7 +396,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_text_style',
 			[
-				'label' => esc_html__( 'Text Style', 'on-page-checkout' ),
+				'label' => esc_html__( 'Text Style', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -404,7 +404,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'text_color',
 			[
-				'label'     => esc_html__( 'Text Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Text Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-scarcity-prefix, {{WRAPPER}} .w3opcfe-scarcity-suffix, {{WRAPPER}} .singlegrid-pdp-scarcity-prefix, {{WRAPPER}} .singlegrid-pdp-scarcity-suffix' => 'color: {{VALUE}};',
@@ -428,7 +428,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_number_style',
 			[
-				'label' => esc_html__( 'Count Number', 'on-page-checkout' ),
+				'label' => esc_html__( 'Count Number', 'on-page-checkout-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -436,7 +436,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'number_color',
 			[
-				'label'     => esc_html__( 'Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-scarcity-number, {{WRAPPER}} .singlegrid-pdp-scarcity-number' => 'color: {{VALUE}};',
@@ -448,7 +448,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'number_bg_color',
 			[
-				'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .w3opcfe-scarcity-number, {{WRAPPER}} .singlegrid-pdp-scarcity-number' => 'background-color: {{VALUE}};',
@@ -467,7 +467,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'number_padding',
 			[
-				'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em' ],
 				'selectors'  => [
@@ -487,7 +487,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'number_border_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
@@ -502,7 +502,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_bar_style',
 			[
-				'label'     => esc_html__( 'Progress Bar Style', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Progress Bar Style', 'on-page-checkout-for-elementor' ),
 				'tab'       => Controls_Manager::TAB_STYLE,
 				'condition' => [
 					'layout' => 'bar',
@@ -513,7 +513,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'bar_height',
 			[
-				'label'      => esc_html__( 'Height', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Height', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -532,7 +532,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'bar_width',
 			[
-				'label'      => esc_html__( 'Width', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Width', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ '%', 'px' ],
 				'range'      => [
@@ -552,7 +552,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'bar_spacing',
 			[
-				'label'      => esc_html__( 'Top Spacing', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Top Spacing', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range'      => [
@@ -571,7 +571,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'bar_fill_color',
 			[
-				'label'     => esc_html__( 'Fill Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Fill Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#eeb029',
 				'selectors' => [
@@ -583,7 +583,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_control(
 			'bar_bg_color',
 			[
-				'label'     => esc_html__( 'Track (Background) Color', 'on-page-checkout' ),
+				'label'     => esc_html__( 'Track (Background) Color', 'on-page-checkout-for-elementor' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => 'rgba(255, 255, 255, 0.15)',
 				'selectors' => [
@@ -595,7 +595,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'bar_border_radius',
 			[
-				'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+				'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'default'    => [
@@ -662,7 +662,7 @@ class W3OPCFE_Scarcity_Widget extends Widget_Base {
 		$blinker_color  = ! empty( $settings['blinker_color'] ) ? $settings['blinker_color'] : '#ff0d00';
 		$use_bangla     = 'yes' === $settings['bangla_numbers'];
 		$count_up       = 'yes' === $settings['counting_up'];
-		$base_number    = $count_up ? $settings['min_val'] : $settings['max_val'];
+		$base_number    = absint( $count_up ? $settings['min_val'] : $settings['max_val'] );
 		$display_number = $use_bangla ? $this->convert_to_bangla_number( $base_number ) : $base_number;
 
 		$initial_percent = 50;
@@ -842,7 +842,7 @@ class W3OPCFE_Singlegrid_Scarcity_Widget extends W3OPCFE_Scarcity_Widget {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Product Scarcity (Legacy)', 'on-page-checkout' );
+		return esc_html__( 'Product Scarcity (Legacy)', 'on-page-checkout-for-elementor' );
 	}
 
 	public function show_in_panel() {

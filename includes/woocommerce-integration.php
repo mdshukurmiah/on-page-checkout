@@ -18,22 +18,22 @@ class W3OPCFE_WooCommerce_Integration {
         }
 
         if ( ! check_ajax_referer( 'w3opcfe_nonce', 'nonce', false ) ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Invalid security token.', 'on-page-checkout' ) ], 403 );
+            wp_send_json_error( [ 'message' => esc_html__( 'Invalid security token.', 'on-page-checkout-for-elementor' ) ], 403 );
         }
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce cart is not initialized.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'WooCommerce cart is not initialized.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         $product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
         $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
-        $selected_products = isset( $_POST['selected_products'] ) ? $_POST['selected_products'] : [];
+        $selected_products = isset( $_POST['selected_products'] ) ? map_deep( wp_unslash( $_POST['selected_products'] ), 'sanitize_text_field' ) : [];
 
         $added = $this->populate_cart( $selected_products, $product_id, $variation_id, $quantity );
         if ( ! $added ) {
-            wp_send_json_error( [ 'message' => esc_html__( 'Please select at least one valid product.', 'on-page-checkout' ) ] );
+            wp_send_json_error( [ 'message' => esc_html__( 'Please select at least one valid product.', 'on-page-checkout-for-elementor' ) ] );
         }
 
         if ( ! empty( $coupon_code ) ) {
@@ -79,16 +79,16 @@ class W3OPCFE_WooCommerce_Integration {
         if ( ! $is_w3_valid && ! $is_wc_valid ) {
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Your session has expired. Please refresh the page and try again.', 'on-page-checkout' ) . '</li></ul>',
-                'message'  => esc_html__( 'Your session has expired. Please refresh the page and try again.', 'on-page-checkout' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Your session has expired. Please refresh the page and try again.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Your session has expired. Please refresh the page and try again.', 'on-page-checkout-for-elementor' ),
             ] );
         }
 
         if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart || ! WC()->checkout() ) {
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout' ) . '</li></ul>',
-                'message'  => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'WooCommerce is not initialized.', 'on-page-checkout-for-elementor' ),
             ] );
         }
 
@@ -96,10 +96,10 @@ class W3OPCFE_WooCommerce_Integration {
         $variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
         $quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
         $coupon_code  = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
-        $selected_products = isset( $_POST['selected_products'] ) ? $_POST['selected_products'] : [];
+        $selected_products = isset( $_POST['selected_products'] ) ? map_deep( wp_unslash( $_POST['selected_products'] ), 'sanitize_text_field' ) : [];
         // The frontend sends selected_products as a JSON string; decode it so it can be passed on as an array.
         if ( is_string( $selected_products ) ) {
-            $selected_products = json_decode( wp_unslash( $selected_products ), true );
+            $selected_products = json_decode( $selected_products, true );
         }
         if ( ! is_array( $selected_products ) ) {
             $selected_products = [];
@@ -109,8 +109,8 @@ class W3OPCFE_WooCommerce_Integration {
         if ( ! $added ) {
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Please select at least one valid product.', 'on-page-checkout' ) . '</li></ul>',
-                'message'  => esc_html__( 'Please select at least one valid product.', 'on-page-checkout' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Please select at least one valid product.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Please select at least one valid product.', 'on-page-checkout-for-elementor' ),
             ] );
         }
 
@@ -127,8 +127,8 @@ class W3OPCFE_WooCommerce_Integration {
         if ( empty( $payment_method ) ) {
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Please select a payment method.', 'on-page-checkout' ) . '</li></ul>',
-                'message'  => esc_html__( 'Please select a payment method.', 'on-page-checkout' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Please select a payment method.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Please select a payment method.', 'on-page-checkout-for-elementor' ),
             ] );
         }
 
@@ -136,8 +136,8 @@ class W3OPCFE_WooCommerce_Integration {
         if ( ! isset( $available_gateways[ $payment_method ] ) ) {
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Invalid payment method selected.', 'on-page-checkout' ) . '</li></ul>',
-                'message'  => esc_html__( 'Invalid payment method selected.', 'on-page-checkout' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Invalid payment method selected.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Invalid payment method selected.', 'on-page-checkout-for-elementor' ),
             ] );
         }
 
@@ -176,8 +176,8 @@ class W3OPCFE_WooCommerce_Integration {
 
             wp_send_json( [
                 'result'   => 'failure',
-                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Checkout failed. Please verify your fields and try again.', 'on-page-checkout' ) . '</li></ul>',
-                'message'  => esc_html__( 'Checkout failed. Please verify your fields and try again.', 'on-page-checkout' ),
+                'messages' => '<ul class="woocommerce-error"><li>' . esc_html__( 'Checkout failed. Please verify your fields and try again.', 'on-page-checkout-for-elementor' ) . '</li></ul>',
+                'message'  => esc_html__( 'Checkout failed. Please verify your fields and try again.', 'on-page-checkout-for-elementor' ),
             ] );
 
         } catch ( Exception $e ) {
@@ -263,7 +263,7 @@ class W3OPCFE_WooCommerce_Integration {
                 }
 
                 if ( empty( $variation ) && 1 === count( $items ) ) {
-                    foreach ( $_POST as $k => $v ) {
+                    foreach ( $_POST as $k => $v ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is verified by the calling handlers (get_checkout_form / process_checkout).
                         if ( strpos( $k, 'attribute_' ) === 0 ) {
                             $variation[ sanitize_key( $k ) ] = sanitize_text_field( wp_unslash( $v ) );
                         }

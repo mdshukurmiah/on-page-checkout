@@ -240,9 +240,10 @@ class W3OPCFE_FOP_Settings {
                     <p>
                         <?php
                         printf(
+                            /* translators: 1: Number of imported entries, 2: Number of duplicate entries skipped. */
                             esc_html__( 'CSV Import finished: %1$d imported, %2$d duplicates skipped.', 'on-page-checkout-for-elementor' ),
-                            $imported_count,
-                            $skipped_count
+                            absint( $imported_count ),
+                            absint( $skipped_count )
                         );
                         ?>
                     </p>
@@ -723,11 +724,17 @@ class W3OPCFE_FOP_Settings {
                         <div style="display:flex; gap:10px;">
                             <a href="<?php echo esc_url( admin_url( 'admin.php?page=w3opcfe_fake_order_protection&tab=blocklists&list=blocklist' ) ); ?>" class="button <?php echo 'blocklist' === $current_list ? 'button-primary' : ''; ?>" style="font-weight:600;">
                                 <span class="dashicons dashicons-dismiss" style="vertical-align:middle; font-size:16px; margin-right:4px;"></span>
-                                <?php printf( esc_html__( 'Blocklist (%d)', 'on-page-checkout-for-elementor' ), $block_count ); ?>
+                                <?php
+                                /* translators: %d: Number of blocklist entries. */
+                                printf( esc_html__( 'Blocklist (%d)', 'on-page-checkout-for-elementor' ), absint( $block_count ) );
+                                ?>
                             </a>
                             <a href="<?php echo esc_url( admin_url( 'admin.php?page=w3opcfe_fake_order_protection&tab=blocklists&list=allowlist' ) ); ?>" class="button <?php echo 'allowlist' === $current_list ? 'button-primary' : ''; ?>" style="font-weight:600;">
                                 <span class="dashicons dashicons-yes-alt" style="vertical-align:middle; font-size:16px; margin-right:4px;"></span>
-                                <?php printf( esc_html__( 'Allowlist (%d)', 'on-page-checkout-for-elementor' ), $allow_count ); ?>
+                                <?php
+                                /* translators: %d: Number of allowlist entries. */
+                                printf( esc_html__( 'Allowlist (%d)', 'on-page-checkout-for-elementor' ), absint( $allow_count ) );
+                                ?>
                             </a>
                         </div>
 
@@ -735,7 +742,10 @@ class W3OPCFE_FOP_Settings {
                         <div style="display:flex; gap:8px;">
                             <button type="button" class="button button-secondary" onclick="jQuery('#w3opcfe-add-entry-panel').slideToggle();">
                                 <span class="dashicons dashicons-plus-alt2" style="vertical-align:middle;"></span>
-                                <?php printf( esc_html__( '+ Add to %s', 'on-page-checkout-for-elementor' ), ucfirst( $current_list ) ); ?>
+                                <?php
+                                /* translators: %s: Target list name. */
+                                printf( esc_html__( '+ Add to %s', 'on-page-checkout-for-elementor' ), esc_html( ucfirst( $current_list ) ) );
+                                ?>
                             </button>
                             <button type="button" class="button button-secondary" onclick="jQuery('#w3opcfe-import-csv-panel').slideToggle();">
                                 <span class="dashicons dashicons-upload" style="vertical-align:middle;"></span>
@@ -751,7 +761,10 @@ class W3OPCFE_FOP_Settings {
                     <!-- Add Entry Panel (collapsible) -->
                     <div id="w3opcfe-add-entry-panel" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:16px 20px; margin-bottom:20px;">
                         <h3 style="margin-top:0; margin-bottom:12px; font-size:14px;">
-                            <?php printf( esc_html__( 'Add New Entry to %s', 'on-page-checkout-for-elementor' ), ucfirst( $current_list ) ); ?>
+                            <?php
+                            /* translators: %s: Target list name. */
+                            printf( esc_html__( 'Add New Entry to %s', 'on-page-checkout-for-elementor' ), esc_html( ucfirst( $current_list ) ) );
+                            ?>
                         </h3>
                         <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                             <input type="hidden" name="action" value="w3opcfe_fop_add_entry">
@@ -785,7 +798,10 @@ class W3OPCFE_FOP_Settings {
                                 </div>
                                 <div>
                                     <button type="submit" class="button button-primary" style="width:100%;">
-                                        <?php printf( esc_html__( 'Add to %s', 'on-page-checkout-for-elementor' ), ucfirst( $current_list ) ); ?>
+                                        <?php
+                                        /* translators: %s: Target list name. */
+                                        printf( esc_html__( 'Add to %s', 'on-page-checkout-for-elementor' ), esc_html( ucfirst( $current_list ) ) );
+                                        ?>
                                     </button>
                                 </div>
                             </div>
@@ -795,7 +811,10 @@ class W3OPCFE_FOP_Settings {
                     <!-- Import CSV Panel (collapsible) -->
                     <div id="w3opcfe-import-csv-panel" style="display:none; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:16px 20px; margin-bottom:20px;">
                         <h3 style="margin-top:0; margin-bottom:6px; font-size:14px;">
-                            <?php printf( esc_html__( 'Import CSV into %s', 'on-page-checkout-for-elementor' ), ucfirst( $current_list ) ); ?>
+                            <?php
+                            /* translators: %s: Target list name. */
+                            printf( esc_html__( 'Import CSV into %s', 'on-page-checkout-for-elementor' ), esc_html( ucfirst( $current_list ) ) );
+                            ?>
                         </h3>
                         <p class="description" style="margin-bottom:12px;">
                             <?php esc_html_e( 'Upload a CSV file containing columns: entry_type, entry_value, reason. You can also upload a simple single-column CSV with phone numbers only. Phone numbers are automatically normalized and duplicates are skipped.', 'on-page-checkout-for-elementor' ); ?>
@@ -883,7 +902,12 @@ class W3OPCFE_FOP_Settings {
                                 <tr>
                                     <td colspan="7" style="text-align:center; padding:30px 15px; color:#64748b;">
                                         <span class="dashicons dashicons-info-outline" style="font-size:28px; width:28px; height:28px; color:#94a3b8; display:block; margin:0 auto 8px;"></span>
-                                        <strong><?php printf( esc_html__( 'No %s entries found.', 'on-page-checkout-for-elementor' ), $current_list ); ?></strong>
+                                        <strong>
+                                            <?php
+                                            /* translators: %s: Target list name. */
+                                            printf( esc_html__( 'No %s entries found.', 'on-page-checkout-for-elementor' ), esc_html( $current_list ) );
+                                            ?>
+                                        </strong>
                                         <p style="margin:4px 0 0 0; font-size:12px;"><?php esc_html_e( 'Add entries manually above, import a CSV list, or let automated rules add them.', 'on-page-checkout-for-elementor' ); ?></p>
                                     </td>
                                 </tr>
@@ -895,17 +919,22 @@ class W3OPCFE_FOP_Settings {
                     <?php if ( $total_pages > 1 ) : ?>
                         <div class="tablenav" style="margin-top:12px;">
                             <div class="tablenav-pages">
-                                <span class="displaying-num"><?php printf( esc_html__( '%d items', 'on-page-checkout-for-elementor' ), $total_count ); ?></span>
+                                <span class="displaying-num">
+                                    <?php
+                                    /* translators: %d: Total number of items. */
+                                    printf( esc_html__( '%d items', 'on-page-checkout-for-elementor' ), absint( $total_count ) );
+                                    ?>
+                                </span>
                                 <span class="pagination-links">
                                     <?php
-                                    echo paginate_links( [
+                                    echo wp_kses_post( paginate_links( [
                                         'base'      => add_query_arg( 'paged', '%#%' ),
                                         'format'    => '',
                                         'prev_text' => '&laquo;',
                                         'next_text' => '&raquo;',
                                         'total'     => $total_pages,
                                         'current'   => $paged,
-                                    ] );
+                                    ] ) );
                                     ?>
                                 </span>
                             </div>

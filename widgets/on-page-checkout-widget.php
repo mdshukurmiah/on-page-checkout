@@ -20,7 +20,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
     }
 
     public function get_title() {
-        return esc_html__( 'On-Page Checkout', 'on-page-checkout' );
+        return esc_html__( 'On-Page Checkout', 'on-page-checkout-for-elementor' );
     }
 
     public function get_icon() {
@@ -47,7 +47,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_content',
             [
-                'label' => esc_html__( 'Products', 'on-page-checkout' ),
+                'label' => esc_html__( 'Products', 'on-page-checkout-for-elementor' ),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -55,12 +55,12 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_selection_source',
             [
-                'label'   => esc_html__( 'Selection Mode', 'on-page-checkout' ),
+                'label'   => esc_html__( 'Selection Mode', 'on-page-checkout-for-elementor' ),
                 'type'    => Controls_Manager::SELECT,
                 'default' => 'multi_select',
                 'options' => [
-                    'multi_select' => esc_html__( 'Searchable Multi-Select', 'on-page-checkout' ),
-                    'repeater'     => esc_html__( 'Product List (Custom Order Repeater)', 'on-page-checkout' ),
+                    'multi_select' => esc_html__( 'Searchable Multi-Select', 'on-page-checkout-for-elementor' ),
+                    'repeater'     => esc_html__( 'Product List (Custom Order Repeater)', 'on-page-checkout-for-elementor' ),
                 ],
             ]
         );
@@ -68,12 +68,12 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'selected_products',
             [
-                'label'       => esc_html__( 'Select Products', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Select Products', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::SELECT2,
                 'options'     => $this->get_product_options(),
                 'multiple'    => true,
                 'label_block' => true,
-                'description' => esc_html__( 'Search and select products by title, SKU, or ID.', 'on-page-checkout' ),
+                'description' => esc_html__( 'Search and select products by title, SKU, or ID.', 'on-page-checkout-for-elementor' ),
                 'condition'   => [
                     'product_selection_source' => 'multi_select',
                 ],
@@ -85,22 +85,22 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $repeater->add_control(
             'product_id',
             [
-                'label'       => esc_html__( 'Select Product', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Select Product', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::SELECT2,
                 'options'     => $this->get_product_options(),
                 'default'     => '',
                 'label_block' => true,
                 'multiple'    => false,
-                'description' => esc_html__( 'Search and select a WooCommerce product.', 'on-page-checkout' ),
+                'description' => esc_html__( 'Search and select a WooCommerce product.', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $repeater->add_control(
             'custom_badge_text',
             [
-                'label'       => esc_html__( 'Custom Badge Text', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Custom Badge Text', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'e.g. Best Value, Popular, 20% Off', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'e.g. Best Value, Popular, 20% Off', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
             ]
         );
@@ -108,7 +108,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $repeater->add_control(
             'custom_badge_color',
             [
-                'label'     => esc_html__( 'Badge Text Color (Optional)', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Text Color (Optional)', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'condition' => [
                     'custom_badge_text!' => '',
@@ -119,7 +119,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $repeater->add_control(
             'custom_badge_bg_color',
             [
-                'label'     => esc_html__( 'Badge Background Color (Optional)', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Background Color (Optional)', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'condition' => [
                     'custom_badge_text!' => '',
@@ -130,7 +130,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_list',
             [
-                'label'       => esc_html__( 'Product List', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Product List', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::REPEATER,
                 'fields'      => $repeater->get_controls(),
                 'default'     => [
@@ -150,22 +150,22 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $badge_repeater->add_control(
             'product_id',
             [
-                'label'       => esc_html__( 'Select Product', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Select Product', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::SELECT2,
                 'options'     => $this->get_product_options(),
                 'default'     => '',
                 'label_block' => true,
                 'multiple'    => false,
-                'description' => esc_html__( 'Choose product to assign custom badge.', 'on-page-checkout' ),
+                'description' => esc_html__( 'Choose product to assign custom badge.', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $badge_repeater->add_control(
             'badge_text',
             [
-                'label'       => esc_html__( 'Badge Text', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Badge Text', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'e.g. Best Value, Popular, 20% Off', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'e.g. Best Value, Popular, 20% Off', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
             ]
         );
@@ -173,7 +173,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $badge_repeater->add_control(
             'badge_color',
             [
-                'label'     => esc_html__( 'Badge Text Color (Optional)', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Text Color (Optional)', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
             ]
         );
@@ -181,7 +181,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $badge_repeater->add_control(
             'badge_bg_color',
             [
-                'label'     => esc_html__( 'Badge Background Color (Optional)', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Background Color (Optional)', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
             ]
         );
@@ -189,7 +189,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_custom_badges',
             [
-                'label'       => esc_html__( 'Product Custom Badges', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Product Custom Badges', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::REPEATER,
                 'fields'      => $badge_repeater->get_controls(),
                 'title_field' => '{{{ badge_text }}}',
@@ -204,7 +204,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_settings',
             [
-                'label' => esc_html__( 'Settings', 'on-page-checkout' ),
+                'label' => esc_html__( 'Settings', 'on-page-checkout-for-elementor' ),
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -212,9 +212,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_selection_heading',
             [
-                'label' => esc_html__( 'Product selection heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Product selection heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Select a Product'
             ]
@@ -223,10 +223,10 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'show_quantity',
             [
-                'label' => esc_html__( 'Show Quantity Selector', 'on-page-checkout' ),
+                'label' => esc_html__( 'Show Quantity Selector', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__( 'Show', 'on-page-checkout' ),
-                'label_off' => esc_html__( 'Hide', 'on-page-checkout' ),
+                'label_on' => esc_html__( 'Show', 'on-page-checkout-for-elementor' ),
+                'label_off' => esc_html__( 'Hide', 'on-page-checkout-for-elementor' ),
                 'return_value' => 'yes',
                 'default' => 'yes',
             ]
@@ -235,36 +235,36 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'show_variations_as_cards',
             [
-                'label'        => esc_html__( 'Show Variations as Separate Cards', 'on-page-checkout' ),
+                'label'        => esc_html__( 'Show Variations as Separate Cards', 'on-page-checkout-for-elementor' ),
                 'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-                'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+                'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+                'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
                 'return_value' => 'yes',
                 'default'      => 'no',
-                'description'  => esc_html__( 'Display each variation as an individual product card instead of a dropdown inside the card.', 'on-page-checkout' ),
+                'description'  => esc_html__( 'Display each variation as an individual product card instead of a dropdown inside the card.', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'enable_multi_product_selection',
             [
-                'label'        => esc_html__( 'Enable Multi Product Selection', 'on-page-checkout' ),
+                'label'        => esc_html__( 'Enable Multi Product Selection', 'on-page-checkout-for-elementor' ),
                 'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-                'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+                'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+                'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
                 'return_value' => 'yes',
                 'default'      => 'no',
-                'description'  => esc_html__( 'Allow customers to select multiple products or variations at once.', 'on-page-checkout' ),
+                'description'  => esc_html__( 'Allow customers to select multiple products or variations at once.', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'out_of_stock_badge_text',
             [
-                'label'       => esc_html__( 'Out of Stock Badge Text', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Out of Stock Badge Text', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::TEXT,
-                'default'     => esc_html__( 'Out of Stock', 'on-page-checkout' ),
-                'placeholder' => esc_html__( 'Out of Stock', 'on-page-checkout' ),
+                'default'     => esc_html__( 'Out of Stock', 'on-page-checkout-for-elementor' ),
+                'placeholder' => esc_html__( 'Out of Stock', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
             ]
         );
@@ -272,10 +272,10 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'preselect_product_param',
             [
-                'label' => esc_html__( 'Preselect Product by Query String Parameter', 'on-page-checkout' ),
+                'label' => esc_html__( 'Preselect Product by Query String Parameter', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'e.g., product_id', 'on-page-checkout' ),
-                'description' => esc_html__( 'Enter the query string parameter name (e.g., product_id) to preselect a product.', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'e.g., product_id', 'on-page-checkout-for-elementor' ),
+                'description' => esc_html__( 'Enter the query string parameter name (e.g., product_id) to preselect a product.', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
             ]
         );
@@ -283,9 +283,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'form_heading',
             [
-                'label' => esc_html__( 'Checkout form heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Checkout form heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Your Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Your Details'
             ]
@@ -294,9 +294,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'billing_details_heading',
             [
-                'label' => esc_html__( 'Billing details heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Billing details heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Billing Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Billing Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Billing Details'
             ]
@@ -305,9 +305,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'shipping_details_heading',
             [
-                'label' => esc_html__( 'Shipping details heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Shipping details heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Shipping Details', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Shipping Details', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Shipping Details'
             ]
@@ -316,9 +316,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'additional_info_heading',
             [
-                'label' => esc_html__( 'Additional info heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Additional info heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Additional info', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Additional info', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Additional Information'
             ]
@@ -327,9 +327,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'order_summary_heading',
             [
-                'label' => esc_html__( 'Order summary heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Order summary heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Your Order', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Your Order', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Your Order'
             ]
@@ -338,34 +338,34 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'mobile_order_summary_label',
             [
-                'label'       => esc_html__( 'Mobile Summary Button Label', 'on-page-checkout' ),
+                'label'       => esc_html__( 'Mobile Summary Button Label', 'on-page-checkout-for-elementor' ),
                 'type'        => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Order summary', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Order summary', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default'     => 'Order summary',
-                'description' => esc_html__( 'Button text displayed on the mobile collapsible summary bar.', 'on-page-checkout' ),
+                'description' => esc_html__( 'Button text displayed on the mobile collapsible summary bar.', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'mobile_order_summary_default_collapsed',
             [
-                'label'        => esc_html__( 'Hide Order Summary by Default on Mobile', 'on-page-checkout' ),
+                'label'        => esc_html__( 'Hide Order Summary by Default on Mobile', 'on-page-checkout-for-elementor' ),
                 'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => esc_html__( 'Yes', 'on-page-checkout' ),
-                'label_off'    => esc_html__( 'No', 'on-page-checkout' ),
+                'label_on'     => esc_html__( 'Yes', 'on-page-checkout-for-elementor' ),
+                'label_off'    => esc_html__( 'No', 'on-page-checkout-for-elementor' ),
                 'return_value' => 'yes',
                 'default'      => 'yes',
-                'description'  => esc_html__( 'Keep the review table collapsed initially on mobile until the user clicks the button.', 'on-page-checkout' ),
+                'description'  => esc_html__( 'Keep the review table collapsed initially on mobile until the user clicks the button.', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'shipping_method_heading',
             [
-                'label' => esc_html__( 'Shipping method heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Shipping method heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Shipping Method', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Shipping Method', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Shipping Method'
             ]
@@ -374,9 +374,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_method_heading',
             [
-                'label' => esc_html__( 'Payment method heading', 'on-page-checkout' ),
+                'label' => esc_html__( 'Payment method heading', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Payment Method', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Payment Method', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Payment Method'
             ]
@@ -384,9 +384,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'order_button_name',
             [
-                'label' => esc_html__( 'Order button name', 'on-page-checkout' ),
+                'label' => esc_html__( 'Order button name', 'on-page-checkout-for-elementor' ),
                 'type' => Controls_Manager::TEXT,
-                'placeholder' => esc_html__( 'Place Order', 'on-page-checkout' ),
+                'placeholder' => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),
                 'label_block' => true,
                 'default' => 'Place Order'
             ]
@@ -400,7 +400,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_products',
             [
-                'label' => esc_html__( 'Product Cards', 'on-page-checkout' ),
+                'label' => esc_html__( 'Product Cards', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -408,18 +408,18 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_cards_columns',
             [
-                'label'          => esc_html__( 'Columns', 'on-page-checkout' ),
+                'label'          => esc_html__( 'Columns', 'on-page-checkout-for-elementor' ),
                 'type'           => Controls_Manager::SELECT,
                 'default'        => '2',
                 'tablet_default' => '2',
                 'mobile_default' => '1',
                 'options'        => [
-                    '1' => esc_html__( '1 Column', 'on-page-checkout' ),
-                    '2' => esc_html__( '2 Columns', 'on-page-checkout' ),
-                    '3' => esc_html__( '3 Columns', 'on-page-checkout' ),
-                    '4' => esc_html__( '4 Columns', 'on-page-checkout' ),
-                    '5' => esc_html__( '5 Columns', 'on-page-checkout' ),
-                    '6' => esc_html__( '6 Columns', 'on-page-checkout' ),
+                    '1' => esc_html__( '1 Column', 'on-page-checkout-for-elementor' ),
+                    '2' => esc_html__( '2 Columns', 'on-page-checkout-for-elementor' ),
+                    '3' => esc_html__( '3 Columns', 'on-page-checkout-for-elementor' ),
+                    '4' => esc_html__( '4 Columns', 'on-page-checkout-for-elementor' ),
+                    '5' => esc_html__( '5 Columns', 'on-page-checkout-for-elementor' ),
+                    '6' => esc_html__( '6 Columns', 'on-page-checkout-for-elementor' ),
                 ],
                 'selectors'      => [
                     '{{WRAPPER}} .opc-products-wrapper' => 'display: grid; grid-template-columns: repeat({{VALUE}}, minmax(0, 1fr));',
@@ -431,7 +431,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'products_wrapper_gap',
             [
-                'label'      => esc_html__( 'Gap Between Cards', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Gap Between Cards', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'range'      => [
@@ -446,7 +446,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_card_padding',
             [
-                'label'      => esc_html__( 'Card Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Card Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -458,7 +458,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_card_bg_color',
             [
-                'label'     => esc_html__( 'Card Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Card Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-products-wrapper .opc-product-item > label' => 'background-color: {{VALUE}};',
@@ -469,7 +469,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_card_active_bg_color',
             [
-                'label'     => esc_html__( 'Active Card Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Active Card Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-products-wrapper label:has(input:checked)' => 'background-color: {{VALUE}};',
@@ -481,7 +481,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             Group_Control_Border::get_type(),
             [
                 'name'     => 'product_card_border',
-                'label'    => esc_html__( 'Card Border', 'on-page-checkout' ),
+                'label'    => esc_html__( 'Card Border', 'on-page-checkout-for-elementor' ),
                 'selector' => '{{WRAPPER}} .opc-products-wrapper .opc-product-item > label',
             ]
         );
@@ -489,7 +489,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_card_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -501,7 +501,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_card_active_border_color',
             [
-                'label'     => esc_html__( 'Active Outline/Border Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Active Outline/Border Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-products-wrapper label:has(input:checked)' => 'outline-color: {{VALUE}}; border-color: {{VALUE}};',
@@ -521,7 +521,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_product_image_style',
             [
-                'label'     => esc_html__( 'Product Image', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Product Image', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -530,7 +530,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_image_width',
             [
-                'label'      => esc_html__( 'Image Width', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Image Width', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', '%', 'rem' ],
                 'range'      => [
@@ -545,7 +545,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_image_height',
             [
-                'label'      => esc_html__( 'Image Height', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Image Height', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', '%', 'rem' ],
                 'range'      => [
@@ -560,7 +560,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_image_border_radius',
             [
-                'label'      => esc_html__( 'Image Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Image Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%' ],
                 'selectors'  => [
@@ -573,7 +573,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_product_title_style',
             [
-                'label'     => esc_html__( 'Product Title', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Product Title', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -582,7 +582,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_title_color',
             [
-                'label'     => esc_html__( 'Title Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Title Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-products-wrapper .product-title' => 'color: {{VALUE}};',
@@ -601,7 +601,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'product_title_margin_bottom',
             [
-                'label'      => esc_html__( 'Bottom Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Bottom Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', 'em' ],
                 'range'      => [
@@ -617,7 +617,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_product_price_style',
             [
-                'label'     => esc_html__( 'Product Price', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Product Price', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -626,7 +626,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_price_color',
             [
-                'label'     => esc_html__( 'Price Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Price Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-products-wrapper .product-price, {{WRAPPER}} .opc-products-wrapper .product-price ins, {{WRAPPER}} .opc-products-wrapper .product-price .amount' => 'color: {{VALUE}};',
@@ -646,7 +646,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_product_original_price_style',
             [
-                'label'     => esc_html__( 'Original Price', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Original Price', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -655,7 +655,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'product_original_price_color',
             [
-                'label'     => esc_html__( 'Original Price Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Original Price Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-products-wrapper .product-price del, {{WRAPPER}} .opc-products-wrapper .product-price del .amount, {{WRAPPER}} .opc-products-wrapper .product-price del span' => 'color: {{VALUE}}; opacity: 1;',
@@ -675,7 +675,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_stock_badge_style',
             [
-                'label'     => esc_html__( 'Out of Stock Badge', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Out of Stock Badge', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -684,7 +684,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'stock_badge_color',
             [
-                'label'     => esc_html__( 'Badge Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-stock-badge' => 'color: {{VALUE}};',
@@ -695,7 +695,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'stock_badge_bg_color',
             [
-                'label'     => esc_html__( 'Badge Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-stock-badge' => 'background-color: {{VALUE}};',
@@ -714,7 +714,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'stock_badge_padding',
             [
-                'label'      => esc_html__( 'Badge Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Badge Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -726,7 +726,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'stock_badge_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -738,7 +738,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_custom_badge_style',
             [
-                'label'     => esc_html__( 'Custom Badge', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Custom Badge', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -747,12 +747,12 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'custom_badge_position',
             [
-                'label'   => esc_html__( 'Badge Position', 'on-page-checkout' ),
+                'label'   => esc_html__( 'Badge Position', 'on-page-checkout-for-elementor' ),
                 'type'    => Controls_Manager::SELECT,
                 'default' => 'top-right',
                 'options' => [
-                    'top-right' => esc_html__( 'Top Right', 'on-page-checkout' ),
-                    'top-left'  => esc_html__( 'Top Left', 'on-page-checkout' ),
+                    'top-right' => esc_html__( 'Top Right', 'on-page-checkout-for-elementor' ),
+                    'top-left'  => esc_html__( 'Top Left', 'on-page-checkout-for-elementor' ),
                 ],
             ]
         );
@@ -760,7 +760,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'custom_badge_top',
             [
-                'label'      => esc_html__( 'Top Position', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Top Position', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'range'      => [
@@ -789,7 +789,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'custom_badge_left',
             [
-                'label'      => esc_html__( 'Left Position', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Left Position', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'range'      => [
@@ -818,7 +818,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'custom_badge_right',
             [
-                'label'      => esc_html__( 'Right Position', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Right Position', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'range'      => [
@@ -847,7 +847,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'custom_badge_color',
             [
-                'label'     => esc_html__( 'Badge Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#ffffff',
                 'selectors' => [
@@ -859,7 +859,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'custom_badge_bg_color',
             [
-                'label'     => esc_html__( 'Badge Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Badge Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'default'   => '#016520',
                 'selectors' => [
@@ -879,7 +879,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'custom_badge_padding',
             [
-                'label'      => esc_html__( 'Badge Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Badge Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -899,7 +899,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'custom_badge_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -924,7 +924,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_variants',
             [
-                'label' => esc_html__( 'Variant Selection', 'on-page-checkout' ),
+                'label' => esc_html__( 'Variant Selection', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -940,7 +940,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'variant_select_text_color',
             [
-                'label'     => esc_html__( 'Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} select.opc-combined-variant-select' => 'color: {{VALUE}};',
@@ -951,7 +951,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'variant_select_bg_color',
             [
-                'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} select.opc-combined-variant-select' => 'background-color: {{VALUE}};',
@@ -970,7 +970,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'variant_select_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -982,7 +982,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'variant_select_padding',
             [
-                'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -994,7 +994,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'variant_select_margin_top',
             [
-                'label'      => esc_html__( 'Top Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Top Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', 'em' ],
                 'range'      => [
@@ -1014,7 +1014,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_quantity',
             [
-                'label' => esc_html__( 'Quantity Selector', 'on-page-checkout' ),
+                'label' => esc_html__( 'Quantity Selector', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -1022,7 +1022,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_quantity_label',
             [
-                'label' => esc_html__( 'Label', 'on-page-checkout' ),
+                'label' => esc_html__( 'Label', 'on-page-checkout-for-elementor' ),
                 'type'  => Controls_Manager::HEADING,
             ]
         );
@@ -1030,7 +1030,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_label_color',
             [
-                'label'     => esc_html__( 'Label Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Label Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-quantity-selector label' => 'color: {{VALUE}};',
@@ -1049,7 +1049,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'quantity_container_padding',
             [
-                'label'      => esc_html__( 'Container Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Container Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1061,7 +1061,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_quantity_box',
             [
-                'label'     => esc_html__( 'Quantity Box & Buttons', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Quantity Box & Buttons', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1070,7 +1070,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_box_bg',
             [
-                'label'     => esc_html__( 'Box Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Box Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .quantity-input-wrapper' => 'background-color: {{VALUE}};',
@@ -1089,7 +1089,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'quantity_box_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1101,7 +1101,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'quantity_box_padding',
             [
-                'label'      => esc_html__( 'Box Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Box Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1113,7 +1113,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_btn_color',
             [
-                'label'     => esc_html__( 'Button Icon/Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Button Icon/Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .quantity-input-wrapper button' => 'color: {{VALUE}};',
@@ -1124,7 +1124,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_btn_bg_color',
             [
-                'label'     => esc_html__( 'Button Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Button Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .quantity-input-wrapper button' => 'background-color: {{VALUE}};',
@@ -1135,7 +1135,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_btn_hover_color',
             [
-                'label'     => esc_html__( 'Button Hover Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Button Hover Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .quantity-input-wrapper button:hover' => 'color: {{VALUE}};',
@@ -1146,7 +1146,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_btn_hover_bg_color',
             [
-                'label'     => esc_html__( 'Button Hover Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Button Hover Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .quantity-input-wrapper button:hover' => 'background-color: {{VALUE}};',
@@ -1157,7 +1157,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'quantity_btn_padding',
             [
-                'label'      => esc_html__( 'Button Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Button Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1169,7 +1169,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'quantity_input_color',
             [
-                'label'     => esc_html__( 'Number Input Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Number Input Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .quantity-input-wrapper input' => 'color: {{VALUE}};',
@@ -1188,7 +1188,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'quantity_input_padding',
             [
-                'label'      => esc_html__( 'Input Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Input Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1205,7 +1205,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_typography',
             [
-                'label' => esc_html__( 'Headings & Form Fields', 'on-page-checkout' ),
+                'label' => esc_html__( 'Headings & Form Fields', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -1214,7 +1214,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_section_titles_style',
             [
-                'label' => esc_html__( 'Section Headings (H3)', 'on-page-checkout' ),
+                'label' => esc_html__( 'Section Headings (H3)', 'on-page-checkout-for-elementor' ),
                 'type'  => Controls_Manager::HEADING,
             ]
         );
@@ -1222,7 +1222,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'section_heading_color',
             [
-                'label'     => esc_html__( 'Heading Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Heading Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .on-page-checkout-widget h3' => 'color: {{VALUE}};',
@@ -1241,7 +1241,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'section_heading_margin',
             [
-                'label'      => esc_html__( 'Heading Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Heading Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1254,7 +1254,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_subtitles_style',
             [
-                'label'     => esc_html__( 'Sub Headings (H4)', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Sub Headings (H4)', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1263,7 +1263,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'sub_heading_color',
             [
-                'label'     => esc_html__( 'Sub Heading Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Sub Heading Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .on-page-checkout-widget h4' => 'color: {{VALUE}};',
@@ -1282,7 +1282,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'sub_heading_margin',
             [
-                'label'      => esc_html__( 'Sub Heading Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Sub Heading Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1295,7 +1295,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_field_labels_style',
             [
-                'label'     => esc_html__( 'Field Labels', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Field Labels', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1304,7 +1304,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'field_label_color',
             [
-                'label'     => esc_html__( 'Label Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Label Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-checkout-fields label, {{WRAPPER}} .woocommerce-form__label-text' => 'color: {{VALUE}};',
@@ -1324,7 +1324,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_inputs_style',
             [
-                'label'     => esc_html__( 'Form Input Fields', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Form Input Fields', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1333,7 +1333,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'input_text_color',
             [
-                'label'     => esc_html__( 'Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-checkout-fields input.input-text, {{WRAPPER}} .opc-checkout-fields select, {{WRAPPER}} .opc-checkout-fields textarea' => 'color: {{VALUE}};',
@@ -1344,7 +1344,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'input_bg_color',
             [
-                'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-checkout-fields input.input-text, {{WRAPPER}} .opc-checkout-fields select, {{WRAPPER}} .opc-checkout-fields textarea' => 'background-color: {{VALUE}};',
@@ -1371,7 +1371,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'input_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1383,7 +1383,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'input_focus_border_color',
             [
-                'label'     => esc_html__( 'Focus Border Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Focus Border Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-checkout-fields input.input-text:focus, {{WRAPPER}} .opc-checkout-fields select:focus, {{WRAPPER}} .opc-checkout-fields textarea:focus' => 'border-color: {{VALUE}}; outline-color: {{VALUE}};',
@@ -1394,7 +1394,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'input_padding',
             [
-                'label'      => esc_html__( 'Input Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Input Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1411,7 +1411,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_order_review',
             [
-                'label' => esc_html__( 'Order Review Table', 'on-page-checkout' ),
+                'label' => esc_html__( 'Order Review Table', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -1419,7 +1419,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'checkout_layout_gap',
             [
-                'label'      => esc_html__( 'Gap Between Form & Review Table', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Gap Between Form & Review Table', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', '%', 'em', 'rem', 'vw' ],
                 'range'      => [
@@ -1436,7 +1436,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'review_box_bg',
             [
-                'label'     => esc_html__( 'Table Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Table Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-order-review' => 'background-color: {{VALUE}};',
@@ -1455,7 +1455,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'review_box_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1467,7 +1467,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'review_box_padding',
             [
-                'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1479,7 +1479,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_table_header_style',
             [
-                'label'     => esc_html__( 'Table Header', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Table Header', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1488,7 +1488,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'table_header_bg_color',
             [
-                'label'     => esc_html__( 'Header Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Header Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .woocommerce-checkout-review-order-table thead, {{WRAPPER}} .woocommerce-checkout-review-order-table thead tr, {{WRAPPER}} .woocommerce-checkout-review-order-table thead th' => 'background-color: {{VALUE}};',
@@ -1499,7 +1499,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'table_header_color',
             [
-                'label'     => esc_html__( 'Header Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Header Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .woocommerce-checkout-review-order-table thead th' => 'color: {{VALUE}};',
@@ -1518,7 +1518,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'table_row_color',
             [
-                'label'     => esc_html__( 'Table Items Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Table Items Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .woocommerce-checkout-review-order-table tbody td, {{WRAPPER}} .woocommerce-checkout-review-order-table tbody td *, {{WRAPPER}} .woocommerce-checkout-review-order-table tbody .product-name, {{WRAPPER}} .woocommerce-checkout-review-order-table tbody .amount, {{WRAPPER}} .woocommerce-checkout-review-order-table tbody bdi, {{WRAPPER}} .woocommerce-checkout-review-order-table tfoot tr:not(.order-total) th, {{WRAPPER}} .woocommerce-checkout-review-order-table tfoot tr:not(.order-total) td, {{WRAPPER}} .woocommerce-checkout-review-order-table tfoot tr:not(.order-total) .amount, {{WRAPPER}} .woocommerce-checkout-review-order-table tfoot tr:not(.order-total) bdi' => 'color: {{VALUE}};',
@@ -1537,7 +1537,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'table_divider_color',
             [
-                'label'     => esc_html__( 'Table Divider / Border Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Table Divider / Border Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .woocommerce-checkout-review-order-table, {{WRAPPER}} .woocommerce-checkout-review-order-table th, {{WRAPPER}} .woocommerce-checkout-review-order-table td, {{WRAPPER}} .woocommerce-checkout-review-order-table thead th, {{WRAPPER}} .woocommerce-checkout-review-order-table tbody td, {{WRAPPER}} .woocommerce-checkout-review-order-table tfoot th, {{WRAPPER}} .woocommerce-checkout-review-order-table tfoot td, {{WRAPPER}} .woocommerce-checkout-review-order-table tr' => 'border-color: {{VALUE}};',
@@ -1548,7 +1548,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_order_total_style',
             [
-                'label'     => esc_html__( 'Total Price Row', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Total Price Row', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1557,7 +1557,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'order_total_color',
             [
-                'label'     => esc_html__( 'Total Price Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Total Price Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .order-total th, {{WRAPPER}} .order-total td, {{WRAPPER}} .order-total td *, {{WRAPPER}} .order-total .amount, {{WRAPPER}} .order-total .amount bdi, {{WRAPPER}} .order-total strong' => 'color: {{VALUE}};',
@@ -1573,7 +1573,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_order_summary_toggle',
             [
-                'label' => esc_html__( 'Order Summary Toggle Button', 'on-page-checkout' ),
+                'label' => esc_html__( 'Order Summary Toggle Button', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -1582,7 +1582,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             Group_Control_Typography::get_type(),
             [
                 'name'     => 'toggle_label_typography',
-                'label'    => esc_html__( 'Label Typography', 'on-page-checkout' ),
+                'label'    => esc_html__( 'Label Typography', 'on-page-checkout-for-elementor' ),
                 'selector' => '{{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-label',
             ]
         );
@@ -1591,7 +1591,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             Group_Control_Typography::get_type(),
             [
                 'name'     => 'toggle_total_typography',
-                'label'    => esc_html__( 'Total Price Typography', 'on-page-checkout' ),
+                'label'    => esc_html__( 'Total Price Typography', 'on-page-checkout-for-elementor' ),
                 'selector' => '{{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-total, {{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-total *',
             ]
         );
@@ -1602,14 +1602,14 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_tab(
             'tab_toggle_normal',
             [
-                'label' => esc_html__( 'Normal', 'on-page-checkout' ),
+                'label' => esc_html__( 'Normal', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'toggle_bg_color',
             [
-                'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle' => 'background-color: {{VALUE}};',
@@ -1620,7 +1620,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_label_color',
             [
-                'label'     => esc_html__( 'Label Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Label Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-label, {{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-left' => 'color: {{VALUE}};',
@@ -1631,7 +1631,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_icon_color',
             [
-                'label'     => esc_html__( 'Icon Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Icon Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-icon' => 'stroke: {{VALUE}};',
@@ -1642,7 +1642,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_total_color',
             [
-                'label'     => esc_html__( 'Total Amount Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Total Amount Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-total, {{WRAPPER}} .opc-mobile-order-summary-toggle .opc-toggle-total *' => 'color: {{VALUE}};',
@@ -1653,7 +1653,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_border_color_normal',
             [
-                'label'     => esc_html__( 'Border Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Border Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle' => 'border-color: {{VALUE}};',
@@ -1667,14 +1667,14 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_tab(
             'tab_toggle_hover',
             [
-                'label' => esc_html__( 'Hover', 'on-page-checkout' ),
+                'label' => esc_html__( 'Hover', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'toggle_hover_bg_color',
             [
-                'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle:hover' => 'background-color: {{VALUE}};',
@@ -1685,7 +1685,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_hover_label_color',
             [
-                'label'     => esc_html__( 'Label Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Label Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle:hover .opc-toggle-label, {{WRAPPER}} .opc-mobile-order-summary-toggle:hover .opc-toggle-left' => 'color: {{VALUE}};',
@@ -1696,7 +1696,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_hover_icon_color',
             [
-                'label'     => esc_html__( 'Icon Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Icon Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle:hover .opc-toggle-icon' => 'stroke: {{VALUE}};',
@@ -1707,7 +1707,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_hover_total_color',
             [
-                'label'     => esc_html__( 'Total Amount Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Total Amount Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle:hover .opc-toggle-total, {{WRAPPER}} .opc-mobile-order-summary-toggle:hover .opc-toggle-total *' => 'color: {{VALUE}};',
@@ -1718,7 +1718,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'toggle_hover_border_color',
             [
-                'label'     => esc_html__( 'Border Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Border Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-mobile-order-summary-toggle:hover' => 'border-color: {{VALUE}};',
@@ -1733,7 +1733,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'toggle_icon_size',
             [
-                'label'      => esc_html__( 'Icon Size', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Icon Size', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px' ],
                 'range'      => [
@@ -1749,7 +1749,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'toggle_icon_spacing',
             [
-                'label'      => esc_html__( 'Icon & Label Spacing', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Icon & Label Spacing', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px' ],
                 'range'      => [
@@ -1773,7 +1773,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'toggle_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1793,7 +1793,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'toggle_padding',
             [
-                'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1805,7 +1805,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'toggle_margin',
             [
-                'label'      => esc_html__( 'Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1822,7 +1822,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_shipping_methods',
             [
-                'label' => esc_html__( 'Shipping Methods', 'on-page-checkout' ),
+                'label' => esc_html__( 'Shipping Methods', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -1830,7 +1830,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'shipping_method_container_bg',
             [
-                'label'     => esc_html__( 'Container Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Container Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-shipping-methods' => 'background-color: {{VALUE}};',
@@ -1849,7 +1849,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'shipping_method_container_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1861,7 +1861,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'shipping_method_container_padding',
             [
-                'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1873,7 +1873,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'shipping_method_container_margin',
             [
-                'label'      => esc_html__( 'Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1885,7 +1885,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_shipping_method_labels_style',
             [
-                'label'     => esc_html__( 'Method Titles & Radio', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Method Titles & Radio', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1894,7 +1894,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'shipping_method_label_color',
             [
-                'label'     => esc_html__( 'Method Label Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Method Label Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-shipping-methods label, {{WRAPPER}} .opc-shipping-methods .amount, {{WRAPPER}} .opc-shipping-methods h4' => 'color: {{VALUE}};',
@@ -1918,7 +1918,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_payment_methods',
             [
-                'label' => esc_html__( 'Payment Methods', 'on-page-checkout' ),
+                'label' => esc_html__( 'Payment Methods', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -1926,7 +1926,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_container_bg',
             [
-                'label'     => esc_html__( 'Container Background', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Container Background', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-payment-methods' => 'background-color: {{VALUE}};',
@@ -1945,7 +1945,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'payment_container_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -1957,7 +1957,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'payment_container_padding',
             [
-                'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1969,7 +1969,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'payment_container_margin',
             [
-                'label'      => esc_html__( 'Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -1981,7 +1981,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'heading_payment_method_labels_style',
             [
-                'label'     => esc_html__( 'Method Titles & Radio', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Method Titles & Radio', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -1990,7 +1990,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_method_label_color',
             [
-                'label'     => esc_html__( 'Method Label Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Method Label Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .wc_payment_methods li.wc_payment_method label, {{WRAPPER}} .opc-payment-methods h4' => 'color: {{VALUE}};',
@@ -2009,7 +2009,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_box_heading',
             [
-                'label'     => esc_html__( 'Payment Description Box', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Payment Description Box', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::HEADING,
                 'separator' => 'before',
             ]
@@ -2018,7 +2018,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_box_bg',
             [
-                'label'     => esc_html__( 'Box Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Box Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .payment_box' => 'background-color: {{VALUE}};',
@@ -2029,7 +2029,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'payment_box_text_color',
             [
-                'label'     => esc_html__( 'Box Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Box Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .payment_box, {{WRAPPER}} .payment_box p' => 'color: {{VALUE}};',
@@ -2056,7 +2056,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'payment_box_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -2068,7 +2068,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'payment_box_padding',
             [
-                'label'      => esc_html__( 'Box Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Box Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -2085,7 +2085,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_section(
             'section_style_button',
             [
-                'label' => esc_html__( 'Place Order Button', 'on-page-checkout' ),
+                'label' => esc_html__( 'Place Order Button', 'on-page-checkout-for-elementor' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -2104,14 +2104,14 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_tab(
             'tab_button_normal',
             [
-                'label' => esc_html__( 'Normal', 'on-page-checkout' ),
+                'label' => esc_html__( 'Normal', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'button_text_color',
             [
-                'label'     => esc_html__( 'Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-place-order-button, {{WRAPPER}} button#place_order' => 'color: {{VALUE}};',
@@ -2122,7 +2122,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'button_bg_color',
             [
-                'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-place-order-button, {{WRAPPER}} button#place_order' => 'background-color: {{VALUE}};',
@@ -2136,14 +2136,14 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->start_controls_tab(
             'tab_button_hover',
             [
-                'label' => esc_html__( 'Hover', 'on-page-checkout' ),
+                'label' => esc_html__( 'Hover', 'on-page-checkout-for-elementor' ),
             ]
         );
 
         $this->add_control(
             'button_hover_text_color',
             [
-                'label'     => esc_html__( 'Text Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Text Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-place-order-button:hover, {{WRAPPER}} button#place_order:hover' => 'color: {{VALUE}};',
@@ -2154,7 +2154,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'button_hover_bg_color',
             [
-                'label'     => esc_html__( 'Background Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Background Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-place-order-button:hover, {{WRAPPER}} button#place_order:hover' => 'background-color: {{VALUE}};',
@@ -2165,7 +2165,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_control(
             'button_hover_border_color',
             [
-                'label'     => esc_html__( 'Border Color', 'on-page-checkout' ),
+                'label'     => esc_html__( 'Border Color', 'on-page-checkout-for-elementor' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .opc-place-order-button:hover, {{WRAPPER}} button#place_order:hover' => 'border-color: {{VALUE}};',
@@ -2189,7 +2189,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'button_border_radius',
             [
-                'label'      => esc_html__( 'Border Radius', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Border Radius', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', '%', 'em', 'rem' ],
                 'selectors'  => [
@@ -2209,7 +2209,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'button_padding',
             [
-                'label'      => esc_html__( 'Padding', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Padding', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::DIMENSIONS,
                 'size_units' => [ 'px', 'em', 'rem' ],
                 'selectors'  => [
@@ -2221,7 +2221,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         $this->add_responsive_control(
             'button_margin_top',
             [
-                'label'      => esc_html__( 'Top Margin', 'on-page-checkout' ),
+                'label'      => esc_html__( 'Top Margin', 'on-page-checkout-for-elementor' ),
                 'type'       => Controls_Manager::SLIDER,
                 'size_units' => [ 'px', 'em' ],
                 'range'      => [
@@ -2261,7 +2261,6 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             'posts_per_page'         => -1,
             'orderby'                => 'title',
             'order'                  => 'ASC',
-            'suppress_filters'       => true,
             'no_found_rows'          => true,
             'update_post_term_cache' => false,
         ] );
@@ -2274,7 +2273,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                     $prod = wc_get_product( $post->ID );
                     if ( $prod ) {
                         if ( $prod->is_type( 'variable' ) ) {
-                            $extra_info[] = esc_html__( 'Variable', 'on-page-checkout' );
+                            $extra_info[] = esc_html__( 'Variable', 'on-page-checkout-for-elementor' );
                         }
                         $sku = $prod->get_sku();
                         if ( ! empty( $sku ) ) {
@@ -2388,7 +2387,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             $label        = ! empty( $var_name ) ? $var_name : '#' . $variation_id;
             $is_in_stock  = ! empty( $variation['is_in_stock'] );
             if ( ! $is_in_stock ) {
-                $label .= ' (' . esc_html__( 'Out of stock', 'on-page-checkout' ) . ')';
+                $label .= ' (' . esc_html__( 'Out of stock', 'on-page-checkout-for-elementor' ) . ')';
             }
             if ( $variation_id ) {
                 $options[ $variation_id ] = [
@@ -2420,9 +2419,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
     private function render_card_quantity() {
         echo '<div class="opc-card-quantity">';
             echo '<div class="quantity-input-wrapper">';
-                echo '<button type="button" class="qty-decrement opc-card-qty-btn" aria-label="' . esc_attr__( 'Decrease quantity', 'on-page-checkout' ) . '">-</button>';
+                echo '<button type="button" class="qty-decrement opc-card-qty-btn" aria-label="' . esc_attr__( 'Decrease quantity', 'on-page-checkout-for-elementor' ) . '">-</button>';
                 echo '<input type="text" class="opc-card-qty-input" value="1" min="1">';
-                echo '<button type="button" class="qty-increment opc-card-qty-btn" aria-label="' . esc_attr__( 'Increase quantity', 'on-page-checkout' ) . '">+</button>';
+                echo '<button type="button" class="qty-increment opc-card-qty-btn" aria-label="' . esc_attr__( 'Increase quantity', 'on-page-checkout-for-elementor' ) . '">+</button>';
             echo '</div>';
         echo '</div>';
     }
@@ -2459,7 +2458,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         }
 
         if ( empty( $product_ids ) ) {
-            echo '<div class="opc-no-products">' . esc_html__( 'No products selected for On Page Checkout.', 'on-page-checkout' ) . '</div>';
+            echo '<div class="opc-no-products">' . esc_html__( 'No products selected for On Page Checkout.', 'on-page-checkout-for-elementor' ) . '</div>';
             return;
         }
 
@@ -2473,14 +2472,14 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         // Only parse preselect parameter on frontend to avoid collision with editor URL query args (e.g. post ID)
         if ( ! $is_elementor_editor ) {
             $preselect_param = ! empty( $settings['preselect_product_param'] ) ? sanitize_key( $settings['preselect_product_param'] ) : '';
-            if ( '' !== $preselect_param && isset( $_GET[ $preselect_param ] ) ) {
-                $raw_val = sanitize_text_field( wp_unslash( $_GET[ $preselect_param ] ) );
+            if ( '' !== $preselect_param && isset( $_GET[ $preselect_param ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only public URL parameter for preselecting products; no state change.
+                $raw_val = sanitize_text_field( wp_unslash( $_GET[ $preselect_param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
                 $parts   = array_map( 'absint', explode( ',', $raw_val ) );
                 $preselected_product_ids = array_values( array_filter( $parts ) );
             }
         }
 
-        $mobile_summary_label = ! empty( $settings['mobile_order_summary_label'] ) ? $settings['mobile_order_summary_label'] : esc_html__( 'Order summary', 'on-page-checkout' );
+        $mobile_summary_label = ! empty( $settings['mobile_order_summary_label'] ) ? $settings['mobile_order_summary_label'] : esc_html__( 'Order summary', 'on-page-checkout-for-elementor' );
         $mobile_summary_collapsed = ( 'no' === ( $settings['mobile_order_summary_default_collapsed'] ?? 'yes' ) ) ? 'no' : 'yes';
         $show_variations_as_cards = ( 'yes' === ( $settings['show_variations_as_cards'] ?? 'no' ) );
         $is_multi_select          = ( 'yes' === ( $settings['enable_multi_product_selection'] ?? 'no' ) );
@@ -2606,7 +2605,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         }
 
         if ( empty( $render_items ) ) {
-            echo '<div class="opc-no-products">' . esc_html__( 'No products available for On Page Checkout.', 'on-page-checkout' ) . '</div>';
+            echo '<div class="opc-no-products">' . esc_html__( 'No products available for On Page Checkout.', 'on-page-checkout-for-elementor' ) . '</div>';
             return;
         }
 
@@ -2634,11 +2633,11 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         }
         $initial_variation_id = ! empty( $selected_indices ) ? ( $render_items[ $selected_indices[0] ]['variation_id'] ?? 0 ) : 0;
 
-        $badge_text = ! empty( $settings['out_of_stock_badge_text'] ) ? $settings['out_of_stock_badge_text'] : esc_html__( 'Out of Stock', 'on-page-checkout' );
+        $badge_text = ! empty( $settings['out_of_stock_badge_text'] ) ? $settings['out_of_stock_badge_text'] : esc_html__( 'Out of Stock', 'on-page-checkout-for-elementor' );
         $custom_badge_pos = ! empty( $settings['custom_badge_position'] ) ? $settings['custom_badge_position'] : 'top-right';
         $custom_badge_pos_class = ( 'top-left' === $custom_badge_pos ) ? 'opc-badge-pos-top-left' : 'opc-badge-pos-top-right';
 
-        echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-multi-select="' . esc_attr( $is_multi_select ? 'yes' : 'no' ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ?? '' ) . '" data-shipping-method-title="' . esc_attr( $settings['shipping_method_heading'] ?? esc_html__( 'Shipping Method', 'on-page-checkout' ) ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ?? '' ) . '" data-order-summary-title="' . esc_attr( $settings['order_summary_heading'] ?? '' ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ?? '' ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ?? '' ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ?? '' ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ?? '' ) . '" data-mobile-summary-label="' . esc_attr( $mobile_summary_label ) . '" data-mobile-summary-collapsed="' . esc_attr( $mobile_summary_collapsed ) . '" data-out-of-stock-label="' . esc_attr( $badge_text ) . '">';
+        echo '<div class="on-page-checkout-widget" data-widget-id="' . esc_attr( $this->get_id() ) . '" data-multi-select="' . esc_attr( $is_multi_select ? 'yes' : 'no' ) . '" data-shipping-title="' . esc_attr( $settings['shipping_details_heading'] ?? '' ) . '" data-shipping-method-title="' . esc_attr( $settings['shipping_method_heading'] ?? esc_html__( 'Shipping Method', 'on-page-checkout-for-elementor' ) ) . '" data-billing-title="' . esc_attr( $settings['billing_details_heading'] ?? '' ) . '" data-order-summary-title="' . esc_attr( $settings['order_summary_heading'] ?? '' ) . '" data-order-summery-title="' . esc_attr( $settings['order_summary_heading'] ?? '' ) . '" data-payment-method-title="' . esc_attr( $settings['payment_method_heading'] ?? '' ) . '" data-additional-info-title="' . esc_attr( $settings['additional_info_heading'] ?? '' ) . '" data-order-button-name="' . esc_attr( $settings['order_button_name'] ?? '' ) . '" data-mobile-summary-label="' . esc_attr( $mobile_summary_label ) . '" data-mobile-summary-collapsed="' . esc_attr( $mobile_summary_collapsed ) . '" data-out-of-stock-label="' . esc_attr( $badge_text ) . '">';
         echo '<form class="opc-checkout-form checkout woocommerce-checkout" method="post">';
         echo '<div class="opc-checkout-notices" style="display:none;"></div>';
         if ( class_exists( '\W3OPCFE_Greenweb' ) && \W3OPCFE_Greenweb::is_otp_enabled() ) {
@@ -2656,14 +2655,8 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                 $is_out_of_stock = empty( $item['is_in_stock'] );
                 $checked = ( in_array( $idx, $selected_indices, true ) && ! $is_out_of_stock );
                 $item_classes = 'opc-product-item' . ( $is_out_of_stock ? ' opc-out-of-stock' : '' );
-                $disabled_attr = $is_out_of_stock ? ' disabled' : '';
 
-                $data_attr = '';
-                if ( ! empty( $item['available_variations'] ) ) {
-                    $data_attr = ' data-available-variations=\'' . esc_attr( wp_json_encode( $item['available_variations'] ) ) . '\'';
-                }
-
-                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . $data_attr . '>';
+                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . ( ! empty( $item['available_variations'] ) ? ' data-available-variations=\'' . esc_attr( wp_json_encode( $item['available_variations'] ) ) . '\'' : '' ) . '>';
                     echo '<label>';
                         echo '<span class="opc-stock-badge opc-out-of-stock-badge"' . ( $is_out_of_stock ? '' : ' style="display:none;"' ) . '>' . esc_html( $badge_text ) . '</span>';
                         if ( ! empty( $item['custom_badge_text'] ) ) {
@@ -2674,10 +2667,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                             if ( ! empty( $item['custom_badge_bg_color'] ) ) {
                                 $custom_badge_inline .= 'background-color:' . esc_attr( $item['custom_badge_bg_color'] ) . ';';
                             }
-                            $custom_badge_style_attr = ! empty( $custom_badge_inline ) ? ' style="' . esc_attr( $custom_badge_inline ) . '"' : '';
-                            echo '<span class="opc-custom-badge ' . esc_attr( $custom_badge_pos_class ) . '"' . $custom_badge_style_attr . '>' . esc_html( $item['custom_badge_text'] ) . '</span>';
+                            echo '<span class="opc-custom-badge ' . esc_attr( $custom_badge_pos_class ) . '"' . ( ! empty( $custom_badge_inline ) ? ' style="' . esc_attr( $custom_badge_inline ) . '"' : '' ) . '>' . esc_html( $item['custom_badge_text'] ) . '</span>';
                         }
-                        echo '<input type="' . esc_attr( $input_type ) . '" class="opc-product-input" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '" ' . checked( $checked, true, false ) . $disabled_attr . '>';
+                        echo '<input type="' . esc_attr( $input_type ) . '" class="opc-product-input" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '" ' . checked( $checked, true, false ) . ( $is_out_of_stock ? ' disabled' : '' ) . '>';
                         echo '<div class="product-card">';
                             echo wp_kses_post( $item['image'] );
                             echo '<div class="product-information">';
@@ -2701,16 +2693,10 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
             $item = $render_items[0];
             $is_out_of_stock = empty( $item['is_in_stock'] );
             $item_classes = 'opc-product-item' . ( $is_out_of_stock ? ' opc-out-of-stock' : '' );
-            $disabled_attr = $is_out_of_stock ? ' disabled' : '';
             $checked = ! $is_out_of_stock;
 
-            $data_attr = '';
-            if ( ! empty( $item['available_variations'] ) ) {
-                $data_attr = ' data-available-variations=\'' . esc_attr( wp_json_encode( $item['available_variations'] ) ) . '\'';
-            }
-
             echo '<div class="opc-products-wrapper">';
-                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . $data_attr . '>';
+                echo '<div class="' . esc_attr( $item_classes ) . '" data-product-id="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '"' . ( $is_out_of_stock ? ' data-out-of-stock="1"' : '' ) . ( ! empty( $item['available_variations'] ) ? ' data-available-variations=\'' . esc_attr( wp_json_encode( $item['available_variations'] ) ) . '\'' : '' ) . '>';
                     echo '<label>';
                         echo '<span class="opc-stock-badge opc-out-of-stock-badge"' . ( $is_out_of_stock ? '' : ' style="display:none;"' ) . '>' . esc_html( $badge_text ) . '</span>';
                         if ( ! empty( $item['custom_badge_text'] ) ) {
@@ -2721,10 +2707,9 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
                             if ( ! empty( $item['custom_badge_bg_color'] ) ) {
                                 $custom_badge_inline .= 'background-color:' . esc_attr( $item['custom_badge_bg_color'] ) . ';';
                             }
-                            $custom_badge_style_attr = ! empty( $custom_badge_inline ) ? ' style="' . esc_attr( $custom_badge_inline ) . '"' : '';
-                            echo '<span class="opc-custom-badge ' . esc_attr( $custom_badge_pos_class ) . '"' . $custom_badge_style_attr . '>' . esc_html( $item['custom_badge_text'] ) . '</span>';
+                            echo '<span class="opc-custom-badge ' . esc_attr( $custom_badge_pos_class ) . '"' . ( ! empty( $custom_badge_inline ) ? ' style="' . esc_attr( $custom_badge_inline ) . '"' : '' ) . '>' . esc_html( $item['custom_badge_text'] ) . '</span>';
                         }
-                        echo '<input type="' . esc_attr( $input_type ) . '" class="opc-product-input" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '" ' . checked( $checked, true, false ) . $disabled_attr . '>';
+                        echo '<input type="' . esc_attr( $input_type ) . '" class="opc-product-input" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $item['product_id'] ) . '" data-variation-id="' . esc_attr( $item['variation_id'] ) . '" ' . checked( $checked, true, false ) . ( $is_out_of_stock ? ' disabled' : '' ) . '>';
                         echo '<div class="product-card">';
                             echo wp_kses_post( $item['image'] );
                             echo '<div class="product-information">';
@@ -2748,11 +2733,11 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         // Quantity selector (only shown when multi-selection is disabled; in multi-select mode each card has its own quantity selector)
         if ( 'yes' === $settings['show_quantity'] && ! $is_multi_select ) {
             echo '<div class="opc-quantity-selector">';
-            echo '<label for="w3opcfe_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout' ) . '</label>';
+            echo '<label for="w3opcfe_quantity">' . esc_html__( 'Select Quantity:', 'on-page-checkout-for-elementor' ) . '</label>';
             echo '<div class="quantity-input-wrapper">';
-                echo '<button type="button" class="qty-decrement" aria-label="' . esc_attr__( 'Decrease quantity', 'on-page-checkout' ) . '">-</button>';
+                echo '<button type="button" class="qty-decrement" aria-label="' . esc_attr__( 'Decrease quantity', 'on-page-checkout-for-elementor' ) . '">-</button>';
                 echo '<input type="text" id="w3opcfe_quantity" name="w3opcfe_quantity" value="1" min="1">';
-                echo '<button type="button" class="qty-increment" aria-label="' . esc_attr__( 'Increase quantity', 'on-page-checkout' ) . '">+</button>';
+                echo '<button type="button" class="qty-increment" aria-label="' . esc_attr__( 'Increase quantity', 'on-page-checkout-for-elementor' ) . '">+</button>';
             echo '</div>';
             echo '</div>';
         } else {
@@ -2765,7 +2750,7 @@ class W3OPCFE_On_Page_Checkout_Widget extends Widget_Base {
         if ( ! empty( $form_heading ) ) {
             echo '<h3>' . esc_html( $form_heading ) . '</h3>';
         }
-        echo '<div id="opc-checkout-fields-container-' . esc_attr( $this->get_id() ) . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout' ) . '</div>';
+        echo '<div id="opc-checkout-fields-container-' . esc_attr( $this->get_id() ) . '" class="opc-checkout-fields-container">' . esc_html__( 'Loading checkout fields...', 'on-page-checkout-for-elementor' ) . '</div>';
         echo '</div>';
         echo '</form>';
         echo '</div>';

@@ -158,10 +158,10 @@ final class W3OPCFE_On_Page_Checkout {
     public function admin_notice_missing_dependencies() {
         $message = sprintf(
             /* translators: 1: Plugin name, 2: Elementor, 3: WooCommerce */
-            esc_html__( '%1$s requires %2$s and %3$s to be installed and activated.', 'on-page-checkout' ),
-            '<strong>' . esc_html__( 'On Page Checkout', 'on-page-checkout' ) . '</strong>',
-            '<strong>' . esc_html__( 'Elementor', 'on-page-checkout' ) . '</strong>',
-            '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout' ) . '</strong>'
+            esc_html__( '%1$s requires %2$s and %3$s to be installed and activated.', 'on-page-checkout-for-elementor' ),
+            '<strong>' . esc_html__( 'On Page Checkout', 'on-page-checkout-for-elementor' ) . '</strong>',
+            '<strong>' . esc_html__( 'Elementor', 'on-page-checkout-for-elementor' ) . '</strong>',
+            '<strong>' . esc_html__( 'WooCommerce', 'on-page-checkout-for-elementor' ) . '</strong>'
         );
 
         printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', wp_kses_post( $message ) );
@@ -211,7 +211,7 @@ final class W3OPCFE_On_Page_Checkout {
         $elements_manager->add_category(
             'on-page-checkout',
             [
-                'title' => esc_html__( 'On Page Checkout', 'on-page-checkout' ),
+                'title' => esc_html__( 'On Page Checkout', 'on-page-checkout-for-elementor' ),
                 'icon'  => 'eicon-checkout',
             ]
         );
@@ -276,18 +276,18 @@ final class W3OPCFE_On_Page_Checkout {
         wp_localize_script( 'w3opcfe-frontend-script', 'w3opcfe_ajax_object', [
             'ajax_url'                 => admin_url( 'admin-ajax.php' ),
             'nonce'                    => wp_create_nonce( 'w3opcfe_nonce' ),
-            'loading_text'             => esc_html__( 'Loading...', 'on-page-checkout' ),
-            'error_text'               => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout' ),
-            'retry_text'               => esc_html__( 'Retry', 'on-page-checkout' ),
-            'processing_text'          => esc_html__( 'Processing...', 'on-page-checkout' ),
-            'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout' ),
-            'place_order_text'         => esc_html__( 'Place Order', 'on-page-checkout' ),
+            'loading_text'             => esc_html__( 'Loading...', 'on-page-checkout-for-elementor' ),
+            'error_text'               => esc_html__( 'An error occurred. Please try again.', 'on-page-checkout-for-elementor' ),
+            'retry_text'               => esc_html__( 'Retry', 'on-page-checkout-for-elementor' ),
+            'processing_text'          => esc_html__( 'Processing...', 'on-page-checkout-for-elementor' ),
+            'no_product_selected_text' => esc_html__( 'Please select a product.', 'on-page-checkout-for-elementor' ),
+            'place_order_text'         => esc_html__( 'Place Order', 'on-page-checkout-for-elementor' ),
             'pixelbeacon_active'       => $pixelbeacon_active,
             'pixel_id'                 => ! empty( $pb_settings['pixel_id'] ) ? esc_js( $pb_settings['pixel_id'] ) : '',
             'test_event_code'          => ! empty( $pb_settings['test_event_code'] ) ? esc_js( $pb_settings['test_event_code'] ) : '',
             'currency'                 => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
             'rest_url'                 => esc_url_raw( rest_url( 'pixelbeacon/v1/event' ) ),
-            'out_of_stock_text'        => esc_html__( 'Out of Stock', 'on-page-checkout' ),
+            'out_of_stock_text'        => esc_html__( 'Out of Stock', 'on-page-checkout-for-elementor' ),
         ] );
     }
 
